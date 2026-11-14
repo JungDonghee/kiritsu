@@ -1,0 +1,7 @@
+# fonts are 36MB and not tracked; see README
+fonts/
+.playwright/
+book.html
+*.png
+.env
+*.log
