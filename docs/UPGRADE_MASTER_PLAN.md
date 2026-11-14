@@ -18,7 +18,7 @@
 | Do dynamic bugs/walls/health go into the 51 campaign stages now? | **No.** Campaign stays deterministic and oracle-clean. |
 | Where does the dynamic system live first? | A separate **LIVE CIRCUIT** arcade mode using the same Vim engine and a generated arena. |
 | What is "Practical Vim full"? | A written **PV-FULL** contract: every one of 123 tips is playable, a verified drill, or an explicitly environment-deferred row with a feature backlog. No unknown gaps. |
-| What is the story? | A cyberpunk bureaucratic noir: **CURSOR 07**, an audit cursor with no file, wakes at a frozen 06:23 to a **CASE 0623 self-closure order** his mentor KURO released. The city is a legal document; District 9's last open line is 07 himself. Four endings: COMPLY / AUDIT / ERASE / AWAKEN. See [`STORY_BIBLE.md`](STORY_BIBLE.md) and [`story/KIRITSU_LOGIC.md`](story/KIRITSU_LOGIC.md). |
+| What is the story? | A cyberpunk bureaucratic noir: **리츠[律]**, an audit cursor with no file, wakes at a frozen 06:23 to a **판결 4,112 self-closure order** his mentor 츠키[月] released. The city is a legal document; District 9's last open line is 07 himself. Four endings: COMPLY / AUDIT / ERASE / AWAKEN. See [`STORY_BIBLE.md`](STORY_BIBLE.md) and [`stories/kiritsu/HANDOVER.md`](stories/kiritsu/HANDOVER.md). |
 | What is the first shippable slice? | One LIVE arena: moving bugs, red walls, corruption, health, timer, score, pause/accessibility, no campaign changes. Then one puzzle room with one-shot floors/plates/effect locks. |
 | What is explicitly not first? | Buffers/windows/files engine, full Modern Vim, multiplayer, accounts, servers. |
 
@@ -188,9 +188,9 @@ Typography:
 Characters (visual):
 - **CURSOR**: the player, a block with a thin wake;
 - **ERRATA** (bugs): six-legged bracket shapes, each type distinct;
-- **ORACLE**: a blind vertical eye / diagnostic column;
+- **칸노[監能]**: a blind vertical eye / diagnostic column;
 - **ROT / REDACTOR**: red editorial marks, never a generic monster;
-- **RIN**: an unregistered child in the lower market; the reason refusal is not enough.
+- **신[審]**: an unregistered child in the lower market; the reason refusal is not enough.
 
 Onboarding:
 - first LIVE run shows a 4-line legend overlay: MOVE, COLLECT, AVOID, WALL;
@@ -200,7 +200,7 @@ Onboarding:
 ## 6. Narrative system
 
 See [`STORY_BIBLE.md`](STORY_BIBLE.md) (v2 cyberpunk bureaucratic noir) and the
-bilingual first scene [`story/PROLOGUE.md`](story/PROLOGUE.md). The story is **not a skin**: the city is a legal document, Vim edits are law, registers are evidence, macros are ghosts, and the final boss is one self-closure order. Delivery contract:
+bilingual first scene [`stories/kiritsu/story-a.md`](stories/kiritsu/story-a.md). The story is **not a skin**: the city is a legal document, Vim edits are law, registers are evidence, macros are ghosts, and the final boss is one self-closure order. Delivery contract:
 
 | surface | content | frequency |
 |---|---|---|
@@ -208,7 +208,7 @@ bilingual first scene [`story/PROLOGUE.md`](story/PROLOGUE.md). The story is **n
 | chapter epigraph | 2–4 lines, chapter voice | chapter select |
 | chapter interlude | 250–600 words | after all chapter stages cleared |
 | codex | author notes, character fragments, definitions | unlocked progressively |
-| LIVE transmissions | ROT/ORACLE lines, no plot-critical info | between waves |
+| LIVE transmissions | ROT/칸노[監能] lines, no plot-critical info | between waves |
 | ending | 3 choices, one hidden condition | after c10 |
 
 Rules:
@@ -278,7 +278,7 @@ inside 300,000 B.
 ## 9. Delivery phases and exit criteria
 
 ### P0 — Plan, story canon and freeze (this document)
-- `STORY_BIBLE.md` v2 and `story/PROLOGUE.md` fixed;
+- `STORY_BIBLE.md` v2 and `stories/kiritsu/story-a.md` fixed;
 - gameplay/puzzle/engine boundaries fixed;
 - current gates green; no feature code mixed in.
 Exit: canon, scope, budget and vertical-slice acceptance approved.
@@ -306,13 +306,13 @@ Exit: solver proves solvability; retry restores devices; Vim `u` does not
 resurrect meta-cells by design; browser QA and gates green.
 
 ### P1 — Story vertical slice
-- prologue (Cursor 07 wakes at 06:23; CASE 0623 on the desk; Kuro on the
+- prologue (Cursor 07 wakes at 06:23; 판결 4,112 on the desk; Kuro on the
   intercom), c01 epigraph/interlude, 6 codex entries, 2 Registrar transmissions;
-- CURSOR 07 / KURO / ORACLE / RIN voice tests; no reveal of the open-line
+- 리츠[律] / 츠키[月] / 칸노[監能] / 신[審] voice tests; no reveal of the open-line
   rule, the 4,217 loops, or the self-closure mechanics;
 - skippable, localized, no book text; archive reachable from codex;
 - story state persisted locally, no server.
-Exit: a new player can explain who they are, who Kuro is, what CASE 0623 is,
+Exit: a new player can explain who they are, who Kuro is, what 판결 4,112 is,
 what happens if they refuse, and why editing is the only way to learn the truth;
 no story blocks controls; link/doc/localization checks green.
 

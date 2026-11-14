@@ -172,7 +172,7 @@ export class App {
       'BUILD 2006.06.23',
       'MEMORY ......... 640K OK',
       'MOUNT /dev/names ......... <b>FAILED</b>',
-      'CURSOR 07 ................. <b>NOT FOUND</b>',
+      '리츠[律] ................. <b>NOT FOUND</b>',
       'IDENTITY LINE ............. <b>OPEN</b>',
       '> WAITING FOR A CURSOR_',
     ];
@@ -205,7 +205,7 @@ export class App {
           'div',
           { class: 'kt-top' },
           h('span', {}, h('b', {}, 'DISTRICT 9'), ' / NIGHT AUDIT'),
-          h('span', { class: 'kt-case' }, 'CASE 0623'),
+          h('span', { class: 'kt-case' }, '판결 4,112'),
           h('span', {}, h('b', {}, '06:23:00'), ' / FROZEN'),
         ),
         h(

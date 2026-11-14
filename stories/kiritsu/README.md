@@ -43,7 +43,9 @@ PLAYWRIGHT_BROWSERS_PATH=<playwright browsers> node build.mjs
 ## Art
 
 - Current: CRT vector (bezels, scanlines, phosphor green, 8 portraits, 12 chapter scenes).
-- Planned: FLUX 1.1 [pro] via `FAL_KEY` (fal.ai) — 21 images; text (Korean/Hanja) stays in HTML/SVG overlay, never baked into the image.
+- **Confirmed**: Black Forest Labs **FLUX 1.1 [pro]** via `gen-art.mjs` (key at `/home/jung/ai_station/sandbox/.secrets/bfl_api_key`, never in repo). Test: `art/test_cover.jpg`.
+- 21 images (cover 1 + cast 8 + scenes 12); text (Korean/Hanja) stays in HTML/SVG overlay, never baked into the image.
+- Run: `node gen-art.mjs all` (or `cover`, `ritsu`, `ch1` ...). ~$1–2 total.
 
 ## Handover rule
 

@@ -156,9 +156,13 @@ PLAYWRIGHT_BROWSERS_PATH=/home/jung/ai_station/sandbox/kiritsu/.playwright node 
 - **CRT 벡터 디스플레이** 스타일: 베젤, 스캔라인, 형광 녹색, 비네트, 8인 초상(공유 HEAD/NECK/SHOULDERS + 개별 얼굴/헤어/모티프), 12장 장면 아트.
 - 평가: "화면은 디자인할 줄 알지만 얼굴은 못 그린다" — **벡터 초상화는 한계**.
 
-### API 계획 (사용자 제공 예정)
-- **1순위**: **FLUX 1.1 [pro]** — `FAL_KEY` (fal.ai). 사이버펑크/애니 일러스트, 캐릭터 일관성 최고. ~$0.05/장.
-- **2순위**: **Google Imagen 4** — `GEMINI_API_KEY`. 시네마틱/커버 대안.
+### API — 확정: BFL FLUX 1.1 [pro]
+- 키: `/home/jung/ai_station/sandbox/.secrets/bfl_api_key` (mode 600, **저장소 밖**). 계정: Black Forest Labs, GitHub 연동.
+- 엔드포인트: `POST https://api.bfl.ai/v1/flux-pro-1.1` + 헤더 `x-key`.
+- 테스트 성공: `art/test_cover.jpg` (1024×1024, 286KB).
+- 생성 스크립트: `node gen-art.mjs all` (또는 `cover`, `ritsu`, `ch1` 등).
+- 수량: 커버 1 + 캐스트 8 + 장면 12 = **21장**, 약 $1~2.
+- **주의**: 키는 절대 커밋/출력하지 않는다. `.secrets/README.md`에 사용법 있음.
 - **텍스트 주의**: 한글·한자는 **이미지에 굽지 않는다.** 기존 HTML/SVG 타이포로 오버레이.
 - **생성 목록**: 커버 1 + 캐스트 8 + 장면 12 = 21장.
 - **일관성**: 동일 모델 + 고정 시드 + 스타일 레퍼런스 + 인물별 프롬프트 고정.
@@ -230,7 +234,5 @@ PLAYWRIGHT_BROWSERS_PATH=/home/jung/ai_station/sandbox/kiritsu/.playwright node 
 - `vimlore/docs/STORY_BIBLE.md`에는 **이미 다른 KIRITSU**가 있다: **네오도쿄 2091**, 인간 **커서 07**, Bureau of Correction, 도시 자체가 편집 가능한 원장.
 - 이 소설은 **AI만 남은 문명**: 리츠[律], 츠키[月], 신[審], 칸노[監能]. **인물·시대·세계관이 다르다.**
 - 사용자의 최신 지시: **이 소설이 vimlore 스토리 모드의 기반**이다.
-- 다음 AI는 둘 중 하나를 **사용자에게 확인**한 뒤 진행한다:
-  - **(a)** 기존 STORY_BIBLE을 이 소설의 캐논으로 **대체**한다.
-  - **(b)** 이 소설을 게임 세계 **안의 이야기**(in-game fiction)로 넣고, 커서 07 세계를 바깥 틀로 유지한다.
+- **결정 (2026-11-15): (a) 대체.** 기존 Neo-Tokyo/Cursor 07 STORY_BIBLE과 `docs/story/`는 **제거**되었고, `docs/STORY_BIBLE.md`는 이 소설의 포인터로 교체되었다. **이 소설(AI-only)이 확정 캐논**이다.
 - **임의로 합치지 말 것.** 두 캐논을 섞으면 인물/시대가 충돌한다.

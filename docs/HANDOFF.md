@@ -89,8 +89,8 @@ only finalize by 23:50; the machine shuts down at 00:00.
 ## 0i. Next direction: gameplay/story before PV-FULL (2026-11-13)
 
 - Master plan: [`UPGRADE_MASTER_PLAN.md`](UPGRADE_MASTER_PLAN.md).
-- Narrative bible: [`STORY_BIBLE.md`](STORY_BIBLE.md) — KIRITSU cyberpunk bureaucratic noir, CURSOR 07/KURO/REGISTRAR, CASE 0623, four endings; hard rules in [`story/KIRITSU_LOGIC.md`](story/KIRITSU_LOGIC.md).
-- First bilingual scene: [`story/PROLOGUE.md`](story/PROLOGUE.md).
+- Narrative canon: [`STORY_BIBLE.md`](STORY_BIBLE.md) — AI-only KIRITSU (리츠[律], 츠키[月], 신[審], 칸노[監能]); LOCKED canon in [`stories/kiritsu/HANDOVER.md`](stories/kiritsu/HANDOVER.md).
+- First bilingual scene: [`stories/kiritsu/story-a.md`](stories/kiritsu/story-a.md).
 - Priority: story vertical slice (prologue + c01 epigraph/interlude + codex),
   then LIVE CIRCUIT/puzzle devices, then PV-FULL Practical Vim engine.
 - Do not retrofit moving hazards into deterministic campaign first-clears;
