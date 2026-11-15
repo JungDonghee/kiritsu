@@ -7,15 +7,16 @@
 > `npm run kickoff`.
 > **Last rewritten:** 2026-11-15, after the naming correction, CI/IME fixes and the novel is confirmed (work/ 13편 ~73,000자).
 
-## 0k — 타이틀 한자 인트로 (2026-11-15, v7)
+## 0k — 타이틀 한자 인트로 (2026-11-15, v8)
 
 - **단독 규격서: `docs/TITLE_KANJI.md`** — v1(다른 글자형·페이드) → v2(CSS
   클립 애니메이션 미동작) → v3(리본 폴리곤 커버리지 ~80%)의 실수를 기록.
-- v7: `tools/gen-title-strokes.py`가 글자 아웃라인을 pathops로 **20개 획별
-  벡터 패스**로 분할한다(union=글자, leftover는 마지막 획). `src/ui/kanji.ts`는
-  이 패스를 실제 일본어 획순으로 채우고, 진행 중 획만 호 클립으로 스윕한다.
-  마스크 기반 v6의 계단 경계/잔상이 없다. 타이틀 자산은 Yuji Boku **Light cut**
-  (8 unit 침식)이며, **한자 폰트는 이 Light cut으로 전 뷰 고정**(2026-11-15).
+- v8: `tools/gen-title-strokes.py`가 잉크 픽셀을 **최근접 획(Voronoi) 단일
+  소유**로 배정하고(교차 없음), 각 획의 **전체 붓 튜브**를 재구성해 가려진
+  부분까지 이어지는 완전한 획을 만든다(union=글자, 나중 획이 겹쳐 덮음).
+  `src/ui/kanji.ts`는 실제 일본어 획순으로 이 패스를 그린다. 타이틀 자산은
+  Yuji Boku **Light cut**(8 unit 침식)이며 **한자 폰트는 이 Light cut으로
+  전 뷰 고정**(2026-11-15). HW/Arphic 데이터는 라이선스·PRC 획순 문제로 미사용.
 - 타이밍: 쓰기 ≈4.4s, 캡션/태그/PRESS는 `--kt-end`로 실제 종료에 정렬.
   단일 파일 칸지 인라인 경량화(약 30KB raw 절감).
 - 검증: `tools/title-check.mjs` (20획·done·캔버스 커버리지·헤드 제거·캡션·

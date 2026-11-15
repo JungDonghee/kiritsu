@@ -135,12 +135,14 @@ docs/               LEVEL_FORMAT.md (authoring), CURRICULUM.md (the 10 floors)
 ## Design laws
 
 - **Title kanji (規律) has a single source of truth:** `public/kanji/ou-guilv-tight.svg`
-  (구양순체 계열 Yuji Boku **Light cut**, viewBox 600×300, fill `#f2d8c9`; generated directly from the subset by `tools/gen-title-svg.py`). **Kanji font is LOCKED** to this Yuji Boku Light cut for every view. v7 draws the real
-  glyph as **20 pre-split per-stroke vector paths** (`tools/gen-title-strokes.py`
-  → `src/ui/title-stroke-paths.ts`) in **real Japanese stroke order**:
+  (구양순체 계열 Yuji Boku **Light cut**, viewBox 600×300, fill `#f2d8c9`; generated directly from the subset by `tools/gen-title-svg.py`). **Kanji font is LOCKED** to this Yuji Boku Light cut for every view. v8 draws the real
+  glyph as **20 full brush-stroke vector paths** (Voronoi-owned ink ∪ variable
+  centreline tube; `tools/gen-title-strokes.py` → `src/ui/title-stroke-paths.ts`)
+  in **real Japanese stroke order**:
   rasterize the glyph, EDT + nearest-stroke assignment → per-point brush
-  half-widths, then clip each pre-split path with a circular sweep along the
-  current stroke's arc. Their union equals the glyph exactly. The stroke order/centrelines are derived
+  half-widths, then draw each full stroke clipped by a circular sweep along its
+  arc; later strokes overlap earlier ones as in real writing. Their union equals
+  the glyph exactly. The stroke order/centrelines are derived
   from KanjiVG (CC BY-SA 3.0, reference only; see `docs/KANJI_ATTRIBUTION.md`)
   and snapped to the Yuji Boku ink. Never draw the final glyph over the animated one (no crossfade/pop). Read [`docs/TITLE_KANJI.md`](docs/TITLE_KANJI.md) before touching the
   title — it codifies the v1–v4 mistakes so other AIs do not repeat them.

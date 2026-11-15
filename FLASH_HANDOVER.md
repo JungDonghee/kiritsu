@@ -19,7 +19,7 @@ KIRITSU = 소설 + vim 교육 게임(부제 VIMLORE). 저장소
 | 소설 | `stories/kiritsu/work/` 13편 확정(~73,000자, 검토 27건 반영, 규칙 0건). **사용자 한국어판 독서·피드백 대기** |
 | 소설 PDF | `stories/kiritsu/KIRITSU.pdf` (인쇄용, 72페이지) |
 | 게임 | 모든 게이트 그린(테스트·오라클 373/373·번들·PWA·타이틀 검사), 라이브 배포 정상 |
-| 타이틀 인트로 | v7 완성: 일본어 획순 + **획별 벡터 패스 사전 분할**(pathops, union=글자) 클립 스윕, Yuji Boku Light cut(폰트 고정), 팝/잔상 없음(총 ~6.6s). `docs/TITLE_KANJI.md` 필독 |
+| 타이틀 인트로 | v8 완성: 일본어 획순 + **Voronoi 소유 + 전체 붓 획 재구성**(contourpy/pathops, union=글자), Yuji Boku Light cut(폰트 고정), 조각/교차/팝 없음(총 ~6.6s). `docs/TITLE_KANJI.md` 필독 |
 | 보류(사용자 지시) | 영어판·리츠 1인칭(피드백 후), 게임 스토리 슬라이스(원고 확정 후), LIVE 모드(승인 전), 이미지(다른 AI 생성) |
 | 자동화 | v4 pro의 매시간 라운드는 **인계 시점에 일시정지됨** — flash 세션에서 새로 만들 것(아래 §5) |
 

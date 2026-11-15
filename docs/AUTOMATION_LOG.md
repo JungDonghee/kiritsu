@@ -399,3 +399,16 @@ GitHub repository renamed `vimlore` → `kiritsu`; VIMLORE is now the **game's**
   `tools/title-plan.json`(중심선/커버 폭) + `src/ui/title-stroke-paths.ts` 생성.
 - 번들 365,1xx B raw / ~118k B gzip(빌드 후 실측은 STATUS). title-check headless 통과, 팝/콘솔 에러/잔상 없음.
 
+## 2026-11-15 (6) — 타이틀 v8: Voronoi 소유 + 전체 붓 획 재구성
+
+- 기존 v7(획별 disjoint 조각)의 문제(획 일부가 빠지고 다른 획 일부가 섞임)를
+  해결: **래스터 Voronoi**로 모든 글리프 잉크 픽셀을 최근접 획 하나에 단일
+  소유시켜 교차를 제거하고, 각 획은 **중심선 가변 반폭 튜브**로 가려진 부분까지
+  이어지는 **전체 붓 획**으로 재구성(글자와 교집합, union=글자). 생성:
+  `tools/gen-title-strokes.py`(mask 렌더 + chamfer Voronoi + contourpy + pathops).
+- 조사(`/tmp/stroke-research/REPORT.md`): Hanzi Writer/Make Me a Hanzi는 規/律
+  per-stroke outline이 있으나 Arphic/PRC 획순·APL 라이선스라 형상 소스로 부적합,
+  KanjiVG는 centerline(CC BY-SA)만 제공. contourpy/opencv/등은 Python 3.14에서
+  사용 가능 확인.
+- 번들: title-stroke-paths 63.7KB 생성, build budget ceiling(420k/140k) 이내.
+
