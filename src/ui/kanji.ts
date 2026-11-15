@@ -71,8 +71,8 @@ const clamp01 = (t: number): number => Math.min(1, Math.max(0, t));
  */
 function planStrokes(): Plan {
   const geoms: StrokeGeom[] = [];
-  const START = 0.55, GAP = 0.08, CHAR_PAUSE = 0.18;
-  const SPEED_DIV = 3000;
+  const START = 0.5, GAP = 0.06, CHAR_PAUSE = 0.14;
+  const SPEED_DIV = 3600;
   const NORM = 1024 / 600;
   let t = START;
   for (let i = 0; i < KIRITSU_TITLE_MEDIANS.length; i++) {
@@ -96,7 +96,7 @@ function planStrokes(): Plan {
     const wcum: number[] = [wts[0]!];
     for (let k = 1; k < wts.length; k++) wcum.push(wcum[k - 1]! + wts[k]!);
     const wtotal = wcum[wcum.length - 1]! || 1;
-    const dur = Math.min(0.55, Math.max(0.22, (len * NORM + 600) / SPEED_DIV));
+    const dur = Math.min(0.48, Math.max(0.18, (len * NORM + 600) / SPEED_DIV));
     geoms.push({ pts: dense, cum, len, wcum, wtotal, start: t, dur });
     t += dur + GAP;
     if (i === KIRITSU_TITLE_MEDIANS.length - 2) t += CHAR_PAUSE;
@@ -154,10 +154,8 @@ export async function mountKtTitleWrite(root: HTMLElement, sfx?: Sfx): Promise<v
     if (head) {
       head.classList.add('kt-vector-head');
       head.innerHTML = '<svg viewBox="-20 -20 40 40" aria-hidden="true">'
-        + '<g fill="none" stroke="#a9ffd9" stroke-width="1.2" stroke-linecap="round">'
-        + '<path d="M-15 0H-4M4 0H15M0 -15V-4M0 4V15" opacity=".9"/>'
-        + '<circle cx="0" cy="0" r="2.4"/>'
-        + '<path d="M9 -4.5L15 0L9 4.5" opacity=".95"/>'
+        + '<g fill="none" stroke="#a9ffd9" stroke-width="1.4" stroke-linecap="round">'
+        + '<path d="M-11 0H-3M3 0H11M0 -11V-3M0 3V11"/>'
         + '</g></svg>';
       head.style.opacity = '0';
     }
@@ -177,7 +175,7 @@ export async function mountKtTitleWrite(root: HTMLElement, sfx?: Sfx): Promise<v
       if (!head) return;
       head.style.left = `${(p.x / VB_W) * 100}%`;
       head.style.top = `${(p.y / VB_H) * 100}%`;
-      head.style.transform = `rotate(${angle}deg) scale(${Math.max(0.65, Math.min(1.5, hw / 12))})`;
+      head.style.transform = `rotate(${angle}deg) scale(${Math.max(0.7, Math.min(1.1, hw / 18))})`;
       head.style.opacity = on ? '0.95' : '0';
     };
 
