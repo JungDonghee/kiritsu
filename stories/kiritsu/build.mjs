@@ -2,6 +2,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { createRequire } from 'node:module';
+import { execFileSync } from 'node:child_process';
 import { art, cast } from './illustrations.mjs';
 
 const dir = path.dirname(fileURLToPath(import.meta.url));
@@ -85,3 +86,8 @@ const out = path.join(dir, 'KIRITSU.pdf');
 await page.pdf({ path: out, format: 'A4', printBackground: true, preferCSSPageSize: true });
 await browser.close();
 console.log('pdf written:', out, fs.statSync(out).size, 'bytes');
+try {
+  console.log(execFileSync('python3', [path.join(dir, 'optimize-pdf.py'), out], { cwd: dir, encoding: 'utf8' }).trim());
+} catch (err) {
+  console.warn('pdf optimize skipped:', String(err.message || err).slice(0, 160));
+}

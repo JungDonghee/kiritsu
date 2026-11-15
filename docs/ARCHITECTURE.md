@@ -1,6 +1,6 @@
 # ARCHITECTURE
 
-VIMLORE is a single static web page with **zero runtime dependencies**. It ships
+KIRITSU (subtitle VIMLORE) is a single static web page with **zero runtime dependencies**. It ships
 as one self-contained `dist/vimlore.html` and runs entirely in the browser:
 there is no server, no account, no database, and no third-party request. The
 only thing that looks like a backend is `tools/oracle-diff.ts`, a development

@@ -1,6 +1,6 @@
 # CURRICULUM PROVENANCE — the ten books are the curriculum authority
 
-> **Why this file exists.** VIMLORE must not be “an AI invented 51 plausible
+> **Why this file exists.** KIRITSU must not be “an AI invented 51 plausible
 > Vim puzzles”. The curriculum is supposed to be a **gradual, natural, almost
 > painless path through professional Vim material**. The ten source books listed
 > below are the authority for *what* is taught, *in what order*, and *why*.

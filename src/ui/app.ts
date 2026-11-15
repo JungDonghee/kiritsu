@@ -5,6 +5,7 @@ import { generateTrial, dailySeed, skillLabel, TRIAL_SKILLS, type Trial } from '
 import { weakestSkills, recordStat, encodeSave, decodeSave, weaknessScore } from '../core/game/stats.ts';
 import { skillModel, activityGrid, streak, bumpActivity } from '../core/game/skills.ts';
 import { h, mount, isTouch, focusGroup, focusStep, focusActivate, focusIndex, type FocusGroup } from './dom.ts';
+import { needsRemap, physicalKey } from '../core/vim/keys.ts';
 import { Sfx } from './sfx.ts';
 import { PlayScreen } from './play.ts';
 
@@ -975,6 +976,27 @@ export class App {
 
   private onKey(e: KeyboardEvent): void {
     if (e.metaKey || e.altKey) return;
+    // A Korean IME rewrites letter keys (h→ㅗ, j→ㅓ, …). Vim keys are physical
+    // positions, so recover them from KeyboardEvent.code. The game must be
+    // playable without switching the input method.
+    if (needsRemap(e.key)) {
+      const remapped = physicalKey(e.key, e.code, e.shiftKey);
+      if (remapped !== e.key) {
+        const orig = e;
+        e = {
+          key: remapped,
+          code: orig.code,
+          ctrlKey: orig.ctrlKey,
+          metaKey: orig.metaKey,
+          altKey: orig.altKey,
+          shiftKey: orig.shiftKey,
+          repeat: orig.repeat,
+          isComposing: orig.isComposing,
+          target: orig.target,
+          preventDefault: () => orig.preventDefault(),
+        } as unknown as KeyboardEvent;
+      }
+    }
     this.sfx.unlock();
     if (this.promptEl) {
       if (e.key === 'Escape') {
@@ -1039,10 +1061,10 @@ export class App {
       } else if (e.key === 'G' || e.key === 'End') {
         e.preventDefault();
         this.selectChapterStage(CHAPTERS[this.chapterIndex].stages.length - 1);
-      } else if (e.key === 'Enter') {
+      } else if (e.key === 'Enter' || e.key === 'l' || e.key === 'ArrowRight') {
         e.preventDefault();
         this.startStageAt(this.chapterSel);
-      } else if (e.key === 'Escape') {
+      } else if (e.key === 'Escape' || e.key === 'h' || e.key === 'ArrowLeft') {
         e.preventDefault();
         this.goMap();
       }
@@ -1067,11 +1089,11 @@ export class App {
       } else if (e.key === 'G' || e.key === 'End') {
         e.preventDefault();
         this.selectFloor(CHAPTERS.length - 1, false);
-      } else if (e.key === 'Enter') {
+      } else if (e.key === 'Enter' || e.key === 'l' || e.key === 'ArrowRight') {
         e.preventDefault();
         if (chapterUnlocked(this.progress, this.mapSel)) this.goChapter(this.mapSel);
         else this.sfx.play('locked');
-      } else if (e.key === 'Escape') {
+      } else if (e.key === 'Escape' || e.key === 'h' || e.key === 'ArrowLeft') {
         this.goTitle();
       } else if (e.key === 'p' || e.key === 'P') {
         this.goProgress();
@@ -1094,12 +1116,12 @@ export class App {
       else if (e.key === 'G' || e.key === 'End') { e.preventDefault(); this.moveTrial(Math.max(0, this.trialEls.length - 1) - this.trialSel); }
       else if (e.key === 'PageDown' || (e.key === 'd' && e.ctrlKey)) { e.preventDefault(); this.moveTrial(5); }
       else if (e.key === 'PageUp' || (e.key === 'u' && e.ctrlKey)) { e.preventDefault(); this.moveTrial(-5); }
-      else if (e.key === 'Enter') { e.preventDefault(); this.runTrial(this.trialSel); }
-      else if (e.key === 'Escape') this.goMap();
+      else if (e.key === 'Enter' || e.key === 'l' || e.key === 'ArrowRight') { e.preventDefault(); this.runTrial(this.trialSel); }
+      else if (e.key === 'Escape' || e.key === 'h' || e.key === 'ArrowLeft') this.goMap();
       return;
     }
     if (this.screen === 'progress' || this.screen === 'codex') {
-      if (e.key === 'Escape') {
+      if (e.key === 'Escape' || e.key === 'h' || e.key === 'ArrowLeft') {
         this.goMap();
         return;
       }

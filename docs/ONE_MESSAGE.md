@@ -11,7 +11,8 @@
 ---
 
 ```text
-You are taking over KIRITSU (VIMLORE is the world/series), a Vim-teaching terminal at
+You are taking over KIRITSU — the world and the game (subtitle VIMLORE: vim
+taught as lore) — a Vim-teaching terminal at
 /home/jung/ai_station/sandbox/vimlore (GitHub JungDonghee/kiritsu, live
 https://jungdonghee.github.io/kiritsu/).
 

@@ -1,11 +1,54 @@
-# HANDOFF — KIRITSU current state (VIMLORE world)
+# HANDOFF — KIRITSU current state (subtitle VIMLORE)
 
 > **Priority and the task board live in [`MASTER_PLAN.md`](MASTER_PLAN.md).**
 > This file is the snapshot a new AI needs in the first ten minutes: what is
 > true now, what is broken, and which traps cost the last session hours.
 > For a single copy-paste start, use [`ONE_MESSAGE.md`](ONE_MESSAGE.md) or run
 > `npm run kickoff`.
-> **Last rewritten:** 2026-11-14, after the KIRITSU repo rename and final title capture.
+> **Last rewritten:** 2026-11-15, after the naming correction, CI/IME fixes and the novel rewrite mandate.
+
+## 0j. Naming, CI fix, IME input, novel mandate (2026-11-15)
+
+**Naming (user-locked).** The world is **KIRITSU**; the game is also
+**KIRITSU**; **VIMLORE is the game's subtitle** (vim taught as story and play).
+The old "VIMLORE is the world/series" framing is retired everywhere: README,
+AGENTS, NORTH_STAR, STORY_BIBLE, HANDOVER, ONE_MESSAGE, NEXT_PROMPT,
+NEW_SESSION_HANDOFF, UPGRADE_MASTER_PLAN, package.json and the GitHub About
+description. Old-canon prose (Neo-Tokyo, Cursor 07, Kuro, 06:23, self-closure)
+was scrubbed from README/UPGRADE/DESIGN/KOREAN_STYLE/NEW_SESSION_HANDOFF.
+
+**CI was red on main since `a0ce173`.** `tools/korean-style.ts` walked the
+deleted `docs/story/` directory and crashed (ENOENT) before the build step, so
+Pages stopped deploying. The gate now scans `src/**/*.ts` + `public/pwa.js`
+only; the novel under `stories/kiritsu/` is deliberately excluded (its
+characters legitimately use 존댓말/격식체). CI + Pages are green again after
+this commit.
+
+**Korean-IME input fix.** hjkl etc. arrived as ㅗㅓㅏㅣ when a Korean IME was
+active and were rejected ("Switch your input to English"). Vim keys are
+physical positions, so `src/core/vim/keys.ts` now remaps from
+`KeyboardEvent.code` (`needsRemap`/`physicalKey`/`CODE_TO_KEY`) on every screen
+— play and menus work with a Korean IME on. Menus additionally accept
+`h`=back/`l`=open alongside the arrow keys (map/chapter/trials/progress/codex).
+Pinned by `tests/keys.test.ts` and a headless Chromium run with synthetic
+Hangul key events.
+
+**Story experiments removed.** The sandbox-root drafts for alternative stories
+(`THE NAME` novella, `UNSAVED`, `THE CATALOG`, `STORY_TREATMENT_v1`,
+`STORY_CONTRACT_DRAFT`, and the skeleton/premise pipeline `STATE.md`) were
+deleted on the user's instruction. The AI-only KIRITSU canon is the only
+story; it lives in [`stories/kiritsu/`](stories/kiritsu/README.md).
+
+**Novel mandate.** Full rewrite of the 42,927-char draft per
+[`stories/kiritsu/WRITING_BRIEF.md`](stories/kiritsu/WRITING_BRIEF.md):
+중편소설 이상 (100,000+ chars, capped only by plausibility/immersion), Korean
+first then an English adaptation, then a 리츠[律] first-person version as the
+game-port source. Every chapter passes a **subagent cross-review** before the
+next one starts. The PDF is white-background book-style with emotional
+FLUX illustrations (JPEG q80 @1024px) and must stay **≤5 MB** for phone
+loading — `build.mjs` now auto-runs `optimize-pdf.py` (pikepdf: object
+streams + linearize); the hardcoded-dir trap in `build.mjs` is resolved.
+
 
 ## 0. Snapshot
 

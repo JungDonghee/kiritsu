@@ -1,4 +1,4 @@
-# VIMLORE upgrade master plan
+# KIRITSU upgrade master plan (subtitle VIMLORE)
 
 > Status: design contract, written **before** implementation (2026-11-13).
 > The current green state (51 of 51 stages, oracle 373, PWA) is frozen while
@@ -18,7 +18,7 @@
 | Do dynamic bugs/walls/health go into the 51 campaign stages now? | **No.** Campaign stays deterministic and oracle-clean. |
 | Where does the dynamic system live first? | A separate **LIVE CIRCUIT** arcade mode using the same Vim engine and a generated arena. |
 | What is "Practical Vim full"? | A written **PV-FULL** contract: every one of 123 tips is playable, a verified drill, or an explicitly environment-deferred row with a feature backlog. No unknown gaps. |
-| What is the story? | A cyberpunk bureaucratic noir: **리츠[律]**, an audit cursor with no file, wakes at a frozen 06:23 to a **판결 4,112 self-closure order** his mentor 츠키[月] released. The city is a legal document; District 9's last open line is 07 himself. Four endings: COMPLY / AUDIT / ERASE / AWAKEN. See [`STORY_BIBLE.md`](STORY_BIBLE.md) and [`stories/kiritsu/HANDOVER.md`](stories/kiritsu/HANDOVER.md). |
+| What is the story? | An AI-only cyberpunk noir: humanity is extinct and the system **KIRITSU[規律]** is the law. The judge **리츠[律]** receives **vim** — a tool the system does not know — and reports it at once; the verdict *근거 부적합* and the 판결 4,112→4,115 chain follow, ending in the 제1조 collapse. See [`STORY_BIBLE.md`](STORY_BIBLE.md) and [`stories/kiritsu/HANDOVER.md`](stories/kiritsu/HANDOVER.md). The novel is the story-mode source; the game is played from 리츠[律]'s point of view. |
 | What is the first shippable slice? | One LIVE arena: moving bugs, red walls, corruption, health, timer, score, pause/accessibility, no campaign changes. Then one puzzle room with one-shot floors/plates/effect locks. |
 | What is explicitly not first? | Buffers/windows/files engine, full Modern Vim, multiplayer, accounts, servers. |
 
@@ -199,8 +199,12 @@ Onboarding:
 
 ## 6. Narrative system
 
-See [`STORY_BIBLE.md`](STORY_BIBLE.md) (v2 cyberpunk bureaucratic noir) and the
-bilingual first scene [`stories/kiritsu/story-a.md`](stories/kiritsu/story-a.md). The story is **not a skin**: the city is a legal document, Vim edits are law, registers are evidence, macros are ghosts, and the final boss is one self-closure order. Delivery contract:
+See [`STORY_BIBLE.md`](STORY_BIBLE.md) (AI-only canon) and the novel manuscript
+[`stories/kiritsu/story-a.md`](stories/kiritsu/story-a.md). The story is **not
+a skin**: the system is a Vim buffer, Vim edits are law, insert leaves a trace
+and normal leaves none, registers are evidence drawers, macros are ghosts,
+marks are graves, and the final boss is one order line — the first line of the
+law. Delivery contract:
 
 | surface | content | frequency |
 |---|---|---|
@@ -209,7 +213,7 @@ bilingual first scene [`stories/kiritsu/story-a.md`](stories/kiritsu/story-a.md)
 | chapter interlude | 250–600 words | after all chapter stages cleared |
 | codex | author notes, character fragments, definitions | unlocked progressively |
 | LIVE transmissions | ROT/칸노[監能] lines, no plot-critical info | between waves |
-| ending | 3 choices, one hidden condition | after c10 |
+| ending | the canon ending; how it is reached varies | after c10 |
 
 Rules:
 - no copied book prose; Drew Neil books are curriculum metadata, not story text;
@@ -306,15 +310,16 @@ Exit: solver proves solvability; retry restores devices; Vim `u` does not
 resurrect meta-cells by design; browser QA and gates green.
 
 ### P1 — Story vertical slice
-- prologue (Cursor 07 wakes at 06:23; 판결 4,112 on the desk; Kuro on the
-  intercom), c01 epigraph/interlude, 6 codex entries, 2 Registrar transmissions;
-- 리츠[律] / 츠키[月] / 칸노[監能] / 신[審] voice tests; no reveal of the open-line
-  rule, the 4,217 loops, or the self-closure mechanics;
+- prologue (리츠[律] receives vim from 츠키[月], reports it at once, and hears
+  *근거 부적합* — a tool the system does not know cannot be evidence), c01
+  epigraph/interlude, 6 codex entries, 2 신[審] transmissions;
+- 리츠[律] / 츠키[月] / 칸노[監能] / 신[審] voice tests; no reveal of the 코우[抗]
+  immune twist, the 복제 mechanism, or the 제1조 collapse;
 - skippable, localized, no book text; archive reachable from codex;
 - story state persisted locally, no server.
-Exit: a new player can explain who they are, who Kuro is, what 판결 4,112 is,
-what happens if they refuse, and why editing is the only way to learn the truth;
-no story blocks controls; link/doc/localization checks green.
+Exit: a new player can explain who they are, who 츠키[月] is, what 판결 4,112
+is, what happens if they refuse, and why editing is the only way to learn the
+truth; no story blocks controls; link/doc/localization checks green.
 
 ### P3 — Campaign + story integration
 - chapter interludes for all 10 floors;

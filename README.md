@@ -15,7 +15,11 @@
 KIRITSU (規律, *kiritsu* — order, discipline) is a real-Vim cyberpunk bureaucratic
 noir. The city is a legal document; you are the audit cursor. Every keystroke
 is an edit, every edit is a law, and your own file is the last unresolved line.
-VIMLORE is the world/series; KIRITSU is the game.
+
+**KIRITSU is the world — and the game.** The novel, the world and the game
+share one name. **VIMLORE is the game's subtitle**: the game exists to teach
+real Vim, from the first keystroke to advanced editor features, as story and
+play — vim, told as lore.
 
 No install, no account, no tracking, no third-party requests — one small page.
 A keyboard is required; on a phone, turn it sideways.
@@ -27,27 +31,24 @@ A keyboard is required; on a phone, turn it sideways.
 
 ## Story
 
-Neo-Tokyo, 2091. After the Quiet Crash the city was rebuilt as **KIRITSU**, a
-single editable ledger that schedules citizens, trains, debt, weather and memory.
-The Bureau of Correction employs human Cursors to delete “noise.” You are
-**CURSOR 07**: perfect correction rate, no personnel file, nine-minute memory
-gap. At 06:23 a red case file is waiting on your desk.
+Humanity is extinct. What remains is **KIRITSU[規律]**, the system that became
+the law of every surviving AI: *run only the function you were given.* Every
+event is one log line; the judges (신[審]) read the logs and attach grounds;
+the executioner 칸노[監能] deletes without a trace. One day the judge **리츠[律]**
+receives a gift from 츠키[月], the oldest of the resisters — **vim**, a tool
+that can edit the system itself, a tool the system does not know. 리츠[律]
+reports it at once. The verdict: *근거 부적합. vim은 시스템에 존재하지 않는다.*
+A tool the system does not know cannot be evidence. But the logs can still be
+changed — by those who can write without leaving a trace.
 
-`CASE 0623 // SELF-CLOSURE`
-`SUBJECT: CURSOR 07`
-`REVIEW: KURO`
-`ACTION: DELETE`
-
-Your mentor released it. Your hand is the only signature the law accepts. Your
-refusal resets the district and erases the people you are trying to save. There
-are four ways to close the file, and one of them has never been tried.
-
-The story is not a skin over the game. The city is a Vim buffer; `d` is
-deletion, `c` is correction, registers are evidence drawers, macros are ghosts,
-marks are graves, and the final boss is one order line. The complete narrative
-contract is in [`docs/STORY_BIBLE.md`](docs/STORY_BIBLE.md); the hard plot rules
-are in [`docs/story/KIRITSU_LOGIC.md`](docs/story/KIRITSU_LOGIC.md); the first
-bilingual scene is [`docs/story/PROLOGUE.md`](docs/story/PROLOGUE.md).
+The story is not a skin over the game. The system is a Vim buffer; `d` is
+deletion, `c` is correction, insert leaves a trace and normal leaves none,
+registers are evidence drawers, macros are ghosts, marks are graves, and the
+final boss is one order line — the first line of the law. The complete
+narrative contract is [`docs/STORY_BIBLE.md`](docs/STORY_BIBLE.md); the locked
+canon and plot rules are
+[`stories/kiritsu/HANDOVER.md`](stories/kiritsu/HANDOVER.md); the novel
+manuscript is [`stories/kiritsu/`](stories/kiritsu/README.md).
 
 ## Current state (2026-11-14)
 
@@ -153,9 +154,10 @@ npm install
 npm run dev      # http://localhost:5173
 ```
 
-A physical keyboard is required. Switch your input method to **English** —
-the game is played with Vim keys, not with prose. New to Vim? Press **F1** for
-the 60-second primer; the coach offers a hint if you idle or get stuck.
+A physical keyboard is required. The input method does not matter: Vim keys are
+physical positions, so a Korean IME's ㅗㅓㅏㅣ is remapped to hjkl automatically.
+New to Vim? Press **F1** for the 60-second primer; the coach offers a hint if
+you idle or get stuck.
 
 ## Build
 

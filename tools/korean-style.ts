@@ -1,6 +1,13 @@
 /**
- * Korean register gate: VIMLORE/KIRITSU is plain/banmal only.
+ * Korean register gate: KIRITSU game-facing text is plain/banmal only.
  * This is a lexical check; nuance is still a human review.
+ *
+ * Scanned: src/**\/*.ts and public/pwa.js — the game's Korean UI surface.
+ * The novel under stories/kiritsu/ is deliberately NOT scanned: its
+ * characters legitimately use mixed registers (츠키[月] speaks 존댓말, 칸노[監能]
+ * is 격식체). When story text is ported into the game it lives in src/ and
+ * gets scanned. The old docs/story/ target was removed with the Neo-Tokyo
+ * canon (2026-11-15); never add a hardcoded directory that can vanish.
  */
 import { readdirSync, readFileSync, statSync } from 'node:fs';
 import { join, resolve } from 'node:path';
@@ -17,7 +24,6 @@ function walk(path: string): void {
   }
 }
 walk(join(root, 'src'));
-walk(join(root, 'docs', 'story'));
 files.push(join(root, 'public', 'pwa.js'));
 
 const bad = /(습니다|입니다|합니다|됩니다|드립니다|아닙니다|십시오|세요|해요|주세요|하십시오|까요|네요|어요|아요|시다|하시|드시|보시|가시|오시|계시|주시)/;

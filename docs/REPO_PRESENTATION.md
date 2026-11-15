@@ -5,7 +5,7 @@
 | field | current value |
 |---|---|
 | name | `kiritsu` |
-| description | KIRITSU — 規律. A real-Vim cyberpunk bureaucratic noir set in VIMLORE. Kanji-first CRT title, 51 stages, diff-tested engine, free offline PWA. In development. |
+| description | KIRITSU — 規律. The world and the game; subtitle VIMLORE (vim taught as lore). A real-Vim cyberpunk bureaucratic noir, 51 stages, diff-tested engine, free offline PWA. In development. |
 | homepage | <https://jungdonghee.github.io/kiritsu/> |
 | topics | `kiritsu`, `vimlore`, `vim`, `neovim`, `vim-adventures`, `browser-game`, `pwa`, `offline`, `cyberpunk`, `crt`, `vector-graphics`, `ouyang-xun`, `terminal`, `typescript`, `game` |
 | license | MIT |
@@ -22,8 +22,6 @@
 | `docs/browser/desktop-play.jpg` | current first chamber (`kiritsu://` path) |
 | `docs/social-preview.png` | final title crop, 1280×640 |
 | `public/social-preview.png` | same card, served for OG/Twitter |
-| `docs/story/title-screen-final.png` | live title capture |
-| `docs/story/title-intro.webm` | recorded boot/typing/laser/flash intro |
 | `docs/browser/pwa/*` | current PWA landscape, portrait gate, offline screenshots |
 | `docs/browser/desktop-play.jpg` | current gameplay capture; README first-chamber cell |
 

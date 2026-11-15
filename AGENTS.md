@@ -7,8 +7,12 @@
 > [`docs/EVALUATION.md`](docs/EVALUATION.md)(리스크·완성 전략)를 읽어라.
 > 이 파일은 영속 불변식이다.
 
-VIMLORE is a **Vim teaching game**. The player is a cursor inside a text
-buffer and plays with *real Vim keys*. It must feel like a game, not a course.
+**KIRITSU is the world and the game; VIMLORE is the game's subtitle.** The
+novel, the world and the game all share the name KIRITSU (規律). The subtitle
+VIMLORE names the game's purpose: teaching real Vim as story and play (vim +
+lore). The game is a **Vim teaching game**: the player is a cursor inside a
+text buffer and plays with *real Vim keys*. It must feel like a game, not a
+course.
 
 This file is the map for any AI (or human) continuing the project.
 
@@ -166,7 +170,7 @@ The game targets a cheap phone with a Bluetooth keyboard.
 
 ## Voice & look (do not drift)
 
-VIMLORE is a **CRT terminal from a machine that should be dead**.
+KIRITSU is a **CRT terminal from a machine that should be dead**.
 
 - Phosphor green on near-black, scanlines, bloom, a slow beam sweep. Not a
   black void: the tube glows.
@@ -297,6 +301,13 @@ Three rules keep it correct:
   scrolls with `j`/`k`, `Ctrl-d`/`Ctrl-u`, `PageUp`/`PageDown`, `g`/`G`,
   `Home`/`End`; the map moves its selection with the same keys. Mouse and touch
   are a convenience, never a requirement.
+- **Vim keys are physical positions, not characters.** Input is normalized in
+  `src/core/vim/keys.ts` (`needsRemap`/`physicalKey`/`CODE_TO_KEY`): a Korean
+  IME's ㅗㅓㅏㅣ arrives as `e.key` but is remapped from `KeyboardEvent.code` to
+  hjkl, on every screen. Never add a new `e.key === 'j'`-style check that
+  bypasses this normalization, and never reintroduce an "input method" gate.
+- **h/l navigate like arrow keys on menus**: `h` = back, `l` = open/select on
+  map/chapter/trials/progress/codex screens (Esc keeps working too).
 - Any "press any key" screen also advances on `pointerdown` (touch/click).
 - The space bar arrives as the token `<Space>`; `insertKey` and `cmdlineKey`
   must map it to `' '` explicitly — a `key.length === 1` check alone silently

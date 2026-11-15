@@ -5,7 +5,7 @@ polite endings, no `-요`.
 
 ## Register
 
-- **Narration:** present plain `-다`. “도시는 문서다.” “시계는 06:23이다.”
+- **Narration:** present plain `-다`. “시스템이 법이다.” “로그가 곧 법이다.”
 - **Instruction:** `-아라 / -어라` or a nominal command. “커서를 옮겨라.”
   “아무 키나 누른다.”
 - **Dialogue:** banmal. “늦었군.” “묻지 마라.” “지금이다.”
@@ -37,6 +37,10 @@ polite endings, no `-요`.
 npm run korean:check
 ```
 
-Scans `src/**/*.ts`, `docs/story/*.md`, and `public/pwa.js`. CI runs it after
-`doc-check`. The rule is lexical, not stylistic: if a forbidden ending appears,
-the gate fails.
+Scans `src/**/*.ts` and `public/pwa.js` (game-facing Korean UI text). CI runs
+it after `doc-check`. The novel manuscript under `stories/kiritsu/` is
+deliberately **not** scanned: its characters legitimately use mixed registers
+(츠키[月] speaks 존댓말, 칸노[監能] is 격식체). When story text is ported into the
+game, the integrated `Localized.ko` strings live in `src/` and are scanned.
+The rule is lexical, not stylistic: if a forbidden ending appears, the gate
+fails.

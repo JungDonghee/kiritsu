@@ -1,12 +1,16 @@
-# NORTH STAR — VIMLORE
+# NORTH STAR — KIRITSU (subtitle VIMLORE)
 
 > Read this before the sprint plan, handoff, or any tool-specific doc. It is the
 > compressed intent that must survive context loss. If a choice conflicts with
 > this file, stop and reconcile it explicitly.
 
+> **Naming:** the world is **KIRITSU**; the game is also **KIRITSU**;
+> **VIMLORE** is the game's subtitle (vim, taught as story and play — vim +
+> lore). The older "VIMLORE is the world/series" framing is retired.
+
 ## One sentence
 
-**VIMLORE is a real-Vim game that takes a player from first keystroke to
+**KIRITSU is a real-Vim game that takes a player from first keystroke to
 advanced Vim mastery through Drew Neil's Practical Vim and Modern Vim, with
 deliberate practice and VimGolf, without requiring a separate course.**
 

@@ -2,6 +2,11 @@
 
 > **CANON: [`stories/kiritsu/HANDOVER.md`](../stories/kiritsu/HANDOVER.md) + [`stories/kiritsu/summary.md`](../stories/kiritsu/summary.md).**
 >
+> **Naming (locked by the user): the world is KIRITSU. The game is also
+> KIRITSU. VIMLORE is the game's subtitle** — it names the game's purpose,
+> teaching real Vim as story and play (vim + lore). The old "VIMLORE is the
+> world/series" framing is retired; do not reintroduce it.
+>
 > The former **Neo-Tokyo 2091 / Cursor 07** bible was **removed on 2026-11-15 by the user's direction**.
 > The confirmed story is the **AI-only** one: 리츠[律], 츠키[月], 신[審], 칸노[監能], 코우[抗], 키리츠[規律].
 

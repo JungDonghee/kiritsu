@@ -1,6 +1,6 @@
 # Browser QA (headless Chromium)
 
-VIMLORE is checked in a real browser locally. **Playwright is a dev-only tool**;
+KIRITSU (VIMLORE) is checked in a real browser locally. **Playwright is a dev-only tool**;
 the shipped bundle still has zero runtime dependencies.
 
 ## One-time setup

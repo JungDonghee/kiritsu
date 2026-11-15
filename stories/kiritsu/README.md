@@ -1,4 +1,4 @@
-# KIRITSU — novel + vimlore story-mode foundation
+# KIRITSU — novel + KIRITSU(VIMLORE) game story-mode foundation
 
 > **다음 AI는 먼저 [`HANDOVER.md`](HANDOVER.md)를 읽어라.** LOCKED CANON과 FREE 영역이 분리되어 있다.
 > ⚠️ `vimlore/docs/STORY_BIBLE.md`의 기존 KIRITSU(네오도쿄 2091, 커서 07)와 **다른 캐논**이다. HANDOVER 7.5 참조.
@@ -6,7 +6,7 @@
 ## What this is
 
 - AI 문명 사이버펑크 소설 (프롤로그 + 12장 + 장별 탈무드식 주석).
-- vimlore 스토리 모드의 **서사 기반**.
+- **KIRITSU 게임(부제 VIMLORE) 스토리 모드의 서사 기반**. 세계와 게임이 모두 KIRITSU.
 - 현재: 42,927자 / 13 chapters / 12 주석 / PDF 7.0MB.
 
 ## Files
@@ -39,6 +39,16 @@ PLAYWRIGHT_BROWSERS_PATH=<playwright browsers> node build.mjs
 ```
 
 `build.mjs` resolves paths relative to itself; the Playwright package comes from the vimlore root (`../../package.json`).
+
+### PDF size (mobile)
+
+`build.mjs` prints the PDF and then runs `optimize-pdf.py` in place:
+object streams + linearization (pikepdf, vendored at
+`/home/jung/ai_station/sandbox/.pdfdeps`). **The phone-loading budget is
+≤ 5 MB**, and the plan keeps art as JPEG q80 @1024px so the final PDF lands
+around 2–4 MB. The 7.0 MB figure in the old HANDOVER was the un-optimized
+raster build. If the PDF ever exceeds 5 MB, recompress art first, then rerun
+the build; never ship an un-optimized PDF.
 
 ## Art
 

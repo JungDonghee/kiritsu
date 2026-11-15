@@ -4,7 +4,7 @@
 > [`STATE_DEBT.md`](STATE_DEBT.md), [`FUZZ_DEBT.md`](FUZZ_DEBT.md) and
 > [`NEXT_STEPS.md`](NEXT_STEPS.md) before trusting any number below.
 
-# MASTER PLAN — KIRITSU completion program (VIMLORE world)
+# MASTER PLAN — KIRITSU completion program (subtitle VIMLORE)
 
 > **Status: ACTIVE** · Orchestrator: the AI that wrote this file (2026-11-11)
 > **Read order for the next AI:** [`PROMPT_SYSTEM.md`](PROMPT_SYSTEM.md) → this file → [`AGENTS.md`](../AGENTS.md) →

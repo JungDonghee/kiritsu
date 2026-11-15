@@ -3,7 +3,7 @@
   "private": true,
   "version": "0.1.0",
   "type": "module",
-  "description": "KIRITSU — a real-Vim cyberpunk memory heist from VIMLORE",
+  "description": "KIRITSU — the world and the game (subtitle VIMLORE): a real-Vim cyberpunk novel and teaching game",
   "scripts": {
     "dev": "vite --host 0.0.0.0",
     "build": "vite build && node tools/inline.mjs",

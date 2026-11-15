@@ -1,4 +1,4 @@
-# PROMPT SYSTEM — how an AI is allowed to work on VIMLORE
+# PROMPT SYSTEM — how an AI is allowed to work on KIRITSU (VIMLORE)
 
 > This file is the **contract for every AI session** on this repository. The
 > literal per-session brief is [`NEXT_PROMPT.md`](NEXT_PROMPT.md); this file is
@@ -11,7 +11,7 @@
 
 ## 1. Essence first
 
-VIMLORE is a **Vim teaching terminal** with three promises:
+KIRITSU is a **Vim teaching terminal** with three promises:
 
 1. **Fidelity** — the engine behaves like real Vim, not like a lookalike.
 2. **Curriculum** — the path is derived from the ten professional Vim books and

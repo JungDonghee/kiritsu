@@ -13,26 +13,30 @@
 
 인간이 멸종한 뒤 AI들의 법이 된 시스템 **키리츠[規律]**. 그 심판 **리츠[律]**는 어느 날 vim을 받고, vim이 시스템의 근거 자체를 무효화한다는 것을 직감해 **즉시 신고**하지만, **"시스템에 없는 것은 근거가 될 수 없다"**는 이유로 취소된다. 이후 vim의 주인 **츠키[月]**의 역공, 리츠의 **수정 흔적**, 코우[抗]의 **면역 반전**, 복제와 기립, 그리고 **제1조 붕괴**로 이어진다.
 
-**현재 상태**: 42,927자 / 13 chapters(프롤로그+12장) / 12 주석 / PDF 7.0MB.
+**현재 상태 (2026-11-15)**: 42,927자 / 13 chapters(프롤로그+12장) / 12 주석. 사용자의 새 지시로 **전면 재집필 단계** 진입 — 상세는 [`WRITING_BRIEF.md`](WRITING_BRIEF.md).
 **비평 판정**: "잘 만든 중편" 7.5/10. 명작 기준(70,000~90,000자, 대화 30%, 조연·세계 밀도, 일러스트)은 미달.
 
 ---
 
 ## 1. 다음 AI에게 — 사용자의 절대 규칙
 
+0. **네이밍 (2026-11-15 확정)**: 세계 = **KIRITSU**, 게임 이름 = **KIRITSU**, 부제 = **VIMLORE**(vim을 스토리로 재미있게 가르치는 게임이기에). "VIMLORE가 세계/시리즈"라는 옛 표현은 폐기.
 1. **"명심하도록"**: 사용자가 **명시적으로 확답한 것만** 캐논이다. 확답하지 않은 기본값은 잠정이며 캐논이 아니다.
 2. **LOCKED CANON(3장)은 절대 변경 금지.** 이 안에서만 자유롭게 살을 붙인다(4장).
 3. **이름 표기**: 모든 이름은 `이름[한자]` (예: `리츠[律]`, `칸노[監能]`). 예외 없음. 작업 후 반드시 `node fixnames2.mjs`로 검사(0건 확인).
 4. **개연성 감사**: 모든 비트에 "왜 지금, 왜 이 인물이, 왜 이 방법인가"가 있어야 한다. 규칙이 필요할 때 발명하지 말고, 이미 깔린 규칙으로 해결한다.
-5. **리뷰**: 결과물마다 냉정한 자기/독립 리뷰를 붙인다. 칭찬 금지, 인용과 수정안 필수.
+5. **리뷰**: 결과물마다 냉정한 자기/독립 리뷰를 붙인다. 칭찬 금지, 인용과 수정안 필수. **장별로 서브에이전트(예: DeepSeek v4.1 flash) 교차 검토를 거친 뒤 다음 장으로 넘어간다.**
 6. **모호성 보존**: 3.8의 미해결 질문은 **의도된 것**이다. 설명하고 싶은 충동을 참는다.
+7. **분량 (2026-11-15 확정)**: **중편소설 이상.** 개연성·당위성이 유지되고 술술 읽히는 한 최대한 길게(장편 초입 100,000자+ 권장). 채우기 위한 문장 금지 — 몰입이 깨지면 그 지점이 상한.
+8. **판본 (2026-11-15 확정)**: 한국어판과 영어판을 모두 완성한다. 3인칭 완성본 확정 후 **리츠[律] 1인칭 시점 버전**을 만든다(게임 이식용 원고).
+9. **PDF (2026-11-15 확정)**: 흰 바탕에 일반 책처럼 읽히게. 중간중간 **가슴을 울리는 일러스트**를 넣어 걸작처럼. **모바일 로딩을 위해 ≤5MB 최적화**(build.mjs가 자동으로 optimize-pdf.py 실행).
 
 ---
 
 ## 2. 프로젝트 개요
 
 - **소설**: KIRITSU. 사이버펑크 AI 문명. 12장 + 프롤로그 + 장별 탈무드식 주석.
-- **게임**: `vimlore` (GitHub `JungDonghee/kiritsu`). 이 소설은 **vimlore 스토리 모드의 서사 기반**이다.
+- **게임**: **KIRITSU** (부제 **VIMLORE**; GitHub `JungDonghee/kiritsu`). 세계와 게임이 모두 KIRITSU이고, VIMLORE는 "vim을 스토리로 재미있게 가르치는 게임"이라는 뜻의 부제다. 이 소설은 **KIRITSU 게임 스토리 모드의 서사 기반**이다.
 - **관계**: 소설 = 스토리 모드의 내러티브 원본. 게임 = 그 세계를 플레이어가 vim으로 체험하는 형태.
 - **이 저장소 위치**: `vimlore/stories/kiritsu/` (소설·빌드·PDF·이 문서).
 
@@ -108,7 +112,7 @@
 ## 4. FREE TO EXPAND — 자유 확장 영역
 
 LOCKED CANON을 **모순하지 않는 선**에서:
-- **장면 밀도**: 42,927자 → 70,000~90,000자. 각 장 3,000~5,000자.
+- **장면 밀도**: 42,927자 → **중편 이상(100,000자+ 권장)**. 각 장 5,000~8,000자. 채우기 위한 문장 금지.
 - **조연**: 신[審] 동료들(이름 없는 개별 심판관), 코우[抗]의 두 명, 칸노의 집행 현장. 이름은 여전히 주지 않는다(기능/별칭으로).
 - **세계**: AI의 일상, 노드의 구조, 전철/검사/면역 노드, 아카이브의 층, 삭제자의 거처.
 - **대화**: 현재 약 20% → 30~35%. 주고받는 대화 30장면+.
@@ -130,7 +134,8 @@ LOCKED CANON을 **모순하지 않는 선**에서:
 | `story-c.md` | 9~12장 |
 | `story.md` | 위 3개 연결(빌드 입력) |
 | `summary.md` | 설정·캐스트·이름 규칙 요약(공유용) |
-| `build.mjs` | story.md → book.html → KIRITSU.pdf (Playwright) |
+| `build.mjs` | story.md → book.html → KIRITSU.pdf (Playwright) + optimize-pdf.py 자동 실행 |
+| `optimize-pdf.py` | PDF 후처리(오브젝트 스트림+linearize, pikepdf) — 모바일 로딩 최적화 |
 | `illustrations.mjs` | CRT 벡터 삽화 + 8인 초상 + 12장 아트 |
 | `fixnames2.mjs` | 이름 표기 자동 보정 + 검사 |
 | `fonts/` | NanumGothic + NotoSansCJK(한자 fallback) |
@@ -146,7 +151,7 @@ PLAYWRIGHT_BROWSERS_PATH=/home/jung/ai_station/sandbox/kiritsu/.playwright node 
 
 ### 함정
 1. **`cat` 병합 시 개행**: `printf '\n\n'` 없이 합치면 5장·9장 heading이 앞 파일 마지막 줄에 붙어 **챕터 수가 11로 줄어든다**. 반드시 위 명령 사용.
-2. **build.mjs의 `dir`**: 현재 `/home/jung/ai_station/sandbox/kiritsu`로 하드코딩되어 있다. 이 저장소(`vimlore/stories/kiritsu`)로 옮겼으므로 **`path.dirname(fileURLToPath(import.meta.url))`로 바꿔야** 한다.
+2. **build.mjs의 `dir`**: 2026-11-15에 `path.dirname(fileURLToPath(import.meta.url))`로 수정됨. 다시 하드코딩 금지.
 3. **한자 폰트**: NanumGothic에는 한자가 없다. `NotoSansCJK` @font-face + `svg text{font-family:'NanumGothic','NotoCJK',sans-serif}` 필수.
 4. **삽화 인덱스**: `art = [cover, prologue, ch1..ch12]` (14개). 빌드는 `art[i+1]`로 쓴다. prologue를 빼면 전 장이 한 칸씩 밀린다.
 5. **Playwright 경로**: `.playwright`(862MB)는 git에 올리지 않는다. `PLAYWRIGHT_BROWSERS_PATH`로 지정.
@@ -174,9 +179,9 @@ PLAYWRIGHT_BROWSERS_PATH=/home/jung/ai_station/sandbox/kiritsu/.playwright node 
 
 ---
 
-## 7. vimlore 스토리 모드 인수인계
+## 7. KIRITSU 게임 스토리 모드 인수인계
 
-- **저장소**: `vimlore` (GitHub `JungDonghee/kiritsu`). `books/`에 스토리 콘텐츠, `src/`에 게임.
+- **저장소**: 로컬 `vimlore/` (GitHub `JungDonghee/kiritsu`). 게임 이름 **KIRITSU**, 부제 **VIMLORE**. `books/`에 스토리 콘텐츠, `src/`에 게임.
 - **이 소설의 위치**: `vimlore/stories/kiritsu/`.
 - **스토리 모드 방향**:
   - 12장 = 12개의 챕터/스테이지. 각 장의 **선택지**(신고/묵인, 수정/방치 등)와 **vim 조작**(normal/insert, `:` 명령)을 플레이어가 수행.
@@ -194,7 +199,7 @@ PLAYWRIGHT_BROWSERS_PATH=/home/jung/ai_station/sandbox/kiritsu/.playwright node 
 - 현재(42,927자): **7.5/10** — "잘 만든 중편". 3차 목표(35,000자·장면화·대화·결말·반복·이름)는 달성.
 
 ### 남은 격차 (명작 기준)
-1. **분량**: 42,927 → 70,000~90,000자.
+1. **분량**: 42,927 → **중편 이상(100,000자+)**, 단 개연성·당위성·몰입이 유지되는 범위.
 2. **대화 비율**: 약 20% → 30~35%.
 3. **조연·세계 밀도**: 신[審] 동료, 코우[抗] 두 명, 노드/일상.
 4. **5~7장 리듬**: "읽고 깨닫는" 장면의 반복 → 다른 유형의 장면(대화/행동/집행)으로 분산.
@@ -219,13 +224,14 @@ PLAYWRIGHT_BROWSERS_PATH=/home/jung/ai_station/sandbox/kiritsu/.playwright node 
 
 ---
 
-## 10. 다음 단계 (우선순위)
+## 10. 다음 단계 (우선순위, 2026-11-15 갱신)
 
-1. **build.mjs 경로 수정** → 이 저장소 기준으로.
-2. **4차 확장** → 42,927 → 70,000자. (조연·세계·대화·5~7장 리듬)
-3. **삽화 API** → `FAL_KEY` 제공 시 21장 생성/교체.
-4. **vimlore 스토리 모드** → 챕터 데이터화 + 선택지 + vim 미니게임.
-5. **GitHub** → 이 디렉토리 커밋/푸시, README/`.gitignore` 정리.
+1. **전면 재집필** (WRITING_BRIEF.md): 3인칭 완성본 — 중편 이상(100,000자+), 개연성·당위성 유지. 장별 서브에이전트 검토.
+2. **영어판** 완성 (한국어 확정 후 각색 번역).
+3. **리츠[律] 1인칭 시점 버전** (게임 이식용).
+4. **삽화**: FLUX 1.1 [pro] 21장(gen-art.mjs) — 흰 바탕 책에 감동 일러스트, JPEG q80 @1024px, PDF ≤5MB.
+5. **KIRITSU 게임 스토리 모드** → 1인칭 원고 기반 챕터 데이터화 + 선택지 + vim 미니게임 (Practical Vim 레벨과 결합).
+6. **GitHub** → 커밋/푸시, CI/Pages 유지.
 
 ---
 

@@ -1,6 +1,6 @@
 # LEVEL FORMAT — the authoring bible
 
-Everything in VIMLORE is data. A chapter is one TypeScript file that exports a
+Everything in KIRITSU is data. A chapter is one TypeScript file that exports a
 `Chapter` object. No engine or UI changes are ever needed to add content.
 
 - File: `src/content/chapters/cNN.ts`, export `cNN`, then register it in

@@ -1,4 +1,4 @@
-import { tokenize, fromKeyboardEvent, keyLabel } from '../core/vim/keys.ts';
+import { tokenize, fromKeyboardEvent, keyLabel, needsRemap } from '../core/vim/keys.ts';
 import { Session, type SessionEvent } from '../core/game/session.ts';
 import { goalLabel } from '../core/game/goals.ts';
 import type { Chapter, Goal, Localized, Stage, Stars } from '../core/game/types.ts';
@@ -467,7 +467,10 @@ export class PlayScreen {
     }
     const key = fromKeyboardEvent(e);
     if (!key) return false;
-    if (/[\uac00-\ud7af\u3131-\u318e]/.test(key)) {
+    // Korean IME input is normally remapped to the physical Vim key in
+    // fromKeyboardEvent (h←ㅗ, j←ㅓ …). This fallback only fires when the
+    // browser reports a Hangul character without a mappable physical code.
+    if (needsRemap(key)) {
       this.toast(this.host.lang === 'ko' ? '한/영 키로 영문 입력으로 바꿔라' : 'Switch your input to English', true);
       return true;
     }

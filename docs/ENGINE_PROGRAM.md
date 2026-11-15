@@ -10,7 +10,7 @@
 
 ## 0. Why this program exists
 
-VIMLORE does **not** need to run Vim or Neovim. It needs to be **complete and
+KIRITSU does **not** need to run Vim or Neovim. It needs to be **complete and
 provably correct inside the surface it teaches**, and **explicitly closed
 outside it**. That is a different, smaller and harder-to-cheat goal than "be
 Vim".

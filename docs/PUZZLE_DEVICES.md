@@ -1,7 +1,7 @@
 # Puzzle devices — one-shot floors, reactive paths, command locks
 
 > Design contract for turn-based puzzle devices. This is the layer that makes
-> VIMLORE a *game* rather than a sequence of edit prompts. It is deliberately
+> KIRITSU a *game* rather than a sequence of edit prompts. It is deliberately
 > separate from the real-time LIVE bugs.
 
 ## 1. Verdict

@@ -14,7 +14,7 @@
 ## Locked state
 
 - Repository: `/home/jung/ai_station/sandbox/vimlore` (GitHub `JungDonghee/kiritsu`)
-- Latest automation commit: `1b41b65` (repo renamed to `kiritsu`; VIMLORE is the world/series)
+- Latest automation commit: `1b41b65` (repo renamed to `kiritsu`; **KIRITSU is the world and the game, VIMLORE is the subtitle**)
 - Live: https://jungdonghee.github.io/kiritsu/
 - Design is **locked**: kanji-first `規律`, `CALL kiritsu` code strip, no Russian
   lettering, no sakura branch, laser reveal, centered VIMLORE layout.
@@ -27,17 +27,20 @@
 ## Today's job
 
 Story only. Start with a short decision pass, then one vertical slice.
+The canon is **locked** in [`stories/kiritsu/HANDOVER.md`](stories/kiritsu/HANDOVER.md);
+the novel rewrite mandate is [`stories/kiritsu/WRITING_BRIEF.md`](stories/kiritsu/WRITING_BRIEF.md).
 
-Decisions to confirm with the user before writing canon:
+Decisions to confirm with the user before porting the novel into the game:
 
-1. What is the player's relationship to Cursor 07 — replacement, copy, or
-   witness?
-2. Does the Registrar know the loop count, or only ORACLE?
-3. What does Kuro want that is not "revenge"?
-4. Which of the single ending is the first-play default, and which requires
-   knowledge from a previous loop?
-5. Does RIN exist outside the terminal, or only as a maintenance process?
-6. Is the final self-closure a mercy, a sentence, or a bureaucratic procedure?
+1. How do the novel's 12 chapters + prologue map to the game's 10 floors?
+2. What is the player's relationship to 리츠[律] — identical, replay, or the
+   copy that becomes 리츠[立]?
+3. Do 선택지 (신고/묵인, 수정/방치) branch the game, or does the game play the
+   canon path with Vim skill as the only variation?
+4. Which single ending is canon, and how do the 도달 방식 differ?
+5. Does 칸노[監能]'s execution appear as a timer/interrogation, or as ex-mode
+   verdicts?
+6. Is the final 제1조 collapse a playable edit or a cutscene?
 
 Deliverable after decisions:
 

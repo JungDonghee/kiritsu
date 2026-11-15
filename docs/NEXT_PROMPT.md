@@ -26,7 +26,8 @@
 
 ## 0. Role
 
-You are the next orchestration AI for **KIRITSU** (VIMLORE is the world/series), a Vim-teaching terminal at
+You are the next orchestration AI for **KIRITSU** — the world and the game
+(subtitle **VIMLORE**: vim taught as lore) — a Vim-teaching terminal at
 `/home/jung/ai_station/sandbox/vimlore` (GitHub `JungDonghee/kiritsu`, live at
 <https://jungdonghee.github.io/kiritsu/>).
 

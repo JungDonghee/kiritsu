@@ -1,6 +1,6 @@
 # VIM COVERAGE — what this engine actually implements
 
-VIMLORE is being built as **the most comprehensive Vim training terminal ever
+KIRITSU (subtitle VIMLORE) is being built as **the most comprehensive Vim training terminal ever
 attempted** — no artificial cap on commands, tips, or advanced features. That is
 a destination, not a current-completeness claim. The engine is a **subset chosen
 for this slice**, kept honest by a differential oracle:
