@@ -1,19 +1,20 @@
-# KIRITSU — new session handoff (2026-11-15)
+# KIRITSU — new session handoff (2026-11-15, flash 인계판)
 
-> 역사적 문서. 현재 상태의 단일 진실은 `stories/kiritsu/HANDOVER.md` §3(캐논)와
-> `stories/kiritsu/NOVEL_STATUS.md`(원고 상태·검토 이력)다. 이 파일은
-> "처음 오는 AI가 읽을 순서"만 안내한다.
+> **저비용 모델(v4.1 flash)이 이어받는 경우 [`FLASH_HANDOVER.md`](../FLASH_HANDOVER.md)를
+> 먼저 읽어라** — 해도 되는 일/하면 안 되는 일/게이트/푸시 절차가 전부 그 파일에 있다.
+> 이 파일은 "처음 오는 AI가 읽을 순서"만 안내한다.
 
 ## Read first
 
-1. `AGENTS.md`
-2. `stories/kiritsu/HANDOVER.md` — LOCKED CANON (필독)
-3. `stories/kiritsu/NOVEL_STATUS.md` — 원고 상태·검토 27건·열린 결정
-4. `stories/kiritsu/STORY_TO_GAME.md` — 게임 이식 매핑
-5. `stories/kiritsu/ART_HANDOVER.md` — 일러스트 생성(다른 AI 담당)
-6. `docs/STATUS.md`
-7. `docs/DESIGN.md`
-8. `README.md`
+1. `../FLASH_HANDOVER.md` — **flash 모델이라면 이것부터** (유지보수 전용 인수인계)
+2. `AGENTS.md`
+3. `stories/kiritsu/HANDOVER.md` — LOCKED CANON (필독)
+4. `stories/kiritsu/NOVEL_STATUS.md` — 원고 상태·검토 27건·열린 결정
+5. `stories/kiritsu/STORY_TO_GAME.md` — 게임 이식 매핑
+6. `stories/kiritsu/ART_HANDOVER.md` — 일러스트 생성(다른 AI 담당)
+7. `docs/STATUS.md`
+8. `docs/DESIGN.md`
+9. `README.md`
 
 ## Locked state
 

@@ -1,5 +1,9 @@
 # AGENTS.md — read this first
 
+> **저비용 모델(v4.1 flash)로 유지보수를 이어받는 경우
+> [`FLASH_HANDOVER.md`](FLASH_HANDOVER.md)를 먼저 읽어라** — 허용/금지 경계가
+> 그 파일에 명시되어 있다.
+
 > **진행 중인 작업을 이어받는 중이라면** [`docs/NORTH_STAR.md`](docs/NORTH_STAR.md), [`docs/SPRINT_2026-11-12.md`](docs/SPRINT_2026-11-12.md), [`docs/MASTER_PLAN.md`](docs/MASTER_PLAN.md),
 > [`docs/PROMPT_SYSTEM.md`](docs/PROMPT_SYSTEM.md), [`docs/CURRICULUM_PROVENANCE.md`](docs/CURRICULUM_PROVENANCE.md)를
 > 먼저 읽어라. **우선순위·5시간 슬라이스·태스크 보드·인수인계 규칙은 그 파일이
