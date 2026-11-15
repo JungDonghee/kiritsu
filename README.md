@@ -50,7 +50,7 @@ canon and plot rules are
 [`stories/kiritsu/HANDOVER.md`](stories/kiritsu/HANDOVER.md); the novel
 manuscript is [`stories/kiritsu/`](stories/kiritsu/README.md).
 
-## Current state (2026-11-14)
+## Current state (2026-11-15)
 
 This is a **development build**, not a finished Vim Adventures peer.
 
@@ -211,7 +211,7 @@ Have fun, and never park in insert mode.
 ## Honest current limits
 
 See [`FINAL_REPORT.md`](docs/FINAL_REPORT.md) and
-[`NEXT_STEPS.md`](docs/NEXT_STEPS.md). In short: three visual fuzz edges, 119
+[`NEXT_STEPS.md`](docs/NEXT_STEPS.md). In short: three visual fuzz edges, 104
 full-state (non-game-used) edges, 75 not-yet-staged Practical Vim tips, and
 Modern Vim's deferred editor surface. The oracle numbers are not a claim of
 global Vim completeness.

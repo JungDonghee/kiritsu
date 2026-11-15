@@ -32,8 +32,7 @@ before `o O` open that many lines with the typed text.
 `{ } ( )` · `%` · `/ ? n N * # g* g#` · `'` and `` ` `` marks · `<C-d> <C-u> <C-f>
 <C-b> <C-e> <C-y>` · `<C-o> <C-i>` jumplist · `+ - _ <CR> <Space> <BS>` ·
 backward `(` built from real sentence starts (BOF, blank-run last line,
-paragraph starts, `[.!?]` + whitespace) ·
-`H M L` (approximated as top/middle/bottom of the buffer).
+paragraph starts, `[.!?]` + whitespace).
 
 **Operators** `d c y > <` · `g~ gu gU gq gw` · doubled forms `dd cc yy >> <<` ·
 `x X s S D C Y` · `r` · `~` · `J gJ` · `p P` · `u <C-r>` · `.` with counts
@@ -98,7 +97,7 @@ taught surface; they enter it only with oracle proof.
 | tooling | quickfix, `:vimgrep`, ctags, LSP, treesitter | outside the current surface; deferred until a tooling phase (not designed yet) |
 | scripting | Vimscript/Lua, `:map`, autocmds, plugins | the game *is* the plugin |
 | interactive substitute | `:s///c` with y/n/a/q/l, `g`+`c`, Esc abort | prompt/status integrated; oracle cannot automate the confirmation keys |
-| misc | `zz/zt/zb`, `H/M/L` exact semantics, `ZZ/ZQ`, mouse | deferred viewport/mouse phase; the canvas is one window today |
+| misc | `zz/zt/zb`, `H/M/L` (currently a no-op — not implemented), `ZZ/ZQ`, mouse | deferred viewport/mouse phase; the canvas is one window today |
 
 ## If you need a missing feature
 

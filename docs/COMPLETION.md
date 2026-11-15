@@ -2,7 +2,7 @@
 
 > **This is a model, not a measured property of the universe.** The weights and
 > scores below are explicit so the claim can be argued with. Last audited
-> 2026-11-13, HEAD `8bad992`, live Pages green.
+> 2026-11-15, HEAD `0bc0111`, live Pages green.
 >
 > Short answer: the **playable core is ~90%**, the **Drew Neil two-book
 > curriculum is ~32% by tip coverage**, and the **full product vision is
@@ -28,7 +28,7 @@ without a separate study habit.
 | area | weight | score | weighted | evidence / gap |
 |---|---:|---:|---:|---|
 | Engine — game-used correctness | 20% | 100 | 20.0 | oracle 373 of 373; game-used solution+undo 51 of 51; matrix 21,712 |
-| Engine — full Vim surface | 10% | 55 | 5.5 | single buffer; 119 full-state edges; fuzz debt 3; no buffers/windows/quickfix/terminal/plugins |
+| Engine — full Vim surface | 10% | 55 | 5.5 | single buffer; 104 full-state edges; fuzz debt 3; no buffers/windows/quickfix/terminal/plugins |
 | Drew Neil curriculum | 25% | 35 | 8.75 | Practical 48 of 123 tips (39%); Modern 0 of 28; 51 of 51 citations; 19 intentional inversions |
 | Level/content/replay | 15% | 65 | 9.75 | 10 chapters / 51 stages; 75 gap tips; no authored post-tower campaign |
 | Mastery / GOLF / spaced review | 10% | 65 | 6.5 | par/3-star, best keys, F3 ghost, GOLF result, TRIALS weakness/daily; no full drill queue/deck |
@@ -51,7 +51,7 @@ Vim Adventures") moves the number more than any code change in this table.
   evidence, 9 engine-only features, 0 orphan cases at last audit).
 
 ### Debt (not game-used)
-- **119 full-state edge cases**: undo 110, register 10, register-type 8.
+- **104 full-state edge cases**: undo 95, register 10, register-type 8.
 - **3 visual fuzz edges** from seed 42 / 2,000 cases: linewise `V)B`, block-yank
   cursor, block curswant/delete. `FUZZ_DEBT.md` has exact repros.
 - Missing domains: buffers/argument list/hidden files, splits/windows/tabs,

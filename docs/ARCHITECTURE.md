@@ -19,9 +19,11 @@ docs/          authoring + coverage + this file
 tests/         unit tests (engine fidelity, trials) — no browser needed
 ```
 
-Dependencies point **downward only**: `ui` → `game`/`vim`, `game` → `vim`,
-`content` → `game` types. `core/vim` is pure and knows nothing about the game;
-you can run it headless (the tests do).
+Dependencies point **downward** with one deliberate exception: `ui` → `game`/`vim`,
+`game` → `vim`, and `content` is data. `core/game/skills.ts` reads `content/`
+(chapter/command order) to build the skill model, so `game` is not strictly below
+`content`. `core/vim` is pure and knows nothing about the game; you can run it
+headless (the tests do).
 
 ## Bug-resistant rings
 

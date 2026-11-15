@@ -120,7 +120,6 @@ PWA 셸(public/·src/ui) 변경 시 `public/sw.js`의 `VERSION`도 bump.
 ```bash
 for i in $(seq 1 12); do sleep 120; R=$(curl -s "https://api.github.com/repos/JungDonghee/kiritsu/actions/runs?per_page=1" | python3 -c "import json,sys; r=json.load(sys.stdin)['workflow_runs'][0]; print(r['head_sha'][:7], r['status'], r['conclusion'])"); echo "poll $i: $R"; case "$R" in *"completed"*) break;; esac; done
 # success면 라이브 마커 확인 (번들은 축소돼 문자열이 쪼개짐 — 조각으로 grep):
-curl -s https://jungdonghee.github.io/kiritsu/kiritsu.html | grep -c "kts-band"   # ≥1
 curl -s https://jungdonghee.github.io/kiritsu/kiritsu.html | grep -c "DAY FILE"   # ≥1
 ```
 실패(failure)면 §4 보고만 한다.

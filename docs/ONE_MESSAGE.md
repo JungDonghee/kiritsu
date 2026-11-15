@@ -8,6 +8,12 @@
 > For the full task packet and scorecard, read [`NEXT_PROMPT.md`](NEXT_PROMPT.md)
 > and [`PROMPT_SYSTEM.md`](PROMPT_SYSTEM.md).
 
+> **STALE SNAPSHOT.** The baseline numbers below (HEAD `20a1c3a`, stage
+> provenance 5/51, bundle 256 kB, 14 fuzz edges) are from 2026-11-10 and are
+> kept as a historical template only. For the current state use
+> [`../FLASH_HANDOVER.md`](../FLASH_HANDOVER.md), [`HANDOFF.md`](HANDOFF.md) and
+> [`STATUS.md`](STATUS.md); `npm run kickoff` generates a fresh message.
+
 ---
 
 ```text

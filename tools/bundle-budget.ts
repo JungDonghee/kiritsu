@@ -6,7 +6,9 @@
  * Raised to 420,000 raw / 140,000 gzip on 2026-11-13 for the single-file title:
  * dist/kiritsu.html now inlines the balanced Ouyang 規律 SVG as a data URI so
  * the downloadable file opens with no sibling assets. Measured 402,705 raw /
- * 132,489 gzip at the raise. The JS/CSS page remains ~292 kB raw / ~89 kB gzip.
+ * 132,489 gzip at the raise. The current JS/CSS page build is ~400 kB raw
+ * (JS ~348 kB + CSS ~52 kB) / ~129 kB gzip; re-measure before changing this
+ * comment.
  *
  * MAX_RAW is the deterministic hard gate. MAX_GZIP carries a measured ~1 kB
  * allowance because the same dist compresses differently across zlib builds:

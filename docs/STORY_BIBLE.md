@@ -36,7 +36,7 @@
 
 ## Story-mode mapping
 
-- 12장 = 12 챕터/스테이지. 단일 결말, 분기는 "도달 방식"만.
+- 13편(프롤로그+12장)은 게임 10챕터·51스테이지에 매핑된다(`stories/kiritsu/STORY_TO_GAME.md`). 단일 결말, 분기는 "도달 방식"만.
 - 로그 읽기 = 탐색/증거 수집. 칸노의 집행 = 타이머/심문. 코우[抗] = 면역 시뮬레이션.
 - vim 조작(normal/insert, `:`)이 핵심 메커니즘.
 - CRT UI는 `stories/kiritsu/illustrations.mjs`의 시각 언어를 그대로 사용.

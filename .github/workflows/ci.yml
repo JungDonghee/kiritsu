@@ -49,7 +49,7 @@ jobs:
       - run: npm ci || npm install
       - name: toolchain (gzip variance diagnostics)
         run: node -p "process.version + ' ' + process.versions.zlib"
-      - name: differential oracle (356 cases vs real Vim)
+      - name: differential oracle (373 cases vs real Vim)
         run: node --experimental-strip-types tools/oracle-diff.ts
       - name: seeded differential fuzz (smoke)
         run: node --experimental-strip-types tools/fuzz.ts --n=500 --seed=7
