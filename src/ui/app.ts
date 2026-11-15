@@ -206,7 +206,7 @@ export class App {
         h(
           'div',
           { class: 'kt-top' },
-          h('span', {}, h('b', {}, 'DISTRICT 9'), ' / NIGHT AUDIT'),
+          h('span', {}, h('b', {}, 'KIRITSU'), ' / DAY FILE'),
           h('span', { class: 'kt-case' }, '판결 4,112'),
           h('span', {}, h('b', {}, '06:23:00'), ' / FROZEN'),
         ),
