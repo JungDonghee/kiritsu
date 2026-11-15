@@ -4,7 +4,7 @@ import { emptyProgress, type Chapter, type Progress, type StageRecord, type Star
 import { generateTrial, dailySeed, skillLabel, TRIAL_SKILLS, type Trial } from '../core/game/trials.ts';
 import { weakestSkills, recordStat, encodeSave, decodeSave, sanitizeProgress, weaknessScore } from '../core/game/stats.ts';
 import { skillModel, activityGrid, streak, bumpActivity } from '../core/game/skills.ts';
-import { h, mount, isTouch, focusGroup, focusStep, focusActivate, focusIndex, type FocusGroup } from './dom.ts';
+import { h, mount, isTouch, focusGroup, focusStep, focusActivate, focusIndex, focusSpatial, type FocusGroup } from './dom.ts';
 import { needsRemap, physicalKey } from '../core/vim/keys.ts';
 import { Sfx } from './sfx.ts';
 import { mountKtTitleWrite } from './kanji.ts';
@@ -168,6 +168,9 @@ export class App {
   private typers: Typewriter[] = [];
   private mapStoryEls: (HTMLElement | null)[] = [];
   private mapStoryTexts: string[] = [];
+  private readonly standalone = window.matchMedia('(display-mode: standalone)').matches
+    || (window.navigator as unknown as { standalone?: boolean }).standalone === true;
+  private immersiveArmed = false;
 
   constructor(root: HTMLElement) {
     this.root = root;
@@ -196,7 +199,11 @@ export class App {
       });
     }
     document.addEventListener('fullscreenchange', () => this.lockEscape());
-    window.addEventListener('pointerdown', () => this.lockEscape());
+    // 홈화면 설치 앱(PWA)에서 Esc가 OS/브라우저 단계에서 앱을 닫아버리는 경우,
+    // 표준 방어는 **전체화면 + Keyboard Lock(Escape)** 이다. 첫 제스처(터치/키)에서
+    // 한 번만 전체화면을 요청하고 Escape를 잠근다. (Android 키보드가 Esc를
+    // 시스템 BACK으로 변환하는 경우는 웹에서 막을 수 없다 — 그 한계는 문서화.)
+    window.addEventListener('pointerdown', () => { this.enterImmersive(); this.lockEscape(); }, { passive: true });
     window.addEventListener('pointerdown', () => {
       if (this.screen === 'title') this.goMap();
     });
@@ -1039,7 +1046,7 @@ export class App {
       }, this.t('erase progress', '진행 초기화'))),
       h('div', { class: 'actions' }, h('button', { class: 'btn primary', onclick: () => this.goMap() }, this.t('BACK', '뒤로'), h('kbd', {}, 'esc'))),
     );
-    mount(this.root, h('div', { class: 'overlay', style: { position: 'relative', background: 'transparent', backdropFilter: 'none' } }, card));
+    mount(this.root, h('div', { class: 'overlay' }, card));
     this.actions = focusGroup(card);
     focusIndex(this.actions, 0);
   }
@@ -1183,6 +1190,18 @@ export class App {
     window.setTimeout(() => el.remove(), 2600);
   }
 
+  /** PWA 몰입 모드: 첫 제스처에서 전체화면으로 들어가 Keyboard Lock을 건다. */
+  private enterImmersive(): void {
+    if (!this.standalone || this.immersiveArmed) return;
+    if (document.fullscreenElement) { this.immersiveArmed = true; this.lockEscape(); return; }
+    const el = document.documentElement as HTMLElement & { requestFullscreen?: (opts?: FullscreenOptions) => Promise<void> };
+    if (!el.requestFullscreen) return;
+    this.immersiveArmed = true;
+    el.requestFullscreen({ navigationUI: 'hide' }).then(() => this.lockEscape()).catch(() => {
+      this.immersiveArmed = false; // 다음 제스처에서 재시도
+    });
+  }
+
   /** Keyboard Lock API: 전체화면일 때 브라우저가 Esc를 가로채지 못하게 한다. */
   private lockEscape(): void {
     if (!document.fullscreenElement) return;
@@ -1208,6 +1227,8 @@ export class App {
     if (e.key === 'Escape') {
       e.preventDefault();
       this.lockEscape();
+    } else if (this.standalone) {
+      this.enterImmersive();
     }
     if (e.metaKey || e.altKey) return;
     // A Korean IME rewrites letter keys (h→ㅗ, j→ㅓ, …). Vim keys are physical
@@ -1375,15 +1396,39 @@ export class App {
       return;
     }
     if (this.screen === 'about') {
+      const card = this.root.querySelector<HTMLElement>('.overlay .card');
+      const scroll = (d: number, page = false) => {
+        if (!card) return;
+        card.scrollTop += (page ? card.clientHeight * 0.85 : 72) * d;
+        this.sfx.play('move');
+      };
       if (e.key === 'Escape') {
         e.preventDefault();
         this.goMap(true);
-      } else if (e.key === 'j' || e.key === 'l') {
+      } else if (e.key === 'j' || e.key === 'ArrowDown') {
         e.preventDefault();
-        if (this.actions) focusStep(this.actions, 1);
-      } else if (e.key === 'k' || e.key === 'h') {
+        if (this.actions && !focusSpatial(this.actions, 'down')) scroll(1);
+      } else if (e.key === 'k' || e.key === 'ArrowUp') {
         e.preventDefault();
-        if (this.actions) focusStep(this.actions, -1);
+        if (this.actions && !focusSpatial(this.actions, 'up')) scroll(-1);
+      } else if (e.key === 'l' || e.key === 'ArrowRight') {
+        e.preventDefault();
+        if (this.actions) focusSpatial(this.actions, 'right');
+      } else if (e.key === 'h' || e.key === 'ArrowLeft') {
+        e.preventDefault();
+        if (this.actions) focusSpatial(this.actions, 'left');
+      } else if (e.key === 'd' && e.ctrlKey) {
+        e.preventDefault(); scroll(1, true);
+      } else if (e.key === 'u' && e.ctrlKey) {
+        e.preventDefault(); scroll(-1, true);
+      } else if (e.key === 'PageDown' || e.key === ' ') {
+        e.preventDefault(); scroll(1, true);
+      } else if (e.key === 'PageUp') {
+        e.preventDefault(); scroll(-1, true);
+      } else if (e.key === 'g' || e.key === 'Home') {
+        e.preventDefault(); if (card) card.scrollTop = 0;
+      } else if (e.key === 'G' || e.key === 'End') {
+        e.preventDefault(); if (card) card.scrollTop = card.scrollHeight;
       } else if (e.key === 'Enter') {
         e.preventDefault();
         if (this.actions) focusActivate(this.actions);

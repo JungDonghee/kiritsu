@@ -11,7 +11,7 @@
 | 총 분량 | 약 73,000자 (공백 포함) — 중편 규격 (읽기 3~4시간) |
 | 목표 | 100,000자+ (사용자 지시: **부풀리기 금지, 흥미 우선** — 확장은 장면 가치가 있을 때만) |
 | 규칙 검사 | `fixnames2.mjs --check` — 13파일 전부 0건 (이름[한자]·카타카나·폐기 용어) |
-| 빌드 | `concat.mjs` → `story.md` → `build.mjs` → `book.html` + `KIRITSU.pdf` |
+| 빌드 | `concat.mjs` → `story.md` → `build.mjs` → `book.html` + `KIRITSU.pdf` (한자 15자는 Yuji Boku 서브셋, OFL) |
 
 ## 2. 검토 이력 (모두 반영 완료)
 

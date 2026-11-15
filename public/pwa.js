@@ -1,6 +1,15 @@
 /* KIRITSU PWA bootstrap: install prompt + landscape gate. Plain JS, no deps. */
 (() => {
   'use strict';
+  // Esc는 이 게임에서 '앱 종료'가 아니다. 가능한 한 가장 이른 capture 단계에서
+  // 브라우저 기본 동작을 취소한다(게임의 Esc 의미론은 app.ts가 이어서 처리).
+  // Android가 키보드 Esc를 시스템 BACK으로 변환하는 것은 페이지가 막을 수 없다.
+  window.addEventListener('keydown', (event) => {
+    if (event.key === 'Escape' && event.cancelable) event.preventDefault();
+  }, true);
+  window.addEventListener('keyup', (event) => {
+    if (event.key === 'Escape' && event.cancelable) event.preventDefault();
+  }, true);
   const doc = document;
   const body = doc.body;
   const standalone = window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone === true;
@@ -64,7 +73,12 @@
 
   // A page cannot lock orientation outside fullscreen. Try both; if the browser
   // refuses, the gate still asks the player to rotate the device.
-  doc.getElementById('pwa-rotate-btn').addEventListener('click', async () => {
+  const lockEscape = async () => {
+    try {
+      if (navigator.keyboard && navigator.keyboard.lock) await navigator.keyboard.lock(['Escape']);
+    } catch {}
+  };
+  const enterImmersive = async () => {
     try {
       if (!doc.fullscreenElement && doc.documentElement.requestFullscreen) {
         await doc.documentElement.requestFullscreen({ navigationUI: 'hide' });
@@ -73,13 +87,21 @@
     try {
       if (screen.orientation && screen.orientation.lock) await screen.orientation.lock('landscape');
     } catch {}
-    // Keyboard Lock: 전체화면에서 Esc가 브라우저 기본 동작(앱 종료/뒤로)으로
-    // 새지 않도록 게임이 키를 캡처한다(지원 브라우저 한정, 실패는 무시).
-    try {
-      if (navigator.keyboard && navigator.keyboard.lock) await navigator.keyboard.lock(['Escape']);
-    } catch {}
+    await lockEscape();
+  };
+  doc.getElementById('pwa-rotate-btn').addEventListener('click', async () => {
+    await enterImmersive();
     sync();
   });
+  // 설치 앱에서는 첫 터치/키(방향키 등)에 전체화면+Esc 잠금을 걸어 둔다.
+  if (standalone) {
+    const arm = () => { enterImmersive(); };
+    window.addEventListener('pointerdown', arm, { once: true, passive: true, capture: true });
+    window.addEventListener('keydown', (event) => {
+      if (event.key !== 'Escape') arm();
+    }, { once: true, capture: true });
+    doc.addEventListener('fullscreenchange', () => { if (doc.fullscreenElement) lockEscape(); });
+  }
 
   let deferred = null;
   const showInstall = () => {

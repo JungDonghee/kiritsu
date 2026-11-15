@@ -339,3 +339,29 @@ GitHub repository renamed `vimlore` → `kiritsu`; VIMLORE is now the **game's**
 - 번들: **396,504 B raw / 130,597 B gzip**(ceiling 420k/140k). 검증: tests 54/54,
   lint 51/51, tsc·doc-check·invariants·build·budget·pwa·title·presentation·korean
   그린, level-oracle 51개 스테이지 전부 일치, STATUS current.
+
+## 2026-11-15 (2) — 획순 v5 · CRT 전 화면 확장 · 설정 내비 수정 · PWA Esc · 소설 한자 폰트
+
+- **타이틀 획쓰기 v5**: KanjiVG(CC BY-SA 3.0, 참고용) 기반 실제 일본어 획순/중심선을
+  Yuji Boku 잉크에 ±7px 스냅. 진행 중 획은 붓끝(tip), 획이 끝나면 그 획만
+  tip→cover로 잉크가 스며들며 채워짐 — 전체 일괄 정착 제거로 "마지막에 확" 없음.
+  최종 20.9% 커버리지/팝 없음, title-check 39fps headless.
+- **CRT 벡터 디스플레이 전 화면 확장**: 오버레이(z70)가 #app 스캔라인(z60) 위라
+  결과/설정/브리핑/도움말이 평평했음. overlay·card·intro/results/help 카드에
+  스캔라인·애퍼처 그릴·비네트·코너 브래킷·형광 글로우·빔 스윕을 직접 적용.
+  버튼은 벡터 베벨/모서리 컷. crt-off·reduced-motion 대응.
+- **설정 내비게이션 수정**: h/j/k/l가 1D 순서라 j(아래)가 옆 버튼으로 가고
+  아래로 내린 뒤 위로 복귀가 안 되던 문제 → **기하 기반 2D 포커스 이동**
+  (`focusSpatial`) + 카드 자체 스크롤(Ctrl-d/u, PgUp/PgDn, g/G). 844×390에서
+  jjj→scrollTop 66, kkkk→scrollTop 0/맨 위 복귀 검증.
+- **PWA Esc 방어 강화**: 설치 앱 첫 제스처에서 전체화면+Keyboard Lock(Escape),
+  capture 단계 preventDefault, history 트랩 유지. Android가 키보드 Esc를 시스템
+  BACK으로 변환하는 경우는 웹에서 차단 불가(문서화).
+- **소설 한자 폰트 통일(Yuji Boku, OFL)**: 원고의 한자 15자
+  `人功唯審律憑抗月監立能規起零霊` 를 전체 Yuji Boku(8.5MB, 로컬 전용)에서
+  서브셋한 **15.7KB** 를 `stories/kiritsu/fonts/`에 커밋. PDF 빌드에 CJK
+  `unicode-range`로 연결해 제목 規律과 동일한 구양순체 계열 붓글씨로 조판
+  (한글 본문은 NanumGothic 유지). 재생성 `stories/kiritsu/subset-font.py`.
+- 게이트: tests 54/54, lint 51/51, tsc/doc-check/invariants, build/budget,
+  pwa/title/presentation/korean 그린, level-oracle 51개 스테이지 일치.
+

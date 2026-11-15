@@ -1,5 +1,6 @@
-# fonts are 36MB and not tracked; see README
-fonts/
+# fonts are ~36MB and not tracked; only the 15-hanja Yuji Boku subset (~15.7KB, OFL) is tracked
+fonts/*
+!fonts/YujiBoku-KIRITSU-subset.ttf
 .playwright/
 book.html
 *.png

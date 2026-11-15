@@ -65,6 +65,54 @@ export function focusStep(g: FocusGroup, d: 1 | -1): void {
   focusIndex(g, g.index + d);
 }
 
+export type Dir4 = 'up' | 'down' | 'left' | 'right';
+
+/** The nearest scrollable ancestor of an element (not the window). */
+export function scrollParent(el: HTMLElement): HTMLElement | null {
+  let p = el.parentElement;
+  while (p) {
+    const st = getComputedStyle(p);
+    if (/(auto|scroll)/.test(st.overflowY) && p.scrollHeight > p.clientHeight + 1) return p;
+    p = p.parentElement;
+  }
+  return null;
+}
+
+/**
+ * 2D focus move for wrapped button grids (settings). Uses element geometry so
+ * j/k always move down/up and h/l left/right, even when a row has 3–4 buttons.
+ * At an edge it scrolls the containing card instead (so k at the top row still
+ * returns a scrolled-down settings card to the top).
+ */
+export function focusSpatial(g: FocusGroup, dir: Dir4): boolean {
+  const cur = g.els[g.index];
+  if (!cur) return false;
+  const cr = cur.getBoundingClientRect();
+  const cx = cr.left + cr.width / 2, cy = cr.top + cr.height / 2;
+  let best = -1, bestScore = Infinity;
+  g.els.forEach((el, i) => {
+    if (el === cur) return;
+    const r = el.getBoundingClientRect();
+    const x = r.left + r.width / 2, y = r.top + r.height / 2;
+    const dx = x - cx, dy = y - cy;
+    const primary = dir === 'down' ? dy : dir === 'up' ? -dy : dir === 'right' ? dx : -dx;
+    if (primary < 8) return; // must be genuinely in that direction
+    const cross = dir === 'down' || dir === 'up' ? Math.abs(dx) : Math.abs(dy);
+    const score = primary + cross * 0.6;
+    if (score < bestScore) { bestScore = score; best = i; }
+  });
+  if (best >= 0) { focusIndex(g, best); return true; }
+  // Edge: scroll the settings card in the requested direction.
+  const sp = scrollParent(cur);
+  if (sp) {
+    const before = sp.scrollTop;
+    sp.scrollTop += dir === 'down' ? 72 : dir === 'up' ? -72 : 0;
+    if (dir === 'left' || dir === 'right' || sp.scrollTop === before) return false;
+    return true;
+  }
+  return false;
+}
+
 export function focusActivate(g: FocusGroup): boolean {
   const el = g.els[g.index];
   if (!el) return false;

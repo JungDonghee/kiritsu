@@ -1,6 +1,13 @@
 // Yuji Boku outlines (OFL 1.1). 規律 / 起立. Brush-regular, not Noto Serif.
 // See docs/KANJI_ATTRIBUTION.md.
-// ── 타이틀 規律 획쓰기 v4 — 캔버스 잉크 타임라인 ────────────────────────────
+// ── 타이틀 規律 획쓰기 v5 — 실제 일본어 획순 + 캔버스 잉크 타임라인 ─────────
+// 획 순서/중심선은 KanjiVG(CC BY-SA 3.0, Ulrich Apel, https://kanjivg.tagaini.net)
+// 를 참고해 추출한 좌표이며, 타이틀 글자형 자체는 아래 규격대로
+// public/kanji/ou-guilv-tight.svg 만 사용한다(글자형은 교체하지 않음).
+// v4까지는 손으로 찍은 스켈레톤이라 실제 일본어 획순/획형과 어긋났고, 마무리에
+// 전체 획을 한 번에 부풀리는 단계가 있어 "마지막에 확"으로 보였다.
+// v5: 정확한 획순/중심선 + 획별 (얇은 붓끝 → 획 완료 시 잉크가 스며들며 두께
+// 채움) 2단계 리빌. 전체 일괄 정착 단계 제거.
 // v1: 다른 변형 + 페이드(실수). v2: clipPath 안 CSS dash 애니메이션이 클립을
 // 갱신하지 못해 얇은 선만 그려지고 끝에 통째로 나타남. v3: clipPath 리본을
 // rAF로 갱신했지만 리본 폴리곤이 자잘하게 어긋나 커버리지 ~80% → 여전히
@@ -30,30 +37,26 @@ export function parseTitleKanji(svgText: string): { chars: KtTitleChar[]; fill: 
 // 획 스켈레톤 (viewBox 600×300 좌표). 순서 = 붓 획순(위→아래, 왼→오른).
 // 규(規)=11획(夫4+見7), 율(律)=9획(彳3+聿6).
 export const KIRITSU_TITLE_STROKES: number[][][] = [
-  // ── 規 ── 夫 (상단)
-  [[62, 58], [130, 57], [200, 60]], // 1 가로
-  [[50, 104], [140, 101], [232, 108]], // 2 가로
-  [[168, 58], [120, 112], [88, 152], [64, 194]], // 3 丿
-  [[120, 106], [176, 150], [224, 186], [236, 188]], // 4 乀
-  // ── 見 (하단)
-  [[58, 118], [140, 120], [222, 126]], // 5 目 상단 가로
-  [[70, 124], [73, 180], [76, 232]], // 6 目 좌측 세로
-  [[92, 150], [150, 152], [206, 156]], // 7 내부 가로1
-  [[92, 188], [150, 190], [206, 194]], // 8 내부 가로2
-  [[208, 124], [211, 180], [214, 236], [188, 244]], // 9 目 우측 세로(하단 좌굴)
-  [[110, 234], [92, 250], [66, 262]], // 10 儿 좌측 다리
-  [[148, 232], [180, 252], [210, 264], [244, 248], [258, 238]], // 11 儿 우측 다리
-  // ── 律 ── 彳 (좌측)
-  [[348, 8], [344, 50], [338, 100], [334, 126]], // 1 丿
-  [[372, 16], [366, 70], [360, 128]], // 2 丿
-  [[374, 72], [384, 140], [398, 220], [394, 232]], // 3 丨
-  // ── 聿 (우측)
-  [[400, 30], [476, 27], [552, 26]], // 4 가로1
-  [[398, 86], [478, 84], [556, 84]], // 5 가로2
-  [[398, 142], [478, 142], [556, 142]], // 6 가로3
-  [[394, 200], [478, 200], [560, 200]], // 7 가로4(장)
-  [[470, 34], [478, 140], [486, 286]], // 8 세로
-  [[400, 280], [478, 284], [556, 288], [560, 290]], // 9 하단 가로
+  [[14.2,89.5], [24.1,90.0], [34.1,89.5], [44.0,88.5], [53.9,87.4], [63.8,86.2], [73.7,85.0], [83.6,83.7], [93.5,82.2], [103.3,80.8], [113.3,80.5]],
+  [[4.0,139.3], [15.7,139.7], [27.4,138.7], [39.1,137.6], [50.8,136.4], [62.5,135.1], [74.2,133.8], [85.9,132.6], [97.5,131.3], [109.3,130.5], [121.0,130.9]],
+  [[64.7,36.0], [69.8,57.7], [69.3,80.1], [68.2,102.5], [66.0,124.9], [62.2,147.0], [56.4,168.6], [47.8,189.3], [36.1,208.3], [21.4,225.3], [4.5,240.0]],
+  [[71.3,166.4], [75.8,169.8], [80.1,173.4], [84.3,177.2], [88.3,181.2], [92.1,185.4], [95.7,189.7], [99.1,194.2], [102.3,198.8], [105.2,203.6], [107.9,208.6]],
+  [[150.7,40.6], [155.7,52.7], [155.8,66.0], [155.8,79.3], [155.8,92.5], [155.8,105.8], [155.8,119.1], [155.8,132.4], [155.8,145.6], [155.8,158.9], [155.8,172.2]],
+  [[158.6,46.7], [181.1,44.3], [203.6,41.9], [226.1,39.6], [248.3,39.9], [260.4,54.4], [260.3,77.1], [260.1,99.7], [260.1,122.3], [259.9,145.0], [259.9,167.6]],
+  [[159.3,84.9], [168.9,83.8], [178.6,82.9], [188.2,82.0], [197.9,81.1], [207.6,80.4], [217.2,79.6], [226.9,78.9], [236.6,78.2], [246.2,77.5], [255.9,77.0]],
+  [[159.2,123.3], [168.9,122.6], [178.5,121.8], [188.1,121.0], [197.8,120.1], [207.4,119.4], [217.1,118.6], [226.7,117.9], [236.4,117.2], [246.0,116.6], [255.7,116.1]],
+  [[159.1,164.5], [168.8,163.6], [178.5,162.7], [188.3,161.9], [198.0,161.0], [207.7,160.2], [217.5,159.4], [227.2,158.6], [236.9,157.8], [246.7,157.1], [256.4,156.5]],
+  [[179.6,180.0], [177.7,190.4], [172.8,199.9], [166.7,208.7], [160.0,217.0], [152.8,224.9], [145.1,232.3], [137.0,239.3], [128.5,245.8], [119.6,251.8], [110.4,257.2]],
+  [[208.1,170.0], [213.0,187.4], [213.1,205.8], [213.1,224.1], [213.7,242.3], [221.7,257.3], [238.7,263.1], [257.0,264.0], [275.3,263.3], [291.5,256.4], [296.0,239.8]],
+  [[373.9,9.0], [371.8,17.7], [367.1,25.4], [362.0,32.7], [356.5,39.8], [350.8,46.8], [344.8,53.5], [338.6,60.0], [332.1,66.2], [325.3,72.1], [318.2,77.6]],
+  [[375.5,80.1], [373.0,91.1], [368.3,101.5], [363.2,111.7], [357.8,121.6], [351.9,131.3], [345.7,140.8], [339.3,150.2], [332.6,159.4], [325.7,168.4], [318.5,177.2]],
+  [[356.9,136.2], [360.3,151.2], [360.3,166.6], [360.3,182.1], [360.3,197.5], [360.3,213.0], [360.3,228.4], [360.3,243.9], [360.2,259.3], [360.2,274.8], [360.1,290.2]],
+  [[416.9,50.9], [435.8,51.2], [454.5,48.4], [473.3,45.3], [492.0,42.4], [510.8,40.3], [523.7,48.3], [523.8,66.8], [520.8,85.5], [517.9,104.3], [514.9,123.0]],
+  [[399.2,96.7], [415.9,97.0], [432.6,95.3], [449.2,93.1], [465.8,91.0], [482.4,88.8], [499.1,86.8], [515.7,85.0], [532.4,83.4], [549.1,82.0], [565.8,82.8]],
+  [[416.4,136.8], [426.9,137.6], [437.3,136.1], [447.7,134.4], [458.1,132.8], [468.6,131.4], [479.1,130.1], [489.5,128.8], [500.0,127.4], [510.5,126.2], [521.0,126.2]],
+  [[411.2,183.3], [423.0,184.8], [434.9,183.3], [446.7,181.2], [458.5,179.3], [470.3,177.5], [482.2,175.7], [494.0,174.2], [505.9,172.7], [517.8,171.4], [529.7,172.3]],
+  [[388.1,229.5], [404.8,230.5], [421.5,228.4], [438.2,226.1], [454.9,223.9], [471.5,221.7], [488.2,219.8], [505.0,218.0], [521.7,216.4], [538.5,215.2], [555.2,216.6]],
+  [[463.8,4], [468.3,32.8], [468.3,62.1], [468.2,91.3], [468.2,120.5], [468.2,149.8], [468.1,179.0], [468.1,208.3], [468.0,237.5], [468.0,266.8], [468,296.0]],
 ];
 
 const VB_W = 600;
@@ -67,8 +70,10 @@ interface StrokeGeom {
   pts: Pt[];
   cum: number[];
   len: number;
-  /** 점별 붓 반폭(viewBox 단위) — 그 점이 덮어야 하는 잉크 거리에서 계산. */
-  half: number[];
+  /** 붓끝 반폭 — 획을 긋는 동안 보이는 얇은 팁. */
+  tip: number[];
+  /** 잉크가 스며든 뒤의 반폭 — 획 완료 시 그 획의 잉크를 100% 덮는다. */
+  cover: number[];
   start: number;
   dur: number;
 }
@@ -196,19 +201,21 @@ const easeOut = (t: number): number => 1 - Math.pow(1 - t, 3);
 const clamp01 = (t: number): number => Math.min(1, Math.max(0, t));
 
 /**
- * 획 데이터 계획. 각 잉크 픽셀을 가장 가까운 (획, 점)에 배정한 뒤, 그 점이
- * 덮어야 하는 최대 거리를 점별 반폭으로 저장한다 → 획 하나가 끝나면 그 획의
- * 잉크는 100% 마스크에 덮인다(마지막 전체 팝 방지의 핵심).
+ * 획 데이터 계획. KanjiVG에서 뽑은 실제 획순/중심선을 Yuji Boku 잉크에 맞춰
+ * 미세 보정하고, 각 점의 (a) 붓끝 반폭(tip, EDT)과 (b) 완료 시 덮어야 할
+ * 반폭(cover, 잉크 배정 거리)을 따로 계산한다. 획이 끝나면 cover로 그 획의
+ * 잉크를 100% 덮으므로 마지막 전체 팝이 없다.
  */
 function planStrokes(ds: string[]): Plan {
   const { ink, edt, w, h, inkPixels } = analyzeInk(ds);
   const geoms: StrokeGeom[] = [];
-  const START = 0.62, GAP = 0.032, CHAR_PAUSE = 0.12;
+  const START = 0.62, GAP = 0.035, CHAR_PAUSE = 0.14;
 
-  // 1) 곡선화 + 평행이동 보정
+  // 1) 곡선화 + 잉크 능선 미세 정렬. (KanjiVG 좌표가 이미 획형에 가까워
+  //    offsetSearch는 ±10 안에서 작은 보정만 한다.)
   for (const stroke of KIRITSU_TITLE_STROKES) {
-    const dense = curl(stroke, 10);
-    for (let pass = 0; pass < 2; pass++) {
+    const dense = curl(stroke, 8);
+    for (let pass = 0; pass < 1; pass++) {
       for (let k = 1; k < dense.length - 1; k++) {
         dense[k] = {
           x: (dense[k - 1]!.x + dense[k]!.x * 2 + dense[k + 1]!.x) / 4,
@@ -218,12 +225,32 @@ function planStrokes(ds: string[]): Plan {
     }
     const off = offsetSearch(edt, w, h, dense);
     for (const p of dense) { p.x += off.x; p.y += off.y; }
+    // KanjiVG는 일본 표준 글자형이라 Yuji Boku(구양순체 계열)와 미세하게 다르다.
+    // 실제 잉크의 거리변환 능선으로 각 점을 ±7 안에서 당겨, 애니메이션이 화면의
+    // 글자를 정확히 따라가게 한다(끝점은 시작/끝 방향 보존을 위해 고정).
+    for (let k = 1; k < dense.length - 1; k++) {
+      const o = dense[k]!;
+      let best = edtAt(edt, w, h, o.x, o.y), bx = o.x, by = o.y;
+      for (let dy = -7; dy <= 7; dy++) for (let dx = -7; dx <= 7; dx++) {
+        const e = edtAt(edt, w, h, o.x + dx, o.y + dy);
+        if (e > best + 0.01) { best = e; bx = o.x + dx; by = o.y + dy; }
+      }
+      if (Math.hypot(bx - o.x, by - o.y) <= 9) { dense[k] = { x: bx, y: by }; }
+    }
+    for (let pass = 0; pass < 1; pass++) {
+      for (let k = 1; k < dense.length - 1; k++) {
+        dense[k] = {
+          x: (dense[k - 1]!.x + dense[k]!.x * 2 + dense[k + 1]!.x) / 4,
+          y: (dense[k - 1]!.y + dense[k]!.y * 2 + dense[k + 1]!.y) / 4,
+        };
+      }
+    }
     const cum: number[] = [0];
     for (let k = 1; k < dense.length; k++) cum.push(cum[k - 1]! + Math.hypot(dense[k]!.x - dense[k - 1]!.x, dense[k]!.y - dense[k - 1]!.y));
-    geoms.push({ pts: dense, cum, len: cum[cum.length - 1]! || 1, half: dense.map(() => 0), start: 0, dur: 0 });
+    geoms.push({ pts: dense, cum, len: cum[cum.length - 1]! || 1, tip: dense.map(() => 2.4), cover: dense.map(() => 2.4), start: 0, dur: 0 });
   }
 
-  // 2) 잉크 픽셀 → 가장 가까운 (획, 점) 배정 + 최대 거리
+  // 2) 잉크 픽셀 → 가장 가까운 (획, 점) 배정 + 최대 거리(cover)
   const need: Float32Array[] = geoms.map((g) => new Float32Array(g.pts.length));
   for (let y = 0; y < h; y++) for (let x = 0; x < w; x++) {
     if (!ink[y * w + x]) continue;
@@ -240,18 +267,20 @@ function planStrokes(ds: string[]): Plan {
     if (dist > need[bi]![bk]!) need[bi]![bk] = dist;
   }
 
-  // 3) 점별 반폭: 필요거리 + 여유(획 내부는 alpha 1 plateau에 들어오게)
+  // 3) tip(얇은 붓끝) / cover(완료 시 잉크 커버) 폭 + 타이밍
   let t = START;
   for (let i = 0; i < geoms.length; i++) {
     const g = geoms[i]!;
-    const raw = Array.from(need[i]!, (d) => Math.min(26, Math.max(2.6, d * 1.12 + 3.2)));
-    let half = raw.slice();
+    const tip = g.pts.map((p2) => Math.min(13, Math.max(2.2, edtAt(edt, w, h, p2.x, p2.y) * 1.02 + 0.9)));
+    const rawCov = Array.from(need[i]!, (d) => Math.min(26, Math.max(2.6, d * 1.06 + 2.6)));
+    const cover = rawCov.slice();
     for (let pass = 0; pass < 2; pass++) {
-      for (let k = 1; k < half.length - 1; k++) half[k] = (half[k - 1]! + half[k]! * 2 + half[k + 1]!) / 4;
+      for (let k = 1; k < cover.length - 1; k++) cover[k] = (cover[k - 1]! + cover[k]! * 2 + cover[k + 1]!) / 4;
     }
-    for (let k = 0; k < half.length; k++) half[k] = Math.max(raw[k]!, half[k]!);
-    g.half = half;
-    g.dur = Math.min(0.19, Math.max(0.075, 0.06 + g.len / 1400));
+    for (let k = 0; k < cover.length; k++) cover[k] = Math.max(rawCov[k]!, cover[k]!);
+    g.tip = tip;
+    g.cover = cover;
+    g.dur = Math.min(0.21, Math.max(0.08, 0.07 + g.len / 1300));
     g.start = t;
     t += g.dur + GAP;
     if (i === geoms.length - 2) t += CHAR_PAUSE;
@@ -279,8 +308,8 @@ function stampSprite(): HTMLCanvasElement {
 }
 
 // 스탬프로 마스크에 획 구간 [from, to] (호 길이)을 칠한다.
-function stampArc(mctx: CanvasRenderingContext2D, sprite: HTMLCanvasElement, g: StrokeGeom, from: number, to: number, widthMul = 1): void {
-  const pts = g.pts, cum = g.cum, half = g.half;
+function stampArc(mctx: CanvasRenderingContext2D, sprite: HTMLCanvasElement, g: StrokeGeom, widths: number[], from: number, to: number, widthMul = 1): void {
+  const pts = g.pts, cum = g.cum, half = widths;
   let k = 0;
   while (k < cum.length - 2 && cum[k + 1]! <= from) k++;
   const start = Math.max(0, from);
@@ -318,12 +347,12 @@ function pointAt(g: StrokeGeom, s: number): Pt {
   return { x: a.x + (b.x - a.x) * f, y: a.y + (b.y - a.y) * f };
 }
 
-function halfAt(g: StrokeGeom, s: number): number {
+function widthAt(g: StrokeGeom, widths: number[], s: number): number {
   let k = 0;
   while (k < g.cum.length - 2 && g.cum[k + 1]! < s) k++;
   const seg = (g.cum[k + 1]! - g.cum[k]!) || 1;
   const f = clamp01((s - g.cum[k]!) / seg);
-  return g.half[k]! + ((g.half[k + 1] ?? g.half[k]!) - g.half[k]!) * f;
+  return widths[k]! + ((widths[k + 1] ?? widths[k]!) - widths[k]!) * f;
 }
 
 /** 원본 SVG를 받아 캔버스 기반 획쓰기 인트로를 띄운다. */
@@ -440,77 +469,92 @@ export async function mountKtTitleWrite(root: HTMLElement, sfx?: Sfx): Promise<v
     }
 
     let done = false;
-    const startAt = performance.now();
-    const drawn = new Float32Array(n); // 획별 현재까지 칠한 호 길이
-    const settle = new Map<number, number>(); // 획 index → settle 시작 시각(초)
-    let spreadAt = -1;
+    let finishing = false;
+    let finishAt = 0;
+    let settled = 0;
     let chime = false;
     let sounded = -1;
+    const startAt = performance.now();
+    const drawn = new Float32Array(n); // 획별 현재까지 칠한 호 길이
+    const completed = new Uint8Array(n);
+    const settle = new Map<number, number>(); // 획 index → 잉크 스며들기 시작 시각
     const trail: Pt[] = [];
 
     const frame = (now: number): void => {
       if (!document.contains(el)) return;
       const t = (now - startAt) / 1000;
 
-      // 1) 진행 중 획 칠하기 / 완료 획 settle
+      // 1) 진행 중 획: **얇은 붓끝(tip)** 으로 중심선을 따라 칠한다.
       let active = -1;
       for (let i = 0; i < n; i++) {
         const g = geoms[i]!;
         if (t < g.start) break;
         if (t >= g.start + g.dur) {
-          if (drawn[i]! < g.len) {
-            stampArc(mctx, sprite, g, drawn[i]!, g.len);
+          if (!completed[i]) {
+            if (drawn[i]! < g.len) stampArc(mctx, sprite, g, g.tip, drawn[i]!, g.len);
             drawn[i] = g.len;
+            completed[i] = 1;
             settle.set(i, t);
           }
         } else {
           active = i;
           const p = clamp01((t - g.start) / g.dur);
-          const s = easeInOut(p) * g.len;
-          if (s > drawn[i]!) stampArc(mctx, sprite, g, drawn[i]!, s);
-          drawn[i] = Math.max(drawn[i]!, s);
+          const arc = easeInOut(p) * g.len;
+          if (arc > drawn[i]!) stampArc(mctx, sprite, g, g.tip, drawn[i]!, arc);
+          drawn[i] = Math.max(drawn[i]!, arc);
           break;
         }
       }
-      // 완료 획의 잉크 번짐: 0.24s 동안 반폭을 1.16배까지 (가장자리 안전)
-      for (const [i, at] of settle) {
-        const g = geoms[i]!;
-        const k = clamp01((t - at) / 0.24);
-        if (k >= 1) { settle.delete(i); continue; }
-        stampArc(mctx, sprite, g, 0, g.len, 1 + 0.16 * easeOut(k) * 0.5);
+
+      // 2) 방금 끝난 획: 0.2s 동안 tip → cover 로 잉크가 스며들며 두께가 채워진다.
+      //    (획별로 완결되므로 "마지막에 전체가 확" 하는 단계가 없다.)
+      if (settle.size) {
+        for (const [i, at] of settle) {
+          const g = geoms[i]!;
+          const k = clamp01((t - at) / 0.2);
+          if (k >= 1) { settle.delete(i); settled++; continue; }
+          const e = easeOut(k);
+          const widths = g.tip.map((v, j) => v + (g.cover[j]! * 1.06 - v) * e);
+          stampArc(mctx, sprite, g, widths, 0, g.len);
+        }
       }
 
-      // 2) 마지막 획 이후 전체 잉크 정착 → 클립 없음(그대로 글자)
-      if (spreadAt < 0 && t >= end) {
-        spreadAt = t;
+      // 3) 모든 획이 잉크로 채워졌으면 원본 글자로 짧게 크로스페이드(팝 없음).
+      if (!finishing && settled >= n) {
+        finishing = true;
+        finishAt = t;
         if (!chime) { chime = true; sfx?.play('chime'); }
       }
-      if (spreadAt >= 0) {
-        const k = clamp01((t - spreadAt) / 0.55);
-        for (const g of geoms) stampArc(mctx, sprite, g, 0, g.len, 1.16 + 0.55 * easeOut(k));
+      if (finishing) {
+        if (head) head.style.opacity = '0';
+        trail.length = 0;
+        compose(trail);
+        const k = clamp01((t - finishAt) / 0.24);
+        gl.globalCompositeOperation = 'source-over';
+        gl.globalAlpha = k;
+        gl.drawImage(glyph, 0, 0);
+        gl.globalAlpha = 1;
         if (k >= 1 && !done) {
           done = true;
-          // 최종 프레임은 원본 글자를 그대로 그린다(글자형 100%, 팝 없음:
-          // 이미 마스크가 모든 잉크를 덮고 있어 차이는 서브픽셀 AA뿐).
-          gl.globalCompositeOperation = 'source-over';
           gl.clearRect(0, 0, out.width, out.height);
           gl.drawImage(glyph, 0, 0);
-          if (head) head.style.opacity = '0';
           el.dataset.state = 'done';
           screen.classList.add('kt-idle');
           return;
         }
+        requestAnimationFrame(frame);
+        return;
       }
 
-      // 3) 화면 합성 + 헤드/잔광
+      // 4) 헤드/잔광 + 합성
       if (active >= 0) {
         const g = geoms[active]!;
-        const s = drawn[active]!;
-        const p = pointAt(g, s);
-        const hw = halfAt(g, s);
-        setHead(p, hw, true);
-        trail.push(p);
-        if (trail.length > 7) trail.shift();
+        const arc = drawn[active]!;
+        const pt = pointAt(g, arc);
+        const hw = widthAt(g, g.tip, arc);
+        setHead(pt, hw, true);
+        trail.push(pt);
+        if (trail.length > 6) trail.shift();
         if (sounded !== active) { sounded = active; sfx?.play('brush', ((active % 5) * 0.03) - 0.06); }
       } else {
         setHead({ x: 0, y: 0 }, 1, false);

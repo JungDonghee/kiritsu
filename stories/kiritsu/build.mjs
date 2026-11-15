@@ -34,12 +34,13 @@ const css = `
 
 @font-face{font-family:'NanumGothic';src:url('fonts/NanumGothic-Regular.ttf') format('truetype');font-weight:400}
 @font-face{font-family:'NanumGothic';src:url('fonts/NanumGothic-Bold.ttf') format('truetype');font-weight:700}
+@font-face{font-family:'YujiBokuSub';src:url('fonts/YujiBoku-KIRITSU-subset.ttf') format('truetype');font-weight:400 700;unicode-range:U+3400-4DBF,U+4E00-9FFF,U+F900-FAFF,U+3000-303F}
 @font-face{font-family:'NotoCJK';src:url('fonts/NotoSubset-Regular.otf') format('opentype');font-weight:400}
 @font-face{font-family:'NotoCJK';src:url('fonts/NotoSubset-Bold.otf') format('opentype');font-weight:700}
 @page{size:A4;margin:0}
 html,body{margin:0;padding:0}
-body{font-family:'NanumGothic','NotoCJK',sans-serif;color:#101c24;background:#fff;-webkit-print-color-adjust:exact;print-color-adjust:exact}
-svg text{font-family:'NanumGothic','NotoCJK',sans-serif}
+body{font-family:'YujiBokuSub','NanumGothic','NotoCJK',sans-serif;color:#101c24;background:#fff;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+svg text{font-family:'YujiBokuSub','NanumGothic','NotoCJK',sans-serif}
 .cover{width:210mm;height:297mm;background:#070b0f;overflow:hidden;position:relative;page-break-after:always}
 .cover svg{width:100%;height:auto;display:block}
 .cover-foot{position:absolute;left:18mm;bottom:16mm;color:#5ff5e0;font-size:9pt;letter-spacing:6px}

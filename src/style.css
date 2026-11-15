@@ -2162,3 +2162,148 @@ body.crt-off .board::after { display: none; }
   .kt-blossom::before { animation: none; }
   .kt-sweep { display: none; }
 }
+
+/* =================================================================== CRT-VECTOR EVERYWHERE
+   타이틀에만 있던 CRT 벡터 디스플레이 정체성을 모든 화면·오버레이(결과/설정/
+   브리핑/도움말/프롬프트)로 확장한다. 오버레이는 #app 스캔라인(z60)보다 위
+   (z70)에 있어 지금까지 스캔라인/비네트를 받지 못했다 — 오버레이 내부에 같은
+   패턴·프레임·형광 글로우를 직접 깐다. 애니메이션은 transform만 사용한다. */
+.screen { position: relative; }
+.screen::before {
+  content: "";
+  position: absolute;
+  inset: 8px;
+  pointer-events: none;
+  z-index: 0;
+  border: 1px solid hsl(var(--hue) 85% 60% / 0.10);
+  border-radius: 3px;
+  background:
+    linear-gradient(hsl(var(--hue) 85% 65% / 0.55), hsl(var(--hue) 85% 65% / 0.55)) left top / 18px 1px no-repeat,
+    linear-gradient(hsl(var(--hue) 85% 65% / 0.55), hsl(var(--hue) 85% 65% / 0.55)) left top / 1px 18px no-repeat,
+    linear-gradient(hsl(var(--hue) 85% 65% / 0.55), hsl(var(--hue) 85% 65% / 0.55)) right top / 18px 1px no-repeat,
+    linear-gradient(hsl(var(--hue) 85% 65% / 0.55), hsl(var(--hue) 85% 65% / 0.55)) right top / 1px 18px no-repeat,
+    linear-gradient(hsl(var(--hue) 85% 65% / 0.4), hsl(var(--hue) 85% 65% / 0.4)) left bottom / 18px 1px no-repeat,
+    linear-gradient(hsl(var(--hue) 85% 65% / 0.4), hsl(var(--hue) 85% 65% / 0.4)) left bottom / 1px 18px no-repeat,
+    linear-gradient(hsl(var(--hue) 85% 65% / 0.4), hsl(var(--hue) 85% 65% / 0.4)) right bottom / 18px 1px no-repeat,
+    linear-gradient(hsl(var(--hue) 85% 65% / 0.4), hsl(var(--hue) 85% 65% / 0.4)) right bottom / 1px 18px no-repeat;
+}
+.screen > * { position: relative; z-index: 1; }
+.screen .topbar { box-shadow: 0 1px 0 hsl(var(--hue) 85% 60% / 0.28), 0 6px 18px rgb(0 0 0 / 0.35); }
+.screen .topbar h1,
+.screen h1,
+.card h2 {
+  text-shadow: 0 0 12px hsl(var(--hue) 85% 60% / 0.35), 0 0 2px hsl(var(--hue) 85% 70% / 0.6);
+}
+
+/* 오버레이 = CRT 유리 패널: 스캔라인+애퍼처 그릴+비네트를 안쪽에 다시 긋는다. */
+.overlay {
+  isolation: isolate;
+  background:
+    repeating-linear-gradient(0deg, rgb(0 0 0 / 0.30) 0 1px, transparent 1px 3px),
+    repeating-linear-gradient(90deg, rgb(255 0 0 / 0.03) 0 1px, rgb(0 255 0 / 0.018) 1px 2px, rgb(0 0 255 / 0.03) 2px 3px),
+    radial-gradient(125% 95% at 50% 46%, rgb(4 14 9 / 0.45) 0 38%, rgb(1 5 3 / 0.92) 100%),
+    rgb(2 8 5 / 0.80);
+}
+.overlay::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 0;
+  height: 38vh;
+  pointer-events: none;
+  z-index: 0;
+  background: linear-gradient(180deg, transparent, rgb(140 255 180 / 0.035) 42%, rgb(140 255 180 / 0.06) 50%, transparent);
+  animation: overlay-sweep 8.5s linear infinite;
+}
+.overlay::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+  background:
+    linear-gradient(104deg, transparent 32%, rgb(210 255 225 / 0.035) 47%, transparent 60%),
+    radial-gradient(105% 85% at 50% 45%, transparent 55%, rgb(0 0 0 / 0.55) 100%);
+}
+@keyframes overlay-sweep {
+  from { transform: translateY(-42vh); }
+  to { transform: translateY(112vh); }
+}
+.overlay > * { position: relative; z-index: 1; }
+
+/* 카드/브리핑/결과창 = CRT 벡터 HUD 패널 */
+.card,
+.intro-card,
+.results-card,
+.help-card {
+  background:
+    repeating-linear-gradient(0deg, rgb(0 0 0 / 0.20) 0 1px, transparent 1px 3px),
+    radial-gradient(140% 100% at 50% 0%, hsl(var(--hue) 85% 50% / 0.12), transparent 58%),
+    linear-gradient(175deg, #07160d, #040d07 70%);
+  border-color: hsl(var(--hue) 85% 60% / 0.34);
+  box-shadow:
+    0 0 0 1px rgb(102 255 158 / 0.07) inset,
+    0 0 46px hsl(var(--hue) 85% 50% / 0.10),
+    0 26px 80px rgb(0 0 0 / 0.72);
+}
+.card > *, .intro-card > *, .results-card > *, .help-card > * { position: relative; z-index: 1; }
+.card::before, .intro-card::before, .results-card::before, .help-card::before {
+  content: "";
+  position: absolute;
+  inset: 6px;
+  border: 1px solid hsl(var(--hue) 85% 60% / 0.16);
+  pointer-events: none;
+  z-index: 0;
+}
+.card::after, .intro-card::after, .results-card::after, .help-card::after {
+  content: "";
+  position: absolute;
+  inset: 6px;
+  pointer-events: none;
+  z-index: 0;
+  background:
+    linear-gradient(hsl(var(--hue) 85% 68% / 0.7), hsl(var(--hue) 85% 68% / 0.7)) left top / 22px 1px no-repeat,
+    linear-gradient(hsl(var(--hue) 85% 68% / 0.7), hsl(var(--hue) 85% 68% / 0.7)) left top / 1px 22px no-repeat,
+    linear-gradient(hsl(var(--hue) 85% 68% / 0.7), hsl(var(--hue) 85% 68% / 0.7)) right top / 22px 1px no-repeat,
+    linear-gradient(hsl(var(--hue) 85% 68% / 0.7), hsl(var(--hue) 85% 68% / 0.7)) right top / 1px 22px no-repeat,
+    linear-gradient(hsl(var(--hue) 85% 68% / 0.45), hsl(var(--hue) 85% 68% / 0.45)) left bottom / 22px 1px no-repeat,
+    linear-gradient(hsl(var(--hue) 85% 68% / 0.45), hsl(var(--hue) 85% 68% / 0.45)) left bottom / 1px 22px no-repeat,
+    linear-gradient(hsl(var(--hue) 85% 68% / 0.45), hsl(var(--hue) 85% 68% / 0.45)) right bottom / 22px 1px no-repeat,
+    linear-gradient(hsl(var(--hue) 85% 68% / 0.45), hsl(var(--hue) 85% 68% / 0.45)) right bottom / 1px 22px no-repeat;
+}
+
+/* 버튼 = 벡터 베벨 + 모서리 컷 */
+.btn {
+  background:
+    linear-gradient(180deg, rgb(102 255 158 / 0.07), rgb(102 255 158 / 0.012)),
+    linear-gradient(90deg, transparent, rgb(102 255 158 / 0.03));
+  box-shadow: inset 0 0 0 1px rgb(102 255 158 / 0.06);
+  clip-path: polygon(7px 0, 100% 0, 100% calc(100% - 7px), calc(100% - 7px) 100%, 0 100%, 0 7px);
+}
+.btn:hover, .btn:focus-visible, .btn.focused { box-shadow: inset 0 0 0 1px rgb(194 255 214 / 0.22), 0 0 24px rgb(102 255 158 / 0.24); }
+.btn kbd { color: hsl(var(--hue) 85% 70%); }
+
+/* 결과: 별과 제목을 CRT 벡터 글로우로 */
+.stars-big span.on {
+  text-shadow: 0 0 8px rgb(255 230 140 / 0.75), 0 0 22px rgb(255 196 72 / 0.45);
+}
+.results-card h2 { text-shadow: 0 0 14px hsl(var(--hue) 85% 60% / 0.45), 0 0 3px hsl(var(--hue) 85% 75% / 0.7); }
+.results-card .rule { box-shadow: 0 0 10px hsl(var(--hue) 85% 60% / 0.35); }
+
+/* 설정/리스트 행: 벡터 구분선·LED */
+.card .row, .stage, .floor { border-bottom-color: hsl(var(--hue) 85% 60% / 0.14); }
+.card .row b, .floor .name, .stage .name { text-shadow: 0 0 9px hsl(var(--hue) 85% 60% / 0.28); }
+
+/* CRT OFF / 저사양: 정체성 유지하되 스캔·빔만 제거 */
+body.crt-off .overlay::before,
+body.crt-off .overlay::after { display: none; }
+body.crt-off .overlay { background: rgb(2 8 5 / 0.86); }
+body.crt-off .card,
+body.crt-off .intro-card,
+body.crt-off .results-card,
+body.crt-off .help-card { background: linear-gradient(175deg, #07160d, #040d07 70%); }
+
+@media (prefers-reduced-motion: reduce) {
+  .overlay::before { animation: none; opacity: 0.4; }
+}
