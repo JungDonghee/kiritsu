@@ -7,21 +7,21 @@
 > `npm run kickoff`.
 > **Last rewritten:** 2026-11-15, after the naming correction, CI/IME fixes and the novel is confirmed (work/ 13편 ~73,000자).
 
-## 0k — 타이틀 한자 인트로 v10 (2026-11-15, 배포 완료)
+## 0k — 타이틀 한자 인트로 v11 (2026-11-15, 배포 완료)
 
-- **상태: v10 완료·라이브 배포.** v9의 20획 **완전 붓 획 아웃라인** 데이터
-  (`src/ui/title-stroke-paths.ts`, 획순 規 11 + 律 9, KanjiVG 중심선을
-  Yuji Boku Light 잉크에 정합)는 그대로 두고, 런타임 `src/ui/kanji.ts`만
-  교체했다: **선명한 붓촉 마스크 스윕**(페더/블러/글로우/궤적 제거),
-  진행 중 획 앞쪽 55%→100% 압력 램프, Hanzi Writer식 길이 비례 타이밍
-  (획당 0.22~0.55s, 총 ≈7.55s, `--kt-end` 7.80s). 마지막에 글자를 덧그리지
-  않는다(팝 없음).
-- 검증: `tools/title-check.mjs`(20획·`data-state=done`·콘솔 0·FPS 40),
-  `npm run verify`, union/색상 오버레이 — `docs/TITLE_KANJI.md` §9.
-- 금지: v1~v8 자동 마스크/Voronoi/튜브/조각 분할 재도입, `gen-title-strokes.py`
-  재실행 배포, HW/Arphic 데이터를 형상 소스로 사용(PRC 획순·APL 라이선스),
-  글자형 교체. 폰트는 Yuji Boku Light cut 고정.
-- 남은 것: 사용자 육안 확인(품질 판정) 후 피드백 반영.
+- **상태: v11 완료·라이브 배포.** 사용자가 폰 트레이서에서 그린 **내부 경계선
+  49개**를 `kanji-trace/cuts.py`로 변환: 잉크 영역 56개 → 20개 territory,
+  사용자가 상자로 표시한 **교차 상자 12개는 여러 획이 공유**. 데이터는
+  `src/ui/title-stroke-paths.ts`(46,499 B). union==글자(diff <0.1%,
+  realMissing 0%). 런타임은 v10 그대로(선명한 붓촉 마스크 스윕, 획당
+  0.22~0.55s, 총 ≈7.55s, `--kt-end` 7.80s).
+- 검증: `tools/title-check.mjs`(20획·`data-state=done`·콘솔 0·FPS 41),
+  `npm run verify`, `cuts-report.json` — `docs/TITLE_KANJI.md` §10.
+- 금지: v1~v8 자동 마스크 재도입, `gen-title-strokes.py` 재실행 배포,
+  HW/Arphic 데이터를 형상 소스로 사용(PRC 획순·APL 라이선스), 글자형 교체,
+  생성 데이터 수작업 편집. 폰트는 Yuji Boku Light cut 고정.
+- 남은 것: 사용자 육안 확인. 추가/수정 cuts가 오면 `cuts.py` 재실행 →
+  데이터 재생성 → `title-check`/`verify` → 재배포.
 
 ## 0j. Naming, CI fix, IME input, novel mandate (2026-11-15)
 
