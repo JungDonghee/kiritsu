@@ -3,7 +3,7 @@
 > **대상 독자**: 이 프로젝트를 이어받을 저비용 모델(v4.1 flash). 이 문서 하나로
 > 유지보수 라운드를 돌 수 있어야 한다. **판단이 필요한 일은 하지 말고 사용자에게
 > 묻거나 멈춘다.** 무리한 판단이 이 프로젝트의 캐논·게이트를 깨는 것보다 낫다.
-> 마지막 갱신: 2026-11-15 (v4 pro 인계). **타이틀 規律 획 애니메이션 v11 배포 완료(사용자 경계 기반 분할)** — [`docs/TITLE_KANJI.md`](docs/TITLE_KANJI.md) §10 참조(사용자 육안 확인 대기).
+> 마지막 갱신: 2026-11-15 (v4 pro 인계). **타이틀 規律 획 애니메이션 v12 배포 완료(사용자 구역+획 선 합성)** — [`docs/TITLE_KANJI.md`](docs/TITLE_KANJI.md) §11 참조(사용자 육안 확인 대기).
 > 문서 지도·읽기 순서·문서 규칙은 [`docs/README.md`](docs/README.md)가 소유한다.
 
 ## 0. 한 줄 요약
@@ -13,12 +13,13 @@ KIRITSU = 소설 + vim 교육 게임(부제 VIMLORE). 저장소
 라이브 https://jungdonghee.github.io/kiritsu/). **소설은 사용자가 읽는 중 —
 원고를 건드리지 않는다. 게임은 전부 그린 — 함부로 손대지 않는다.**
 
-## 0-b. 타이틀 20획 — v11 완료 (2026-11-15)
+## 0-b. 타이틀 20획 — v12 완료 (2026-11-15)
 
-사용자가 폰 트레이서에서 그린 **내부 경계선 49개**를 `kanji-trace/cuts.py`로
-변환해 `src/ui/title-stroke-paths.ts`를 **20개 territory**로 교체했다(잉크 영역
-56개, 사용자가 상자로 표시한 교차부 12개는 여러 획이 공유). union==글자
-(diff <0.1%). 런타임 `src/ui/kanji.ts`는 v10 그대로 — 선명한 붓촉 마스크 스윕,
+사용자가 폰 트레이서에서 그린 **경계선 51개 + 직선 획 선 22개**를
+`kanji-trace/zones.py`로 합성했다. 선이 지나는 구역들이 한 획이 되고,
+꺾인 획(6+7, 16+17)은 자동 병합해 정확히 **20획**. 데이터는
+`src/ui/title-stroke-paths.ts`(30,002 B). union==글자(realMissing 0%).
+런타임 `src/ui/kanji.ts`는 v10 그대로 — 선명한 붓촉 마스크 스윕,
 획당 0.22~0.55s·총 ≈7.55s, 마지막에 글자를 덧그리지 않는다(팝 없음).
 
 - 검증: `node tools/title-check.mjs`(20획·done·콘솔0·FPS≥18), `npm run verify`,
@@ -34,7 +35,7 @@ KIRITSU = 소설 + vim 교육 게임(부제 VIMLORE). 저장소
 | 소설 | `stories/kiritsu/work/` 13편 확정(~73,000자, 검토 27건 반영, 규칙 0건). **사용자 한국어판 독서·피드백 대기** |
 | 소설 PDF | `stories/kiritsu/KIRITSU.pdf` (인쇄용, 72페이지) |
 | 게임 | 모든 게이트 그린(테스트·오라클 373/373·번들·PWA·타이틀 검사), 라이브 배포 정상 |
-| 타이틀 인트로 | **v11 배포 완료(2026-11-15).** 사용자 내부 경계 기반 20획 territory(공유 교차 상자 12개), title-check green(FPS 41, `--kt-end` 7.80s). 사용자 육안 확인 대기. [`docs/TITLE_KANJI.md`](docs/TITLE_KANJI.md) §10 |
+| 타이틀 인트로 | **v12 배포 완료(2026-11-15).** 사용자 구역+획 선 합성 20획 territory, title-check green(FPS 39, `--kt-end` 7.80s). 사용자 육안 확인 대기. [`docs/TITLE_KANJI.md`](docs/TITLE_KANJI.md) §11 |
 | 보류(사용자 지시) | 영어판·리츠 1인칭(피드백 후), 게임 스토리 슬라이스(원고 확정 후), LIVE 모드(승인 전), 이미지(다른 AI 생성) |
 | 자동화 | v4 pro의 매시간 라운드는 **인계 시점에 일시정지됨** — flash 세션에서 새로 만들 것(아래 §5) |
 

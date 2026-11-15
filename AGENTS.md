@@ -143,18 +143,20 @@ docs/               README.md (문서 지도), LEVEL_FORMAT.md (authoring), CURR
 
 ## Design laws
 
-- **Title kanji (規律) — v11 SHIPPED (2026-11-15).** The rejected automated
-  partitions v1–v8 are retired. v11 data (`src/ui/title-stroke-paths.ts`) is a
-  **20-territory ink partition** produced by `kanji-trace/cuts.py` from 49
-  hand-drawn inner boundary cuts: 56 ink regions, with 12 small junction boxes
-  shared by every touching stroke ("the squares belong to both strokes").
-  Union reproduces the glyph (raster diff <0.1%, AA edges only), and painting in
-  stroke order keeps later strokes' ink from appearing early. The runtime is
-  v10's crisp brush-tip mask sweep (`src/ui/kanji.ts`, 0.22–0.55s per stroke,
-  ≈7.55s). Never draw the final glyph over the animated one (no
-  crossfade/pop), never re-introduce v1–v8 masks, and never edit the generated
-  data by hand — rerun `kanji-trace/cuts.py` with the user's cuts and re-verify.
-  Read [`docs/TITLE_KANJI.md`](docs/TITLE_KANJI.md) §10 before touching the title.
+- **Title kanji (規律) — v12 SHIPPED (2026-11-15).** The rejected automated
+  partitions v1–v8 are retired. v12 data (`src/ui/title-stroke-paths.ts`) is a
+  **20-territory synthesis** produced by `kanji-trace/zones.py` from the user's
+  hand-drawn drawing: **51 inner boundary cuts** partition the ink into 57 zones,
+  and **22 straight stroke lines** (drawn in stroke order; cornered strokes use
+  two touching segments — 6+7 and 16+17 are grouped automatically) merge the
+  zones they pass through into each stroke, giving exactly **20 strokes**. A zone
+  crossed by several lines is shared (same ink colour, so overlaps are invisible
+  in the final glyph). Union reproduces the glyph (raster diff <0.1%, AA edges
+  only). Runtime is v10's crisp brush-tip mask sweep (`src/ui/kanji.ts`,
+  0.22–0.55s per stroke, ≈7.55s). Never draw the final glyph over the animated
+  one, never re-introduce v1–v8 masks, and never edit the generated data by
+  hand — rerun `kanji-trace/zones.py` with the user's cuts/lines and re-verify.
+  Read [`docs/TITLE_KANJI.md`](docs/TITLE_KANJI.md) §11 before touching the title.
 - **Title kanji (規律) has a single source of truth:** `public/kanji/ou-guilv-tight.svg`
   (구양순체 계열 Yuji Boku **Light cut**, viewBox 600×300, fill `#f2d8c9`;
   generated directly from the subset by `tools/gen-title-svg.py`). **Kanji
