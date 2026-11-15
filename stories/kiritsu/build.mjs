@@ -48,8 +48,11 @@ svg text{font-family:'NanumGothic','NotoCJK',sans-serif}
 .ch-num{font-size:9pt;color:#0a8a7e;letter-spacing:5px}
 .ch-head h1{font-size:25pt;margin:1mm 0 1mm;letter-spacing:-0.5px}
 .ch-head .en{font-size:9pt;color:#5a7a86;letter-spacing:4px}
-.art{margin:0 0 6mm}
+.art{margin:0 0 6mm;break-inside:avoid;page-break-inside:avoid}
 .art svg{width:100%;height:auto;display:block}
+.ch-head{break-after:avoid;page-break-after:avoid}
+.commentary{break-inside:avoid;page-break-inside:avoid}
+.blockquote{break-inside:avoid;page-break-inside:avoid}
 .body p{font-size:11pt;line-height:1.95;margin:0 0 3.4mm;text-align:justify;word-break:keep-all}
 .body strong{color:#0a6f66}
 .commentary{margin-top:6mm;padding:4.5mm 5.5mm;background:#f2f7f6;border-left:3px solid #0a8a7e}
