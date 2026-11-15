@@ -152,12 +152,15 @@ export async function mountKtTitleWrite(root: HTMLElement, sfx?: Sfx): Promise<v
     const lctx = layer.getContext('2d');
     if (!lctx) return;
     if (head) {
-      head.style.width = '12px';
-      head.style.height = '12px';
-      head.style.margin = '-6px 0 0 -6px';
-      head.style.mixBlendMode = 'normal';
+      head.classList.add('kt-vector-head');
+      head.innerHTML = '<svg viewBox="-20 -20 40 40" aria-hidden="true">'
+        + '<g fill="none" stroke="#a9ffd9" stroke-width="1.2" stroke-linecap="round">'
+        + '<path d="M-15 0H-4M4 0H15M0 -15V-4M0 4V15" opacity=".9"/>'
+        + '<circle cx="0" cy="0" r="2.4"/>'
+        + '<path d="M9 -4.5L15 0L9 4.5" opacity=".95"/>'
+        + '</g></svg>';
+      head.style.opacity = '0';
     }
-    if (head) head.style.opacity = '0';
     screen.style.setProperty('--kt-end', `${(end + 0.25).toFixed(2)}s`);
     el.dataset.state = 'writing';
 
@@ -169,6 +172,15 @@ export async function mountKtTitleWrite(root: HTMLElement, sfx?: Sfx): Promise<v
       const f = clamp01((target - g.wcum[k]!) / span);
       return g.cum[k]! + ((g.cum[k + 1] ?? g.cum[k]!) - g.cum[k]!) * f;
     };
+    // CRT-vector brush cursor: a thin crosshair/nib at the exact contact point.
+    const setHead = (p: Pt, hw: number, on: boolean, angle = 0): void => {
+      if (!head) return;
+      head.style.left = `${(p.x / VB_W) * 100}%`;
+      head.style.top = `${(p.y / VB_H) * 100}%`;
+      head.style.transform = `rotate(${angle}deg) scale(${Math.max(0.65, Math.min(1.5, hw / 12))})`;
+      head.style.opacity = on ? '0.95' : '0';
+    };
+
     // Wet brush dab: a small circular wet spot (diameter ≈ the stroke's local
     // width) at the point the brush currently touches; ink behind is final.
     const WET_ERASE = 0.62;
@@ -212,6 +224,32 @@ export async function mountKtTitleWrite(root: HTMLElement, sfx?: Sfx): Promise<v
       lctx.clip();
       lctx.fill(paths[active]!);
       lctx.restore();
+
+      // No ink ahead of the brush: keep only the half-plane behind the contact
+      // line through the current brush position.
+      {
+        const tip = pointAt(g, arc);
+        const ahead = pointAt(g, Math.min(g.len, arc + 2));
+        const behind = pointAt(g, Math.max(0, arc - 2));
+        let ttx = ahead.x - behind.x, tty = ahead.y - behind.y;
+        const tl = Math.hypot(ttx, tty) || 1;
+        ttx /= tl; tty /= tl;
+        const nnx = -tty, nny = ttx;
+        const BIG = 2000;
+        const ax = tip.x + nnx * BIG, ay = tip.y + nny * BIG;
+        const bx = tip.x - nnx * BIG, by = tip.y - nny * BIG;
+        lctx.save();
+        lctx.setTransform(1, 0, 0, 1, 0, 0);
+        lctx.globalCompositeOperation = 'destination-in';
+        lctx.beginPath();
+        lctx.moveTo(ax * OUT_SCALE, ay * OUT_SCALE);
+        lctx.lineTo(bx * OUT_SCALE, by * OUT_SCALE);
+        lctx.lineTo((bx - ttx * BIG) * OUT_SCALE, (by - tty * BIG) * OUT_SCALE);
+        lctx.lineTo((ax - ttx * BIG) * OUT_SCALE, (ay - tty * BIG) * OUT_SCALE);
+        lctx.closePath();
+        lctx.fill();
+        lctx.restore();
+      }
 
       // Wet brush dab: erase a soft circular spot at the current touch point.
       // The radius follows the stroke's local half-width, so the wet circle is
@@ -295,7 +333,16 @@ export async function mountKtTitleWrite(root: HTMLElement, sfx?: Sfx): Promise<v
       paint(active, arc);
 
       if (active >= 0) {
+        const g = geoms[active]!;
+        const pt = pointAt(g, arc);
+        const ahead = pointAt(g, Math.min(g.len, arc + 2));
+        const behind = pointAt(g, Math.max(0, arc - 2));
+        const angle = (Math.atan2(ahead.y - behind.y, ahead.x - behind.x) * 180) / Math.PI;
+        const hw = KIRITSU_TITLE_STROKE_RADII[active]!;
+        setHead(pt, hw, true, angle);
         if (sounded !== active) { sounded = active; sfx?.play('brush', ((active % 5) * 0.03) - 0.06); }
+      } else {
+        setHead({ x: 0, y: 0 }, 1, false);
       }
 
       if (doneCount >= n) {
@@ -305,6 +352,7 @@ export async function mountKtTitleWrite(root: HTMLElement, sfx?: Sfx): Promise<v
         }
         if (t - allDoneAt >= 0.18) {
           paint(-1, 0);
+          setHead({ x: 0, y: 0 }, 1, false);
           el.dataset.state = 'done';
           screen.classList.add('kt-idle');
           return;

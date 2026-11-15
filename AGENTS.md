@@ -153,9 +153,11 @@ docs/               README.md (문서 지도), LEVEL_FORMAT.md (authoring), CURR
   crossed by several lines is shared (same ink colour, so overlaps are invisible
   in the final glyph). Union reproduces the glyph (raster diff <0.1%, AA edges
   only). v13 runtime (`src/ui/kanji.ts`) removes the laser head completely:
-  only a **small circular wet dab at the current touch point** (radius = the
-  local stroke half-width; destination-out radial gradient, max 62% removed)
-  is lighter; ink the brush has already passed is immediately final-colour.
+  the old radial laser is now a **thin CRT-vector crosshair + nib cursor** at
+  the contact point; the active mask is clipped by the half-plane behind the
+  cursor so ink never appears ahead of the brush. Only a **small circular wet
+  dab at the contact point** (radius = local half-width; destination-out radial,
+  max 62% removed) is lighter; passed ink is immediately final-colour.
   Stroke progress accelerates
   (`0.12t+0.88t^2.4`, slow start → fast finish) with the old end-slowdown
   removed; total ≈7.55s. Never draw the final glyph over the animated one,
