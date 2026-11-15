@@ -2,7 +2,7 @@ import { CHAPTERS } from '../content/chapters/index.ts';
 import { COMMANDS, stageUnlockKeys, chapterForKey } from '../content/commands.ts';
 import { emptyProgress, type Chapter, type Progress, type StageRecord, type Stars } from '../core/game/types.ts';
 import { generateTrial, dailySeed, skillLabel, TRIAL_SKILLS, type Trial } from '../core/game/trials.ts';
-import { weakestSkills, recordStat, encodeSave, decodeSave, weaknessScore } from '../core/game/stats.ts';
+import { weakestSkills, recordStat, encodeSave, decodeSave, sanitizeProgress, weaknessScore } from '../core/game/stats.ts';
 import { skillModel, activityGrid, streak, bumpActivity } from '../core/game/skills.ts';
 import { h, mount, isTouch, focusGroup, focusStep, focusActivate, focusIndex, type FocusGroup } from './dom.ts';
 import { needsRemap, physicalKey } from '../core/vim/keys.ts';
@@ -28,15 +28,9 @@ function loadProgress(): Progress {
   try {
     const raw = localStorage.getItem(SAVE_KEY);
     if (!raw) return emptyProgress();
-    const p = JSON.parse(raw) as Progress;
-    if (typeof p !== 'object' || !p.stages) return emptyProgress();
-    const merged = { ...emptyProgress(), ...p };
-    // v1 defaulted to absolute numbers. Treat that old default as the new
-    // relative default once; a v2 save keeps whatever the player chose.
-    if ((p.version ?? 1) < 2 && merged.lineNumbers === 'abs') merged.lineNumbers = 'rel';
-    if (merged.lineNumbers !== 'rel' && merged.lineNumbers !== 'abs') merged.lineNumbers = 'rel';
-    merged.version = 2;
-    return merged;
+    // 저장 코드/localStorage는 신뢰하지 않는다: 손상 세이브(stats/profile null)
+    // 에서 승리 시 크래시하던 P1 버그를 sanitizeProgress가 막는다.
+    return sanitizeProgress(JSON.parse(raw));
   } catch {
     return emptyProgress();
   }
@@ -84,7 +78,28 @@ export class App {
     this.sfx.setEnabled(this.progress.sound);
     this.mapSel = clamp(this.progress.currentChapter, 0, CHAPTERS.length - 1);
     this.keyHandler = (e) => this.onKey(e);
-    window.addEventListener('keydown', this.keyHandler);
+    // capture 단계에서 Esc를 먼저 잡아 브라우저/PWA 기본 동작(앱 종료·뒤로가기·
+    // 전체화면 해제)을 최대한 막는다. 게임 자체 Esc 의미론은 onKey가 이어서 처리.
+    window.addEventListener('keydown', this.keyHandler, { capture: true });
+    window.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') e.preventDefault();
+    }, { capture: true });
+    window.addEventListener('keyup', (e) => {
+      if (e.key === 'Escape') e.preventDefault();
+    }, { capture: true });
+    // 홈화면 설치(PWA standalone)에서는 Esc/뒤로가기가 앱을 닫지 않도록
+    // history 엔트리를 하나 두고 popstate마다 다시 push해 앱 안에서 처리한다.
+    const standalone = window.matchMedia('(display-mode: standalone)').matches
+      || (window.navigator as unknown as { standalone?: boolean }).standalone === true;
+    if (standalone) {
+      try { history.pushState({ kiritsu: 1 }, '', location.href); } catch { /* file:// */ }
+      window.addEventListener('popstate', () => {
+        try { history.pushState({ kiritsu: 1 }, '', location.href); } catch { /* ignore */ }
+        this.handlePwaBack();
+      });
+    }
+    document.addEventListener('fullscreenchange', () => this.lockEscape());
+    window.addEventListener('pointerdown', () => this.lockEscape());
     window.addEventListener('pointerdown', () => {
       if (this.screen === 'title') this.goMap();
     });
@@ -183,8 +198,8 @@ export class App {
       'IDENTITY LINE ............. <b>OPEN</b>',
       '> WAITING FOR A CURSOR_',
     ];
-    const petals = Array.from({ length: 48 }, (_, i) => h('i', {
-      class: i < 14 ? 'kt-petal kt-still' : 'kt-petal',
+    const petals = Array.from({ length: 24 }, (_, i) => h('i', {
+      class: i < 10 ? 'kt-petal kt-still' : 'kt-petal',
       'aria-hidden': 'true',
       style: {
         '--x': String((i * 37 + 4) % 96),
@@ -233,7 +248,7 @@ export class App {
             { class: 'kt-ink-wrap', role: 'img', 'aria-label': '規律 — order, discipline' },
             h('div', { class: 'kt-ink' }, h('img', { src: './kanji/ou-guilv-tight.svg', alt: '', draggable: false })),
             h('div', { class: 'kt-laser-head', 'aria-hidden': 'true' }),
-            h('div', { class: 'kt-flash', 'aria-hidden': 'true' }),
+            h('div', { class: 'kt-bloom', 'aria-hidden': 'true' }),
           ),
           h('div', { class: 'kt-caption' }, 'ORDER · DISCIPLINE'),
           h('div', { class: 'kt-tag ko' }, this.t('Order is a file. You are the cursor.', '규율은 파일이다. 너는 커서다.')),
@@ -247,10 +262,11 @@ export class App {
         isTouch() ? h('div', { class: 'kt-touch' }, this.t('a physical keyboard is required', '물리 키보드가 필요하다')) : null,
       ),
     );
-    void mountKtTitleWrite(this.root);
+    void mountKtTitleWrite(this.root, this.sfx);
   }
 
   goMap(): void {
+    this.sfx.play('select');
     this.killPlay();
     this.screen = 'map';
     const stars = this.totalStars();
@@ -350,6 +366,7 @@ export class App {
 
   /** Stage picker: cleared stages are replayable; future stages stay sealed. */
   goChapter(i: number): void {
+    this.sfx.play('select');
     this.killPlay();
     this.chapterIndex = i;
     const ch = CHAPTERS[i];
@@ -519,6 +536,7 @@ export class App {
   // ------------------------------------------------------------------ trials
 
   goTrials(): void {
+    this.sfx.play('select');
     this.killPlay();
     this.trialRuns = [];
     this.trialSel = 0;
@@ -695,6 +713,7 @@ export class App {
   }
 
   goProgress(): void {
+    this.sfx.play('select');
     this.killPlay();
     this.screen = 'progress';
     this.hue(128);
@@ -731,6 +750,7 @@ export class App {
   }
 
   goCodex(): void {
+    this.sfx.play('select');
     this.killPlay();
     this.screen = 'codex';
     const groups = CHAPTERS.map((c, i) => {
@@ -770,6 +790,7 @@ export class App {
   }
 
   goAbout(): void {
+    this.sfx.play('select');
     this.killPlay();
     this.screen = 'about';
     const card = h(
@@ -815,7 +836,7 @@ export class App {
           onclick: () => this.openTextPrompt(this.t('Paste a save code', '세이브 코드 붙여넣기'), '', (code) => {
             if (!code) return;
             const p = decodeSave(code);
-            if (!p) { alert(this.t('Not a valid code', '올바른 코드가 아니다')); return; }
+            if (!p) { this.toast(this.t('Not a valid code', '올바른 코드가 아니다'), true); return; }
             this.progress = { ...emptyProgress(), ...p };
             this.save();
             this.goAbout();
@@ -934,6 +955,7 @@ export class App {
 
   /** F1 everywhere: a keyboard-only primer that never depends on the mouse. */
   toggleHelp(): void {
+    if (this.helpOpen) this.sfx.play('back'); else this.sfx.play('hint');
     if (this.helpOpen) {
       this.closeHelp();
       return;
@@ -980,10 +1002,40 @@ export class App {
 
   // -------------------------------------------------------------------- keys
 
+  /** In-game toast (no browser dialogs). */
+  private toast(msg: string, bad = false): void {
+    this.root.querySelectorAll('.toast').forEach((old) => old.remove());
+    const el = h('div', { class: `toast${bad ? ' locked' : ''}` }, msg);
+    this.root.append(el);
+    window.setTimeout(() => el.remove(), 2600);
+  }
+
+  /** Keyboard Lock API: 전체화면일 때 브라우저가 Esc를 가로채지 못하게 한다. */
+  private lockEscape(): void {
+    if (!document.fullscreenElement) return;
+    const kb = (navigator as unknown as { keyboard?: { lock?: (keys?: string[]) => Promise<void> } }).keyboard;
+    if (kb?.lock) void kb.lock(['Escape']).catch(() => { /* unsupported */ });
+  }
+
+  /** PWA 뒤로가기(Esc/back gesture)는 앱 종료 대신 화면 안에서 뒤로 이동. */
+  private handlePwaBack(): void {
+    if (this.promptEl) { this.closeTextPrompt(); return; }
+    if (this.confirmEl) { this.closeConfirm(); return; }
+    if (this.helpOpen) { this.closeHelp(); return; }
+    if (this.screen === 'title') return;
+    if (this.screen === 'map') { this.goTitle(); return; }
+    if (this.screen === 'chapter') { this.goMap(); return; }
+    if (this.screen === 'play') { this.goChapter(this.chapterIndex); return; }
+    this.goMap();
+  }
+
   private onKey(e: KeyboardEvent): void {
     // PWA(홈 화면 설치)에서 Esc가 앱을 종료/뒤로가기 시키지 않게 전역 차단.
     // Esc는 이 게임에서 결코 '나가기'가 아니다(AGENTS: Esc는 Vim의 Esc).
-    if (e.key === 'Escape') e.preventDefault();
+    if (e.key === 'Escape') {
+      e.preventDefault();
+      this.lockEscape();
+    }
     if (e.metaKey || e.altKey) return;
     // A Korean IME rewrites letter keys (h→ㅗ, j→ㅓ, …). Vim keys are physical
     // positions, so recover them from KeyboardEvent.code. The game must be

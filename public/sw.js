@@ -1,5 +1,5 @@
 /* KIRITSU service worker: installable, offline shell, no third-party requests. */
-const VERSION = 'kiritsu-v14';
+const VERSION = 'kiritsu-v15';
 const SHELL = [
   './',
   './index.html',

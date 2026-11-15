@@ -43,6 +43,24 @@ const VOICES: Record<string, Voice[]> = {
   locked: [{ type: 'square', f0: 110, dur: 0.09, gain: 0.05 }],
   undo: [{ type: 'sine', f0: 320, f1: 520, dur: 0.1, gain: 0.03 }],
   open: [{ type: 'sine', f0: 300, f1: 600, dur: 0.18, gain: 0.03 }],
+  // ── v3 UI: typewriter / intro / ghost ────────────────────────────────
+  type: [{ type: 'square', f0: 1060, dur: 0.012, gain: 0.009 }],
+  select: [{ type: 'triangle', f0: 620, dur: 0.04, gain: 0.03 }],
+  back: [{ type: 'triangle', f0: 380, dur: 0.05, gain: 0.026 }],
+  hint: [
+    { type: 'sine', f0: 660, dur: 0.09, gain: 0.03 },
+    { type: 'sine', f0: 990, dur: 0.12, gain: 0.024, delay: 0.05 },
+  ],
+  ghost: [
+    { type: 'sine', f0: 880, f1: 440, dur: 0.22, gain: 0.028 },
+    { type: 'triangle', f0: 1320, f1: 660, dur: 0.18, gain: 0.016, delay: 0.03 },
+  ],
+  whoosh: [{ type: 'sawtooth', f0: 190, f1: 60, dur: 0.26, gain: 0.032 }],
+  brush: [{ type: 'sine', f0: 230, f1: 120, dur: 0.15, gain: 0.013 }],
+  chime: [
+    { type: 'sine', f0: 784, dur: 0.2, gain: 0.032 },
+    { type: 'sine', f0: 1046, dur: 0.34, gain: 0.026, delay: 0.09 },
+  ],
 };
 
 const MUTE_KEY = 'vimlore.sound';

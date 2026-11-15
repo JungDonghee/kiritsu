@@ -34,6 +34,103 @@ export interface PlayHost {
 
 const KO = (s: Localized, lang: 'ko' | 'en'): string => (lang === 'ko' ? s.ko : s.en);
 
+/**
+ * Keys typed during the briefing may skip the typing, but a mashed Enter must
+ * not skip it and start the chamber in the same motion. Enter is ignored for
+ * this long after the BEGIN prompt becomes available.
+ */
+const INTRO_READY_GUARD = 700;
+/** Minimum time the briefing card is on screen, even when a key skips it. */
+const INTRO_MIN_DWELL = 620;
+
+interface TypingOpts {
+  /** ms per character baseline; derived from text length when omitted. */
+  base?: number;
+  /** Play a tick every Nth visible character (0/undefined disables). */
+  tickEvery?: number;
+  onTick?: () => void;
+  onDone?: () => void;
+  /** Wait before the first character (the card needs to land first). */
+  startDelay?: number;
+}
+
+/**
+ * Typewriter reveal for a reserved block. The caller writes the final text into
+ * an invisible sibling, so the card never reflows while typing; this class only
+ * grows the visible layer and owns its timer. finish() completes once, cancel()
+ * discards without side effects — a replaced hint or a destroyed screen can
+ * never keep writing into a detached node.
+ */
+class Typing {
+  private node = document.createTextNode('');
+  private caret: HTMLElement;
+  private timer = 0;
+  private index = 0;
+  private seen = 0;
+  private state: 'typing' | 'done' | 'cancelled' = 'typing';
+
+  constructor(
+    layer: HTMLElement,
+    private text: string,
+    private opts: TypingOpts = {},
+  ) {
+    this.caret = h('span', { class: 'type-caret' });
+    layer.append(this.node, this.caret);
+    this.timer = window.setTimeout(this.step, this.opts.startDelay ?? 90);
+  }
+
+  private step = (): void => {
+    if (this.state !== 'typing') return;
+    if (this.index >= this.text.length) {
+      this.complete();
+      return;
+    }
+    const ch = this.text[this.index++];
+    this.node.data = this.text.slice(0, this.index);
+    if (ch !== ' ' && ch !== '\n' && this.opts.tickEvery) {
+      this.seen++;
+      if (this.seen % this.opts.tickEvery === 0) this.opts.onTick?.();
+    }
+    this.timer = window.setTimeout(this.step, this.delay(ch));
+  };
+
+  private delay(ch: string): number {
+    const len = Math.max(1, this.text.length);
+    const base = this.opts.base ?? Math.min(24, Math.max(8, 2200 / len));
+    let d = base + (this.index % 5 === 0 ? 9 : 0);
+    if (ch === '\n') d += 55;
+    else if ('.!?…'.includes(ch)) d += 70;
+    else if (',;:—'.includes(ch)) d += 28;
+    return d;
+  }
+
+  private complete(): void {
+    this.state = 'done';
+    this.index = this.text.length;
+    this.node.data = this.text;
+    this.caret.remove();
+    this.opts.onDone?.();
+  }
+
+  /** Any key: show the whole text now (onDone runs exactly once). */
+  finish(): void {
+    if (this.state !== 'typing') return;
+    window.clearTimeout(this.timer);
+    this.complete();
+  }
+
+  /** Discard the animation without running onDone (the element is going away). */
+  cancel(): void {
+    if (this.state === 'typing') window.clearTimeout(this.timer);
+    this.state = 'cancelled';
+    this.caret.remove();
+  }
+
+  get done(): boolean {
+    return this.state === 'done';
+  }
+}
+
 /** One sentence that says exactly what clears the chamber, in player words. */
 function clearLabel(goal: Goal, lang: 'ko' | 'en'): string {
   const ko = lang === 'ko';
@@ -97,14 +194,39 @@ export class PlayScreen {
   private coachEl: HTMLElement | null = null;
   private lastInputAt = 0;
   private coachStep = 0;
+  private coachType: Typing | null = null;
+  private hintType: Typing | null = null;
+  private hintTimer = 0;
+  /** True when the user asked the OS to reduce motion: skip typewriter/animation. */
+  private reduced = false;
+  // Briefing reveal: the card lands, the brief types, then BEGIN becomes live.
+  private introActions: HTMLElement | null = null;
+  private introPrimary: HTMLElement | null = null;
+  private introCard: HTMLElement | null = null;
+  private introPart: { shell: HTMLElement; layer: HTMLElement } | null = null;
+  private introText = '';
+  private introType: Typing | null = null;
+  private introPending = 0;
+  private introRevealTimer = 0;
+  private introShownAt = 0;
+  private introTyped = false;
+  private introReady = false;
+  private introReadyAt = 0;
+  // Ghost run id: every start/cancel invalidates an in-flight ghost loop.
+  private ghostRun = 0;
+  private ghostLive: Session | null = null;
+  private starTimers: number[] = [];
 
   constructor(root: HTMLElement, host: PlayHost) {
     this.host = host;
     this.root = root;
+    this.reduced = typeof window.matchMedia === 'function' && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
     this.session = new Session({ stage: host.stage, chapterIndex: host.chapter.index - 1, allowed: host.allowed, onEvent: (e) => this.onEvent(e) });
     this.session.chapterForKey = host.chapterForKey;
     this.canvas = h('canvas');
-    this.board = h('div', { class: 'board' }, this.canvas);
+    // The buffer is part of the fiction the briefing introduces: it stays
+    // veiled until the player presses BEGIN, then wakes with a fade.
+    this.board = h('div', { class: 'board veiled' }, this.canvas);
     this.echo = h('div', { class: 'echo' });
     this.hudKeys = h('span', { class: 'keys' });
     this.hearts = h('span', { class: 'hearts' });
@@ -198,7 +320,9 @@ export class PlayScreen {
   }
 
   private updateHud(): void {
-    const s = this.session;
+    // 고스트 재생 중에는 데모 세션이 화면을 소유하지만, HUD의 키/하트는
+    // 플레이어의 실제 세션(live)을 보여준다. 예전엔 2/9 → 0/9 로 롤백돼 보였다.
+    const s = this.ghosting && this.ghostLive ? this.ghostLive : this.session;
     const max = s.maxHearts;
     this.hearts.textContent = '';
     for (let i = 0; i < max; i++) {
@@ -395,7 +519,41 @@ export class PlayScreen {
       this.hideCoach();
     }
     if (e.repeat) return true; // our own repeat loop handles held keys
-    if (this.state === 'intro' || this.state === 'won' || this.state === 'lost') {
+    if (this.state === 'intro') {
+      // The briefing is modal: any key first finishes the typing. Only once the
+      // BEGIN prompt is live can a key start the chamber, and a short Enter
+      // lock swallows the key that raced the reveal.
+      if (!this.introReady) {
+        if (!this.introTyped) {
+          this.skipIntroTyping();
+          return true;
+        }
+        // The brief is fully revealed but the prompt is still settling: Esc is
+        // already the way out, everything else waits for BEGIN to appear.
+        if (e.key === 'Escape') {
+          this.host.onExit();
+        }
+        return true;
+      }
+      if (e.key === 'Enter' && performance.now() - this.introReadyAt < INTRO_READY_GUARD) return true;
+      const fwd = e.key === 'j' || e.key === 'l' || e.key === 'ArrowDown' || e.key === 'ArrowRight';
+      if (fwd || e.key === 'k' || e.key === 'h' || e.key === 'ArrowUp' || e.key === 'ArrowLeft') {
+        if (this.actions) focusStep(this.actions, fwd ? 1 : -1);
+        this.host.sfx.play(fwd ? 'move' : 'back');
+        return true;
+      }
+      if (e.key === 'Enter') {
+        if (this.actions && focusActivate(this.actions)) return true;
+        this.begin();
+        return true;
+      }
+      if (e.key === 'Escape') {
+        this.host.onExit();
+        return true;
+      }
+      return true;
+    }
+    if (this.state === 'won' || this.state === 'lost') {
       // Overlay buttons are navigated with Vim keys: h/l or j/k moves the
       // focus, Enter activates. Escape always leaves.
       if (e.key === 'j' || e.key === 'l') {
@@ -408,8 +566,7 @@ export class PlayScreen {
       }
       if (e.key === 'Enter') {
         if (this.actions && focusActivate(this.actions)) return true;
-        if (this.state === 'intro') this.begin();
-        else if (this.state === 'won') this.host.onNext();
+        if (this.state === 'won') this.host.onNext();
         else this.restart();
         return true;
       }
@@ -421,7 +578,6 @@ export class PlayScreen {
         this.restart();
         return true;
       }
-      if (this.state === 'intro') return false;
       return true;
     }
     if (this.exitPrompt) {
@@ -445,7 +601,10 @@ export class PlayScreen {
       // expands it to spaces up to the next tabstop (4).
       const mode = this.session.vim.mode;
       if (mode !== 'insert' && mode !== 'replace') {
-        this.showHint();
+        // First Tab completes a still-typing hint; only a finished hint page
+        // advances to the next one.
+        if (this.hintType && !this.hintType.done) this.hintType.finish();
+        else this.showHint();
         return true;
       }
     }
@@ -474,8 +633,9 @@ export class PlayScreen {
       this.toast(this.host.lang === 'ko' ? '한/영 키로 영문 입력으로 바꿔라' : 'Switch your input to English', true);
       return true;
     }
-    this.hintBox?.remove();
-    this.hintBox = null;
+    // A key first completes the hint's typing; the next one dismisses it.
+    if (this.hintType && !this.hintType.done) this.hintType.finish();
+    else this.hideHint();
     const accepted = this.session.feed(key);
     this.updateHud();
     this.showEcho(key);
@@ -512,20 +672,59 @@ export class PlayScreen {
   }
 
   private begin(): void {
+    if (this.state !== 'intro' || !this.introReady) return;
     this.stopRepeat();
     this.state = 'playing';
-    this.overlay?.remove();
-    this.overlay = null;
+    if (this.introPending) {
+      window.clearTimeout(this.introPending);
+      this.introPending = 0;
+    }
+    if (this.introRevealTimer) {
+      window.clearTimeout(this.introRevealTimer);
+      this.introRevealTimer = 0;
+    }
+    this.introType?.cancel();
+    this.introType = null;
+    // The briefing card and the buffer crossfade into each other: the board
+    // wakes from the veil while the overlay fades away.
+    this.dismissOverlay(200);
+    this.board.classList.remove('veiled');
+    this.board.classList.add('wake');
+    this.actions = null;
+    this.introActions = null;
+    this.introPrimary = null;
+    this.introCard = null;
+    this.introPart = null;
     this.echo.classList.remove('on');
     this.hideCoach();
     this.lastInputAt = performance.now();
     this.coachStep = 0;
-    this.host.sfx.play('open');
+    this.host.sfx.play('whoosh');
+    window.setTimeout(() => {
+      if (!this.destroyed && this.state === 'playing') this.host.sfx.play('open');
+    }, 90);
     this.updateHud();
+    this.dirty = true;
+  }
+
+  private dismissOverlay(ms: number): void {
+    const ov = this.overlay;
+    this.overlay = null;
+    if (!ov) return;
+    ov.style.pointerEvents = 'none';
+    if (this.reduced) {
+      ov.remove();
+      return;
+    }
+    ov.style.transition = 'opacity .18s ease';
+    ov.style.opacity = '0';
+    window.setTimeout(() => ov.remove(), ms);
   }
 
   restart(): void {
+    if (this.ghosting) this.cancelGhost();
     this.stopRepeat();
+    this.hideHint();
     this.session = this.session.restart();
     // Re-apply the gutter setting: restart() builds a fresh Vim with defaults.
     this.session.vim.number = this.host.lineNumbers === 'abs' || this.host.lineNumbers === 'both';
@@ -537,6 +736,7 @@ export class PlayScreen {
     this.hintLevel = 0;
     this.flash = 0;
     this.shake = 0;
+    this.ghostTween = null;
     this.matches = [];
     this.hideCoach();
     this.lastInputAt = performance.now();
@@ -590,7 +790,7 @@ export class PlayScreen {
         goalChar: '*',
         coinChar: '$',
         hazard: this.session.hazardChars,
-        ghost: this.hintLevel >= 3 && this.host.stage.solution ? this.ghostHint() : null,
+        ghost: !this.ghosting && this.hintLevel >= 3 && this.host.stage.solution ? this.ghostHint() : null,
         flash: this.flash,
         shake: this.shake,
         numbers: this.numberMode(),
@@ -658,13 +858,24 @@ export class PlayScreen {
           ),
       h('div', { class: 'why' }, why),
     );
+    const brief = KO(stage.brief, lang);
+    const typed = this.typed(brief);
+    this.introPart = typed;
+    this.introText = brief;
+    // The action row is reserved but empty until the brief finishes typing: no
+    // BEGIN button exists to focus, click or accidentally Enter through while
+    // the card is still animating.
+    this.introActions = h('div', {
+      class: 'actions',
+      style: { minHeight: '36px', opacity: '0', pointerEvents: 'none', transition: 'opacity .18s ease' },
+    });
     const card = h(
       'div',
-      { class: 'card' },
+      { class: 'card intro-card' },
       h('div', { class: 'sigil-ghost' }, chapter.sigil),
       h('div', { class: 'eyebrow' }, `${lang === 'ko' ? '층' : 'FLOOR'} ${String(chapter.index).padStart(2, '0')} · ${KO(chapter.title, lang)} · ${stageIndex + 1}/${stageCount}`),
       h('h2', {}, KO(stage.name, lang)),
-      h('div', { class: 'brief ko' }, KO(stage.brief, lang)),
+      h('div', { class: 'brief ko' }, typed.shell),
       this.host.firstTime
         ? h(
             'div',
@@ -684,21 +895,141 @@ export class PlayScreen {
         h('div', { class: 'fact' }, h('div', { class: 'k' }, lang === 'ko' ? '클리어' : 'CLEAR'), h('div', { class: 'v' }, clearLabel(stage.goal, lang))),
         h('div', { class: 'fact' }, h('div', { class: 'k' }, lang === 'ko' ? '3별 기준' : 'PAR'), h('div', { class: 'v' }, `${stage.par} ${lang === 'ko' ? '키' : 'keys'}`)),
       ),
-      h(
-        'div',
-        { class: 'actions' },
+      this.introActions,
+    );
+    const overlay = h('div', { class: 'overlay' }, card);
+    // A tap/click anywhere on the briefing skips the typing, never starts it.
+    overlay.addEventListener('pointerdown', () => this.skipIntroTyping());
+    this.overlay = overlay;
+    this.introCard = card;
+    this.root.append(overlay);
+    this.armIntroTyping();
+  }
+
+  /** Build a block that reserves its final text while a prefix types in. */
+  private typed(text: string): { shell: HTMLElement; layer: HTMLElement } {
+    const layer = h('span', { class: 'type-layer', style: { position: 'absolute', inset: '0', display: 'block' } });
+    const shell = h(
+      'div',
+      { class: 'type-shell', style: { position: 'relative' } },
+      h('span', { style: { visibility: 'hidden' } }, text),
+      layer,
+    );
+    return { shell, layer };
+  }
+
+  /**
+   * Reserve the block's final size from the invisible measuring span, then
+   * empty it so the DOM only ever contains the typed prefix (an audit or a
+   * screen reader must never see the full text twice).
+   */
+  private reserveTyped(part: { shell: HTMLElement; layer: HTMLElement }): void {
+    const hidden = part.shell.firstElementChild as HTMLElement | null;
+    const r = part.shell.getBoundingClientRect();
+    if (r.width > 0) part.shell.style.width = `${Math.ceil(r.width)}px`;
+    if (r.height > 0) part.shell.style.minHeight = `${Math.ceil(r.height)}px`;
+    if (hidden) hidden.textContent = '';
+  }
+
+  private startTyped(part: { shell: HTMLElement; layer: HTMLElement }, text: string, opts: TypingOpts): Typing | null {
+    this.reserveTyped(part);
+    if (this.reduced) {
+      part.layer.textContent = text;
+      opts.onDone?.();
+      return null;
+    }
+    return new Typing(part.layer, text, opts);
+  }
+
+  private armIntroTyping(): void {
+    this.introShownAt = performance.now();
+    if (this.reduced) {
+      if (this.introPart) {
+        this.reserveTyped(this.introPart);
+        this.introPart.layer.textContent = this.introText;
+      }
+      this.markIntroReady();
+      return;
+    }
+    // Let the card land (intro-pop) before the keyboard starts.
+    this.introPending = window.setTimeout(() => {
+      this.introPending = 0;
+      if (this.destroyed || this.state !== 'intro') return;
+      const part = this.introPart;
+      if (!part) return;
+      this.reserveTyped(part);
+      this.introType = new Typing(part.layer, this.introText, {
+        startDelay: 0,
+        tickEvery: 4,
+        onTick: () => this.host.sfx.play('type'),
+        onDone: () => this.armIntroReveal(),
+      });
+    }, 300);
+  }
+
+  /**
+   * Reveal BEGIN once the brief is complete, with a short settle beat. A key
+   * that skips the typing must not also start the chamber in the same motion:
+   * the minimum dwell swallows a mashed Enter before the prompt even exists.
+   */
+  private armIntroReveal(): void {
+    if (this.introRevealTimer || this.introReady || this.state !== 'intro') return;
+    this.introTyped = true;
+    const elapsed = performance.now() - this.introShownAt;
+    const wait = Math.max(120, INTRO_MIN_DWELL - elapsed);
+    this.introRevealTimer = window.setTimeout(() => {
+      this.introRevealTimer = 0;
+      this.markIntroReady();
+    }, wait);
+  }
+
+  /** Any key or tap: reveal the full brief and arm the BEGIN prompt. */
+  private skipIntroTyping(): void {
+    if (this.state !== 'intro' || this.introReady) return;
+    if (this.introPending) {
+      window.clearTimeout(this.introPending);
+      this.introPending = 0;
+    }
+    if (this.introType) {
+      const typing = this.introType;
+      this.introType = null;
+      typing.finish(); // onDone -> armIntroReveal
+      return;
+    }
+    if (this.introPart) {
+      this.reserveTyped(this.introPart);
+      this.introPart.layer.textContent = this.introText;
+    }
+    this.armIntroReveal();
+  }
+
+  private markIntroReady(): void {
+    if (this.introReady || this.state !== 'intro') return;
+    this.introReady = true;
+    this.introReadyAt = performance.now();
+    const card = this.introCard;
+    const actions = this.introActions;
+    if (actions && card) {
+      const lang = this.host.lang;
+      actions.append(
         h('button', { class: 'btn primary', onclick: () => this.begin() }, lang === 'ko' ? '시작' : 'BEGIN', h('kbd', {}, '↵')),
         h('button', { class: 'btn', onclick: () => this.host.onExit() }, lang === 'ko' ? '나가기' : 'LEAVE'),
-      ),
-    );
-    this.overlay = h('div', { class: 'overlay' }, card);
-    this.root.append(this.overlay);
-    this.actions = focusGroup(card);
-    focusIndex(this.actions, 0);
+      );
+      this.actions = focusGroup(card);
+      focusIndex(this.actions, 0);
+      this.introPrimary = actions.firstElementChild as HTMLElement | null;
+      actions.style.opacity = '1';
+      actions.style.pointerEvents = 'auto';
+      const primary = this.introPrimary;
+      primary?.classList.add('primed');
+      if (!this.reduced) window.setTimeout(() => primary?.classList.remove('primed'), 3200);
+    }
+    this.host.sfx.play('select');
   }
 
   private showResults(stars: Stars, keys: number, par: number): void {
     this.hideCoach();
+    this.hideHint();
     const { stage, lang, chapter } = this.host;
     const starEls = [0, 1, 2].map((i) => h('span', { class: i < stars ? 'on' : '' }, '★'));
     const learned = (stage.teaches ?? [])
@@ -757,10 +1088,16 @@ export class PlayScreen {
     this.actions = focusGroup(card);
     focusIndex(this.actions, 0);
     this.host.onWin(stars, keys, par);
-    for (let i = 0; i < stars; i++) setTimeout(() => this.host.sfx.play('star', i * 0.08), 260 + i * 220);
+    // Remember the staggered star cue so a fast NEXT/RETRY does not leak it
+    // into the next chamber.
+    for (let i = 0; i < stars; i++) {
+      this.starTimers.push(window.setTimeout(() => this.host.sfx.play('star', i * 0.08), 260 + i * 220));
+    }
   }
 
   private showLost(): void {
+    this.hideCoach();
+    this.hideHint();
     const { lang } = this.host;
     const card = h(
       'div',
@@ -816,7 +1153,7 @@ export class PlayScreen {
     if (this.repeating) this.lastInputAt = t;
     const idle = t - this.lastInputAt;
     const first = !!this.host.firstTime;
-    if (this.coachStep === 0 && idle > (first ? 6000 : 10000)) {
+    if (this.coachStep === 0 && idle > (first ? 6000 : 9000)) {
       this.showCoach(this.coachText(0));
       this.coachStep = 1;
     } else if (this.coachStep === 1 && idle > (first ? 15000 : 24000)) {
@@ -829,25 +1166,35 @@ export class PlayScreen {
   }
 
   private showCoach(text: string): void {
-    if (this.state !== 'playing') return;
-    this.coachEl?.remove();
+    if (this.state !== 'playing' || this.ghosting) return;
+    this.hideCoach();
+    // One help widget at a time: a coach that arrives while a hint is open
+    // replaces it instead of stacking two floating panels over the buffer.
+    this.hideHint();
+    const typed = this.typed(text);
     this.coachEl = h(
       'div',
       { class: 'coach' },
       h('div', { class: 'coach-k' }, this.t('COACH', '코치')),
-      h('div', { class: 'coach-t' }, text),
+      h('div', { class: 'coach-t' }, typed.shell),
       h('div', { class: 'coach-h' }, this.t('TAB more · F1 help', 'TAB 더 · F1 도움')),
     );
     this.root.append(this.coachEl);
+    this.host.sfx.play('brush');
+    this.coachType = this.startTyped(typed, text, { base: 15 });
   }
 
   private hideCoach(): void {
+    this.coachType?.cancel();
+    this.coachType = null;
     this.coachEl?.remove();
     this.coachEl = null;
   }
 
   private openExit(): void {
     if (this.exitPrompt) return;
+    if (this.ghosting) this.cancelGhost();
+    this.hideHint();
     const lang = this.host.lang;
     const card = h(
       'div',
@@ -872,10 +1219,11 @@ export class PlayScreen {
     this.exitPrompt?.remove();
     this.exitPrompt = null;
     this.exitActions = null;
+    this.host.sfx.play('back');
   }
 
   private showHint(): void {
-    if (this.state !== 'playing') return;
+    if (this.state !== 'playing' || this.ghosting) return;
     this.lastInputAt = performance.now();
     this.coachStep = Math.max(this.coachStep, 1);
     this.hideCoach();
@@ -892,23 +1240,44 @@ export class PlayScreen {
             ? '이미 모든 힌트를 봤다. F3으로 고스트를 봐.'
             : 'No more hints. F3 plays the ghost.';
     this.hintLevel++;
+    this.hideHint();
+    const typed = this.typed(text);
+    // The default `.hint-pop` sits over the objective bar; lift it above the
+    // statusline/objective/cmdline stack so the goal text stays readable.
+    const box = h('div', { class: 'hint-pop ko', style: { bottom: '104px' } }, typed.shell);
+    this.hintBox = box;
+    this.root.append(box);
+    this.host.sfx.play('hint');
+    const startHide = (): void => {
+      // A replaced hint (new Tab) must not be removed by the old timer.
+      if (this.hintBox !== box) return;
+      if (this.hintTimer) window.clearTimeout(this.hintTimer);
+      this.hintTimer = window.setTimeout(() => {
+        this.hintTimer = 0;
+        if (this.hintBox === box) this.hideHint();
+      }, 7000);
+    };
+    this.hintType = this.startTyped(typed, text, { base: 16, onDone: startHide });
+  }
+
+  private hideHint(): void {
+    this.hintType?.cancel();
+    this.hintType = null;
+    if (this.hintTimer) {
+      window.clearTimeout(this.hintTimer);
+      this.hintTimer = 0;
+    }
     this.hintBox?.remove();
-    this.hintBox = h('div', { class: 'hint-pop ko' }, text);
-    this.root.append(this.hintBox);
-    this.host.sfx.play('open');
-    setTimeout(() => {
-      this.hintBox?.remove();
-      this.hintBox = null;
-    }, 7000);
+    this.hintBox = null;
   }
 
   async playGhost(): Promise<void> {
-    if (this.ghosting || this.state !== 'playing') return;
+    if (this.ghosting || this.destroyed || this.state !== 'playing') return;
     const sol = this.host.stage.solution;
     if (!sol) return;
     // Replay on a fresh session seeded from the stage's initial text, never
-    // from the player's edited buffer. The live session is kept untouched and
-    // restored verbatim afterwards.
+    // from the player's edited buffer. The live session object is kept aside
+    // untouched and put back verbatim afterwards.
     const live = this.session;
     const demo = new Session({
       stage: this.host.stage,
@@ -919,19 +1288,27 @@ export class PlayScreen {
     demo.chapterForKey = this.host.chapterForKey;
     demo.vim.number = this.host.lineNumbers === 'abs' || this.host.lineNumbers === 'both';
     demo.vim.relativenumber = this.host.lineNumbers === 'rel' || this.host.lineNumbers === 'both';
+    // Every start/cancel gets its own id; an older loop can never restore or
+    // touch the session after a restart/skip/exit raced it.
+    const run = ++this.ghostRun;
+    this.ghostLive = live;
     this.stopRepeat();
+    this.hideHint();
+    this.hideCoach();
     this.ghosting = true;
     this.ghostSkip = false;
     this.session = demo;
-    // The demo Session has no event callback, so the render loop must be told
-    // explicitly that the visible buffer/cursor changed.
-    this.dirty = true;
-    this.overlay?.remove();
+    this.echo.classList.remove('on');
+    // The demo's version counter starts in the same numeric range as the live
+    // buffer's, so a composite frame baked for the live session could be
+    // reused for a different buffer (the cache is keyed by version). resize()
+    // resets that cache and forces a fresh paint.
+    this.fit();
     this.ghostTicker = h('span', { class: 'ghost-ticker' }, '');
     this.ghostProgress = h('span', { class: 'ghost-progress' }, '');
     this.overlay = h(
       'div',
-      { class: 'overlay', style: { background: 'transparent', pointerEvents: 'none' } },
+      { class: 'overlay ghost-overlay', style: { background: 'transparent', pointerEvents: 'none' } },
       h(
         'div',
         { class: 'ghost-hud' },
@@ -942,9 +1319,10 @@ export class PlayScreen {
       ),
     );
     this.root.append(this.overlay);
+    this.host.sfx.play('ghost');
     const keys = tokenize(sol);
     for (let i = 0; i < keys.length; i++) {
-      if (this.destroyed) return;
+      if (this.destroyed || run !== this.ghostRun) return;
       if (this.ghostSkip) {
         // Skip the animation but still reach the final state: the player wants
         // to see the clear result, not a half-played buffer.
@@ -970,7 +1348,7 @@ export class PlayScreen {
       if (this.ghostProgress) this.ghostProgress.textContent = `${i + 1}/${keys.length}`;
       await new Promise((r) => setTimeout(r, 180));
     }
-    if (this.destroyed) return;
+    if (this.destroyed || run !== this.ghostRun) return;
     // Hold the actual final state on screen. This is the result preview the
     // player asked for: the solution's target, not just prose.
     this.ghostSkip = false;
@@ -979,26 +1357,51 @@ export class PlayScreen {
       this.ghostTicker.textContent = this.host.lang === 'ko' ? '이것이 클리어 상태다' : 'This is the cleared state';
     }
     if (this.ghostProgress) this.ghostProgress.textContent = 'CLEAR';
-    for (let waited = 0; waited < 1400 && !this.ghostSkip; waited += 50) {
+    this.host.sfx.play('chime');
+    for (let waited = 0; waited < 1400 && !this.ghostSkip && !this.destroyed && run === this.ghostRun; waited += 50) {
       await new Promise((r) => setTimeout(r, 50));
     }
-    if (this.destroyed) return;
-    this.session = live;
-    // Force the renderer frame cache to rebuild: the live session's version
-    // may numerically collide with the last demo frame.
-    live.vim.version++;
-    this.overlay?.remove();
-    this.overlay = null;
-    this.ghostTicker = null;
-    this.ghostProgress = null;
-    this.ghostTween = null;
-    this.ghosting = false;
-    this.updateHud();
-    this.dirty = true;
+    if (this.destroyed || run !== this.ghostRun) return;
+    this.restoreLive();
     this.toast(this.host.lang === 'ko' ? '이제 네 차례' : 'Now you', false);
   }
 
+  /** Abort an in-flight ghost and put the live session back at once. */
+  private cancelGhost(): void {
+    this.ghostRun++;
+    if (this.ghosting || this.ghostLive) this.restoreLive();
+  }
+
+  /**
+   * Put the untouched live session back and clean every trace of the demo:
+   * overlay, HUD references, tween, coach timer, echo and renderer cache.
+   */
+  private restoreLive(): void {
+    const live = this.ghostLive;
+    this.ghostLive = null;
+    this.ghosting = false;
+    this.ghostSkip = false;
+    this.ghostTween = null;
+    this.ghostTicker = null;
+    this.ghostProgress = null;
+    this.overlay?.remove();
+    this.overlay = null;
+    if (live) this.session = live;
+    // Force a fresh composite frame: the last demo frame is cached under a
+    // version number the live session may share.
+    this.fit();
+    this.updateHud();
+    this.showEcho('');
+    this.hideCoach();
+    this.lastInputAt = performance.now();
+    this.coachStep = 0;
+    this.dirty = true;
+  }
+
   private toast(msg: string, bad: boolean): void {
+    // Toasts are a single slot: a new cue replaces the old one instead of
+    // stacking two absolutely positioned boxes on the same pixel.
+    for (const old of Array.from(this.root.querySelectorAll('.toast'))) old.remove();
     const t = h('div', { class: `toast${bad ? ' locked' : ''}` }, msg);
     this.root.append(t);
     setTimeout(() => t.remove(), 2200);
@@ -1007,9 +1410,18 @@ export class PlayScreen {
   destroy(): void {
     this.stopRepeat();
     this.destroyed = true;
+    this.ghostRun++;
+    if (this.introPending) window.clearTimeout(this.introPending);
+    if (this.introRevealTimer) window.clearTimeout(this.introRevealTimer);
+    this.introType?.cancel();
+    this.introType = null;
     cancelAnimationFrame(this.raf);
     this.ro?.disconnect();
     this.overlay?.remove();
+    this.exitPrompt?.remove();
     this.hideCoach();
+    this.hideHint();
+    for (const id of this.starTimers) window.clearTimeout(id);
+    this.starTimers = [];
   }
 }

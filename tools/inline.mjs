@@ -25,7 +25,15 @@ for (const name of assets) {
 // the downloadable single HTML can open from a USB stick without sibling files.
 const kanjiPath = join(dist, 'kanji', 'ou-guilv-tight.svg');
 if (existsSync(kanjiPath)) {
-  const data = `data:image/svg+xml;base64,${Buffer.from(readFileSync(kanjiPath)).toString('base64')}`;
+  // 단일 파일 경량화: 좌표 소수점을 정수로 반올림(원본 글자형은 glyph 단위 그대로)하고
+  // 태그 사이 공백을 줄인다. 원본 public/kanji/...svg 는 건드리지 않는다.
+  let svg = readFileSync(kanjiPath, 'utf8');
+  svg = svg
+    .replace(/-?\d+\.\d+/g, (m) => String(Math.round(parseFloat(m))))
+    .replace(/>\s+</g, '><')
+    .replace(/\s{2,}/g, ' ')
+    .trim();
+  const data = `data:image/svg+xml;base64,${Buffer.from(svg).toString('base64')}`;
   html = html.replaceAll('./kanji/ou-guilv-tight.svg', data);
 }
 

@@ -73,6 +73,11 @@
     try {
       if (screen.orientation && screen.orientation.lock) await screen.orientation.lock('landscape');
     } catch {}
+    // Keyboard Lock: 전체화면에서 Esc가 브라우저 기본 동작(앱 종료/뒤로)으로
+    // 새지 않도록 게임이 키를 캡처한다(지원 브라우저 한정, 실패는 무시).
+    try {
+      if (navigator.keyboard && navigator.keyboard.lock) await navigator.keyboard.lock(['Escape']);
+    } catch {}
     sync();
   });
 

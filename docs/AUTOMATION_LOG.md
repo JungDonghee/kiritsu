@@ -290,3 +290,28 @@ GitHub repository renamed `vimlore` → `kiritsu`; VIMLORE is now the **game's**
   presentation:check·korean:check OK, STATUS current, level-oracle 51개 스테이지
   전부 일치.
   real-Vim oracle·matrix는 푸시 후 CI가 재확인.
+
+## 2026-11-15 — 타이틀 v3 · 플레이 인트로/타이핑 · UI·고스트 정리
+
+- **타이틀 規律 인트로 v3**: 캔버스 잉크 분석(무게중심 다단계 스냅 + 국소 두께)으로
+  획별 테이퍼 붓 리본을 만들고 rAF가 clipPath를 직접 갱신한다(CSS 클립 애니메이션
+  제거). 20획 0.7–4.46s, settle ~5.8s, 1920 headless 40–46fps — 기존 26.5fps/얼룩
+  프레임을 대체. `docs/TITLE_KANJI.md` v3로 갱신.
+- **단일 파일 경량화**: `inline.mjs`가 칸지 SVG data URI를 정수 좌표·공백 압축으로
+  인라인(원본 SVG 불변). raw 약 30KB 절감 → 현재 **389,785 B raw / 129,151 B gzip**
+  (ceiling 420k/140k).
+- **플레이 브리핑**: `.board.veiled` → 브리핑 typewriter(공용 Typing 헬퍼, caret) →
+  620ms dwell → BEGIN DOM 등장 → 700ms Enter guard → 보드 wake. 브리핑/힌트/코치
+  타이핑 + 사운드 큐(type/whoosh/open/hint/brush/ghost/chime). reduced-motion 즉시.
+- **고스트**: `ghostRun` 토큰으로 재시작/이탈 레이스 차단, frame-cache reset via fit(),
+  HUD 키/하트는 live 세션 기준, 복원 verbatim(버퍼·커서·모드·undo·키 등) 확인.
+- **UI/버그픽스**: 숏 랜드스케이프 설정 카드 grid 겹침 수정(2열은 브리핑에만),
+  비싼 filter 애니메이션 제거, 페탈 24개+인트로 후 감축, toast 단일 슬롯,
+  세이브 가져오기 브라우저 alert → 인게임 토스트, 모바일 overscroll/터치 지연 방지.
+- **세이브 위생**: `sanitizeProgress` 도입으로 손상 세이브(stats/profile null) 승리 시
+  크래시(P1) 방지 + `tests/progress.test.ts` 4개 추가(총 54 tests).
+- **PWA Esc 종료 방지**: capture 단계 Esc preventDefault + standalone history back 트랩
+  + 전체화면 시 Keyboard Lock(['Escape']) 시도.
+- 검증: tests 54/54, lint 51/51, tsc·doc-check·invariants clean,
+  build/budget/pwa/title/presentation/korean 그린, level-oracle 51개 스테이지 전부 일치, STATUS current.
+  ui-audit: P0 없음, P1(Enter-mash) 수정 확인, ghost 복원 diff [] 확인.

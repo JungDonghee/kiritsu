@@ -1,10 +1,10 @@
 /**
- * 타이틀 한자 인트로 회귀 검사 (local-only).
+ * 타이틀 한자 인트로 회귀 검사 (local-only, v3 리본 리빌).
  *   npm run build
  *   node tools/title-check.mjs
  *
- * 검증: 20획(kts-core) 존재 · 유령 2개 · 인트로 종료 후 전획 dashoffset 0 +
- * 레이저 헤드 숨김 · 콘솔 에러 0 · reduced-motion에서 즉시 표시.
+ * 검증: 20획 리본 · 정확한 완료 상태(data-state=done) · clip 제거 · 레이저/팁 제거 ·
+ * 캡션 노출 · 콘솔 에러 0 · reduced-motion 즉시 완료 · Esc 내비게이션 · FPS≥18.
  */
 import { createServer } from 'node:http';
 import { createReadStream, existsSync, statSync } from 'node:fs';
@@ -43,42 +43,55 @@ page.on('console', (m) => { if (m.type() === 'error') errors.push(m.text()); });
 
 await page.goto(`http://127.0.0.1:${port}/`, { waitUntil: 'load' });
 
-// 1) 초기 구조
-await page.waitForSelector('.kt-ink svg', { timeout: 5000 });
-const strokes = await page.$$eval('.kts-core', (els) => els.length);
-console.log('strokes:', strokes, '| ghost-free:', (await page.$$eval('.kts-ghost', (els) => els.length)) === 0);
+// 1) 구조
+await page.waitForSelector('.kt-ink-write svg', { timeout: 6000 });
+const strokes = await page.$$eval('.kts-rib', (els) => els.length);
+const dataStrokes = await page.$eval('.kts-svg', (el) => Number(el.getAttribute('data-strokes')));
 
-// 1-2) 인트로 구간 FPS 증거 (북스타 #6: 측정 우선)
+// 2) 인트로 FPS 측정 (쓰기 구간)
 const fps = await page.evaluate(() => new Promise((resolve) => {
   let frames = 0;
   const t0 = performance.now();
   const loop = (now) => {
     frames++;
-    if (now - t0 >= 7000) {
-      resolve((frames * 1000) / (now - t0));
-      return;
-    }
+    if (now - t0 >= 4200) { resolve((frames * 1000) / (now - t0)); return; }
     requestAnimationFrame(loop);
   };
   requestAnimationFrame(loop);
 }));
-console.log('intro fps:', fps.toFixed(0));
 
-// 2) 인트로 종료 후 상태 (20획, ~7.1s 종료 → 8.2s에 확인)
-await page.waitForTimeout(1200);
-const done = await page.evaluate(() => {
-  const cores = [...document.querySelectorAll('.kts-core')];
+// 3) 완료 대기 (v3는 data-state=done)
+const t0 = Date.now();
+const doneOk = await page.waitForFunction(
+  () => document.querySelector('.kt-ink-write')?.getAttribute('data-state') === 'done',
+  { timeout: 12000 },
+).then(() => true).catch(() => false);
+const doneMs = Date.now() - t0;
+await page.waitForTimeout(2400); // 캡션/프레스 등장 대기
+const after = await page.evaluate(() => {
+  const w = document.querySelector('.kt-ink-write');
+  const g = document.querySelector('.kts-ink');
+  const tip = document.querySelector('.kts-tip');
   const head = document.querySelector('.kt-laser-head');
-  const allDrawn = cores.every((el) => parseFloat(getComputedStyle(el).strokeDashoffset) === 0);
-  const headHidden = !head || getComputedStyle(head).opacity === '0';
-  const settled = [...document.querySelectorAll('.kts-settle')].every(
-    (el) => parseFloat(getComputedStyle(el).opacity) > 0.98,
-  );
-  return { allDrawn, headHidden, settled };
+  const op = (sel) => {
+    const el = document.querySelector(sel);
+    return el ? parseFloat(getComputedStyle(el).opacity) : 0;
+  };
+  return {
+    state: w?.getAttribute('data-state'),
+    clipRemoved: !g?.getAttribute('clip-path'),
+    tipEmpty: !tip?.getAttribute('d'),
+    headHidden: !head || parseFloat(getComputedStyle(head).opacity) < 0.05,
+    cap: op('.kt-caption') > 0.9,
+    tag: op('.kt-tag') > 0.9,
+    press: op('.kt-press') > 0.05, // kt-blink 저점(0.1)에서도 통과
+    clipVar: getComputedStyle(document.querySelector('.kt-screen')).getPropertyValue('--kt-end').trim(),
+  };
 });
-console.log('after intro:', JSON.stringify(done));
+console.log('strokes:', strokes, '| data-strokes:', dataStrokes, '| intro fps:', fps.toFixed(0), '| done ms:', doneMs);
+console.log('after:', JSON.stringify(after));
 
-// 2-2) 지도에서 Esc → 타이틀 복귀 + 타이틀에서 Esc가 튕기지 않는지
+// 4) Esc 내비게이션: Enter→지도, Esc→타이틀, 재입력 Esc 튕김 없음
 await page.keyboard.press('Enter');
 await page.waitForTimeout(400);
 const onMap = (await page.$$('.map')).length > 0;
@@ -89,26 +102,23 @@ await page.keyboard.press('Escape');
 await page.waitForTimeout(400);
 const stillOnTitle = (await page.$$('.title-screen')).length > 0 && (await page.$$('.map')).length === 0;
 console.log('esc nav:', JSON.stringify({ onMap, backOnTitle, stillOnTitle }));
-await page.reload({ waitUntil: 'load' });
-await page.waitForTimeout(300);
 
-// 3) reduced-motion: 즉시 표시
+// 5) reduced-motion: 즉시 완료
 await page.emulateMedia({ reducedMotion: 'reduce' });
 await page.reload({ waitUntil: 'load' });
-await page.waitForTimeout(300);
-const reduced = await page.evaluate(() => {
-  const cores = [...document.querySelectorAll('.kts-core')];
-  return cores.every((el) => parseFloat(getComputedStyle(el).strokeDashoffset) === 0);
-});
-console.log('reduced-motion all visible:', reduced);
+await page.waitForSelector('.kt-ink-write', { timeout: 6000 });
+const reduced = await page.waitForFunction(
+  () => document.querySelector('.kt-ink-write')?.getAttribute('data-state') === 'done',
+  { timeout: 2500 },
+).then(() => true).catch(() => false);
+console.log('reduced-motion instant done:', reduced);
 
 await browser.close();
 server.close();
 
-// FPS 게이트: 재해 감지용(≥18). 헤드리스 소프트웨어 렌더링은 기존 타이틀
-// 이펙트 스택(꽃잎·스캔·스윕) 때문에 ~23fps가 환경 상한 — 실기 GPU 합성 대상 아님.
-// 지속 게임플레이 60fps 증거는 browser:qa(57fps)가 담당한다.
-const ok = strokes === 20 && done.allDrawn && done.headHidden && done.settled && reduced && errors.length === 0 && fps >= 18 && onMap && backOnTitle && stillOnTitle;
+const ok = strokes === 20 && dataStrokes === 20 && doneOk && after.clipRemoved && after.tipEmpty && after.headHidden
+  && after.cap && after.tag && after.press && reduced && errors.length === 0 && fps >= 18
+  && onMap && backOnTitle && stillOnTitle;
 console.log('console errors:', errors.length);
 if (!ok) {
   console.error('title-check FAILED');

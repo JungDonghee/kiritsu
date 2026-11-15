@@ -135,12 +135,12 @@ docs/               LEVEL_FORMAT.md (authoring), CURRICULUM.md (the 10 floors)
 ## Design laws
 
 - **Title kanji (規律) has a single source of truth:** `public/kanji/ou-guilv-tight.svg`
-  (구양순체 Yuji Boku, viewBox 600×300, fill `#f2d8c9`). The stroke-by-stroke
-  laser/brush intro must *draw* strokes (dashoffset reveal along
-  `KIRITSU_TITLE_STROKES` skeletons + settle layer), never fade/pop them. Read
+  (구양순체 Yuji Boku, viewBox 600×300, fill `#f2d8c9`). v3 draws the real glyph
+  ink through ink-mask-centroid skeletons + tapered brush ribbons whose clip is
+  updated from rAF (never CSS clip animations, never fade/pop). Read
   [`docs/TITLE_KANJI.md`](docs/TITLE_KANJI.md) before touching the title — it
-  codifies two past mistakes (wrong glyph variant; fade instead of drawing) so
-  other AIs do not repeat them.
+  codifies the v1/v2 mistakes (wrong glyph variant; fade; dead clipPath CSS
+  animation) so other AIs do not repeat them.
 
 1. One insight per stage. The puzzle must make the command *necessary*.
 2. `par` is the lesson: 3 stars = the elegant solution.
@@ -162,8 +162,9 @@ docs/               LEVEL_FORMAT.md (authoring), CURRICULUM.md (the 10 floors)
 The game targets a cheap phone with a Bluetooth keyboard.
 
 - Zero runtime dependencies. Stretch goal: 200 kB raw / 70 kB gzip. **Hard
-  ceiling enforced by `npm run budget`: 420,000 B raw / 140,000 B gzip** (current
-  276.1 kB / 86.0 kB); do not raise it without a deliberate, measured reason.
+  ceiling enforced by `npm run budget`: 420,000 B raw / 140,000 B gzip**. Current
+  measured size lives in `docs/STATUS.md`; do not raise the ceiling without a
+  deliberate, measured reason.
 - The renderer bakes one **opaque composite frame** (background, highlights,
   glyphs, bloom) and blits it once per frame; cursor, cursorline, line numbers,
   ghost and particles are the FX pass. Rebuild the frame only when its key changes.
