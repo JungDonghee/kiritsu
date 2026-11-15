@@ -7,14 +7,14 @@
 > `npm run kickoff`.
 > **Last rewritten:** 2026-11-15, after the naming correction, CI/IME fixes and the novel is confirmed (work/ 13편 ~73,000자).
 
-## 0k — 타이틀 한자 인트로 (2026-11-15, v5)
+## 0k — 타이틀 한자 인트로 (2026-11-15, v6)
 
 - **단독 규격서: `docs/TITLE_KANJI.md`** — v1(다른 글자형·페이드) → v2(CSS
   클립 애니메이션 미동작) → v3(리본 폴리곤 커버리지 ~80%)의 실수를 기록.
-- v5: `src/ui/kanji.ts`가 글자를 래스터화하고 잉크 EDT + 보로노이 배정으로
-  획별 점별 반폭을 구한 뒤, **캔버스 붓 스탬프 마스크**로 잉크를 드러낸다.
-  획 순서/중심선은 KanjiVG 참고 좌표를 Yuji Boku 잉크에 스냅한 것이고,
-  획별 tip→cover 채움(전체 일괄 정착 없음) → **팝 없이 글자형 100%**(20.9%).
+- v6: `src/ui/kanji.ts`가 글자를 래스터화하고 잉크 EDT + 보로노이 배정으로
+  **획별 소유권**을 만든다. 진행 중 획은 그 획 마스크를 호 클립으로 스윕하고,
+  완료 획은 실제 잉크 레이어로 누적 → 다른 획 잔상/전체 교체 없이 순서대로
+  써진다. 타이틀 자산은 Yuji Boku **Light cut**(8 unit 침식)에서 직접 생성.
 - 타이밍: 쓰기 ≈4.4s, 캡션/태그/PRESS는 `--kt-end`로 실제 종료에 정렬.
   단일 파일 칸지 인라인 경량화(약 30KB raw 절감).
 - 검증: `tools/title-check.mjs` (20획·done·캔버스 커버리지·헤드 제거·캡션·

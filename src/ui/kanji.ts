@@ -70,10 +70,11 @@ interface StrokeGeom {
   pts: Pt[];
   cum: number[];
   len: number;
-  /** 붓끝 반폭 — 획을 긋는 동안 보이는 얇은 팁. */
-  tip: number[];
-  /** 잉크가 스며든 뒤의 반폭 — 획 완료 시 그 획의 잉크를 100% 덮는다. */
+  /** 완료 시 그 획의 잉크를 덮는 반폭(보로노이 잉크 거리). */
   cover: number[];
+  /** 획 내 곡률/끝을 반영한 시간 가중치 누적(붓 속도 프로파일). */
+  wcum: number[];
+  wtotal: number;
   start: number;
   dur: number;
 }
@@ -81,6 +82,10 @@ interface Plan {
   geoms: StrokeGeom[];
   end: number;
   inkPixels: number;
+  /** 잉크 픽셀별 소유 획 id (0..n-1) — 획별 잉크 레이어 마스크용. */
+  owner: Uint8Array;
+  /** 글자 알파가 있는 모든 픽셀(AA 가장자리 포함). */
+  cov: Uint8Array;
 }
 
 // 폴리라인 → Catmull-Rom 곡선 샘플
@@ -129,13 +134,14 @@ function rasterGlyph(ds: string[], fill: string, scale: number): HTMLCanvasEleme
 }
 
 /** 잉크 마스크 + 거리변환(EDT, viewBox 단위). */
-function analyzeInk(ds: string[]): { ink: Uint8Array; edt: Float32Array; w: number; h: number; inkPixels: number } {
+function analyzeInk(ds: string[]): { ink: Uint8Array; cov: Uint8Array; edt: Float32Array; w: number; h: number; inkPixels: number } {
   const c = document.createElement('canvas');
   c.width = MASK_W; c.height = MASK_H;
   const ctx = c.getContext('2d');
   const ink = new Uint8Array(MASK_W * MASK_H);
+  const cov = new Uint8Array(MASK_W * MASK_H);
   const edt = new Float32Array(MASK_W * MASK_H);
-  if (!ctx) return { ink, edt, w: MASK_W, h: MASK_H, inkPixels: 0 };
+  if (!ctx) return { ink, cov, edt, w: MASK_W, h: MASK_H, inkPixels: 0 };
   ctx.fillStyle = '#fff';
   for (const d of ds) {
     try { ctx.fill(new Path2D(d), 'nonzero'); } catch { /* ignore */ }
@@ -144,7 +150,9 @@ function analyzeInk(ds: string[]): { ink: Uint8Array; edt: Float32Array; w: numb
   const INF = 1e9;
   let inkPixels = 0;
   for (let i = 0; i < MASK_W * MASK_H; i++) {
-    ink[i] = px[i * 4 + 3]! > 120 ? 1 : 0;
+    const a = px[i * 4 + 3]!;
+    cov[i] = a > 0 ? 1 : 0;
+    ink[i] = a > 120 ? 1 : 0;
     if (ink[i]) inkPixels++;
     edt[i] = ink[i] ? INF : 0;
   }
@@ -168,11 +176,11 @@ function analyzeInk(ds: string[]): { ink: Uint8Array; edt: Float32Array; w: numb
     if (x > 0 && y < h - 1) m = Math.min(m, edt[i + w - 1]! + B);
     edt[i] = m;
   }
-  return { ink, edt, w, h, inkPixels };
+  return { ink, cov, edt, w, h, inkPixels };
 }
 
 // 타이틀 재진입 시 잉크 분석(EDT/보로노이)과 글자 래스터를 재사용한다.
-let titleCache: { key: string; plan: Plan; glyph: HTMLCanvasElement; glow: HTMLCanvasElement } | null = null;
+let titleCache: { key: string; plan: Plan; glyph: HTMLCanvasElement } | null = null;
 
 const edtAt = (edt: Float32Array, w: number, h: number, x: number, y: number): number => {
   const px = Math.round(x), py = Math.round(y);
@@ -197,22 +205,21 @@ function offsetSearch(edt: Float32Array, w: number, h: number, pts: Pt[]): Pt {
 }
 
 const easeInOut = (t: number): number => (t < 0.5 ? 2 * t * t : 1 - Math.pow(-2 * t + 2, 2) / 2);
-const easeOut = (t: number): number => 1 - Math.pow(1 - t, 3);
 const clamp01 = (t: number): number => Math.min(1, Math.max(0, t));
 
 /**
- * 획 데이터 계획. KanjiVG에서 뽑은 실제 획순/중심선을 Yuji Boku 잉크에 맞춰
- * 미세 보정하고, 각 점의 (a) 붓끝 반폭(tip, EDT)과 (b) 완료 시 덮어야 할
- * 반폭(cover, 잉크 배정 거리)을 따로 계산한다. 획이 끝나면 cover로 그 획의
- * 잉크를 100% 덮으므로 마지막 전체 팝이 없다.
+ * 획 데이터 계획. KanjiVG의 실제 일본어 획순/중심선을 Yuji Boku 잉크에 맞춘 뒤,
+ * (1) 잉크 픽셀을 가장 가까운 (획, 점)에 배정해 **획별 소유권(owner)** 을 만들고
+ * (2) 획별 커버 반폭과 (3) 붓 속도 프로파일(곡률/끝에서 느리게)을 계산한다.
+ * 애니메이션은 이 소유권으로 "그 획의 잉크만" 순서대로 드러낸다.
  */
 function planStrokes(ds: string[]): Plan {
-  const { ink, edt, w, h, inkPixels } = analyzeInk(ds);
+  const { ink, cov, edt, w, h, inkPixels } = analyzeInk(ds);
+  const owner = new Uint8Array(w * h);
   const geoms: StrokeGeom[] = [];
   const START = 0.62, GAP = 0.035, CHAR_PAUSE = 0.14;
 
-  // 1) 곡선화 + 잉크 능선 미세 정렬. (KanjiVG 좌표가 이미 획형에 가까워
-  //    offsetSearch는 ±10 안에서 작은 보정만 한다.)
+  // 1) 곡선화 + 실제 잉크 능선 정렬 (끝점은 방향 보존을 위해 고정)
   for (const stroke of KIRITSU_TITLE_STROKES) {
     const dense = curl(stroke, 8);
     for (let pass = 0; pass < 1; pass++) {
@@ -225,9 +232,6 @@ function planStrokes(ds: string[]): Plan {
     }
     const off = offsetSearch(edt, w, h, dense);
     for (const p of dense) { p.x += off.x; p.y += off.y; }
-    // KanjiVG는 일본 표준 글자형이라 Yuji Boku(구양순체 계열)와 미세하게 다르다.
-    // 실제 잉크의 거리변환 능선으로 각 점을 ±7 안에서 당겨, 애니메이션이 화면의
-    // 글자를 정확히 따라가게 한다(끝점은 시작/끝 방향 보존을 위해 고정).
     for (let k = 1; k < dense.length - 1; k++) {
       const o = dense[k]!;
       let best = edtAt(edt, w, h, o.x, o.y), bx = o.x, by = o.y;
@@ -247,95 +251,64 @@ function planStrokes(ds: string[]): Plan {
     }
     const cum: number[] = [0];
     for (let k = 1; k < dense.length; k++) cum.push(cum[k - 1]! + Math.hypot(dense[k]!.x - dense[k - 1]!.x, dense[k]!.y - dense[k - 1]!.y));
-    geoms.push({ pts: dense, cum, len: cum[cum.length - 1]! || 1, tip: dense.map(() => 2.4), cover: dense.map(() => 2.4), start: 0, dur: 0 });
+    geoms.push({ pts: dense, cum, len: cum[cum.length - 1]! || 1, cover: dense.map(() => 2.4), wcum: [], wtotal: 1, start: 0, dur: 0 });
   }
 
-  // 2) 잉크 픽셀 → 가장 가까운 (획, 점) 배정 + 최대 거리(cover)
+  // 2) 잉크 픽셀 → 가장 가까운 (획, 점) 배정 + 커버 거리
   const need: Float32Array[] = geoms.map((g) => new Float32Array(g.pts.length));
   for (let y = 0; y < h; y++) for (let x = 0; x < w; x++) {
-    if (!ink[y * w + x]) continue;
+    const px = y * w + x;
+    if (!cov[px]) continue; // AA 가장자리까지 소유권을 배정해야 미완성 획의 잔상이 없다
     let best = Infinity, bi = 0, bk = 0;
-    for (let s = 0; s < geoms.length; s++) {
-      const pts = geoms[s]!.pts;
+    for (let si = 0; si < geoms.length; si++) {
+      const pts = geoms[si]!.pts;
       for (let k = 0; k < pts.length; k++) {
         const dx = pts[k]!.x - x, dy = pts[k]!.y - y;
         const d2 = dx * dx + dy * dy;
-        if (d2 < best) { best = d2; bi = s; bk = k; }
+        if (d2 < best) { best = d2; bi = si; bk = k; }
       }
     }
+    owner[px] = bi;
+    if (!ink[px]) continue;
     const dist = Math.sqrt(best);
     if (dist > need[bi]![bk]!) need[bi]![bk] = dist;
   }
 
-  // 3) tip(얇은 붓끝) / cover(완료 시 잉크 커버) 폭 + 타이밍
+  // 3) 커버 반폭 + 붓 속도 프로파일(곡률 큰 곳·획 끝에서 느리게)
   let t = START;
   for (let i = 0; i < geoms.length; i++) {
     const g = geoms[i]!;
-    const tip = g.pts.map((p2) => Math.min(13, Math.max(2.2, edtAt(edt, w, h, p2.x, p2.y) * 1.02 + 0.9)));
-    const rawCov = Array.from(need[i]!, (d) => Math.min(26, Math.max(2.6, d * 1.06 + 2.6)));
-    const cover = rawCov.slice();
+    const raw = Array.from(need[i]!, (d) => Math.min(26, Math.max(2.6, d * 1.04 + 2.6)));
+    const cover = raw.slice();
     for (let pass = 0; pass < 2; pass++) {
       for (let k = 1; k < cover.length - 1; k++) cover[k] = (cover[k - 1]! + cover[k]! * 2 + cover[k + 1]!) / 4;
     }
-    for (let k = 0; k < cover.length; k++) cover[k] = Math.max(rawCov[k]!, cover[k]!);
-    g.tip = tip;
+    for (let k = 0; k < cover.length; k++) cover[k] = Math.max(raw[k]!, cover[k]!);
     g.cover = cover;
-    g.dur = Math.min(0.21, Math.max(0.08, 0.07 + g.len / 1300));
+
+    const wts = g.pts.map((_, k) => {
+      let wgt = 1;
+      if (k > 0 && k < g.pts.length - 1) {
+        const a = g.pts[k - 1]!, b = g.pts[k]!, c = g.pts[k + 1]!;
+        const v1x = b.x - a.x, v1y = b.y - a.y, v2x = c.x - b.x, v2y = c.y - b.y;
+        const ang = Math.abs(Math.atan2(v1x * v2y - v1y * v2x, v1x * v2x + v1y * v2y));
+        wgt = 1 + 2.8 * (ang / Math.PI); // 모서리/곡선에서 느려짐
+      }
+      return wgt;
+    });
+    wts[0] *= 1.4;
+    wts[wts.length - 1] *= 1.6; // 붓을 내리고/들 때 잠깐 느리게
+    const wcum: number[] = [wts[0]!];
+    for (let k = 1; k < wts.length; k++) wcum.push(wcum[k - 1]! + wts[k]!);
+    g.wcum = wcum;
+    g.wtotal = wcum[wcum.length - 1]! || 1;
+
+    g.dur = Math.min(0.34, Math.max(0.12, 0.10 + g.len / 1050));
     g.start = t;
     t += g.dur + GAP;
     if (i === geoms.length - 2) t += CHAR_PAUSE;
   }
-  return { geoms, end: t, inkPixels };
-}
-
-// 붓 스탬프(부드러운 원) 스프라이트 — 매 프레임 gradient 생성 비용 제거.
-function stampSprite(): HTMLCanvasElement {
-  const c = document.createElement('canvas');
-  c.width = 64; c.height = 64;
-  const ctx = c.getContext('2d');
-  if (ctx) {
-    const g = ctx.createRadialGradient(32, 32, 0, 32, 32, 32);
-    g.addColorStop(0, 'rgba(255,255,255,1)');
-    g.addColorStop(0.78, 'rgba(255,255,255,1)');
-    g.addColorStop(0.94, 'rgba(255,255,255,.55)');
-    g.addColorStop(1, 'rgba(255,255,255,0)');
-    ctx.fillStyle = g;
-    ctx.beginPath();
-    ctx.arc(32, 32, 32, 0, Math.PI * 2);
-    ctx.fill();
-  }
-  return c;
-}
-
-// 스탬프로 마스크에 획 구간 [from, to] (호 길이)을 칠한다.
-function stampArc(mctx: CanvasRenderingContext2D, sprite: HTMLCanvasElement, g: StrokeGeom, widths: number[], from: number, to: number, widthMul = 1): void {
-  const pts = g.pts, cum = g.cum, half = widths;
-  let k = 0;
-  while (k < cum.length - 2 && cum[k + 1]! <= from) k++;
-  const start = Math.max(0, from);
-  const end = Math.max(start, to);
-  let s = start;
-  while (s <= end) {
-    while (k < cum.length - 2 && cum[k + 1]! < s) k++;
-    const a = pts[k]!, b = pts[k + 1] ?? a;
-    const seg = (cum[k + 1]! - cum[k]!) || 1;
-    const f = clamp01((s - cum[k]!) / seg);
-    const x = a.x + (b.x - a.x) * f;
-    const y = a.y + (b.y - a.y) * f;
-    const hw = (half[k]! + ((half[k + 1] ?? half[k]!) - half[k]!) * f) * widthMul;
-    mctx.drawImage(sprite, x - hw, y - hw, hw * 2, hw * 2);
-    s += Math.max(1.6, hw * 0.55);
-  }
-  // 마지막 지점 보정
-  const last = Math.min(end, cum[cum.length - 1]!);
-  let kk = k;
-  while (kk < cum.length - 2 && cum[kk + 1]! < last) kk++;
-  const a = pts[kk]!, b = pts[kk + 1] ?? a;
-  const seg = (cum[kk + 1]! - cum[kk]!) || 1;
-  const f = clamp01((last - cum[kk]!) / seg);
-  const x = a.x + (b.x - a.x) * f, y = a.y + (b.y - a.y) * f;
-  const hw = (half[kk]! + ((half[kk + 1] ?? half[kk]!) - half[kk]!) * f) * widthMul;
-  mctx.drawImage(sprite, x - hw, y - hw, hw * 2, hw * 2);
+  return { geoms, end: t, inkPixels, owner, cov };
 }
 
 function pointAt(g: StrokeGeom, s: number): Pt {
@@ -370,25 +343,13 @@ export async function mountKtTitleWrite(root: HTMLElement, sfx?: Sfx): Promise<v
     const ds = chars.map((c) => transformDToViewBox(c.full, c.transform));
     const key = `${ds.length}:${ds[0]!.length}:${ds[1]?.length ?? 0}:${fill}`;
     if (!titleCache || titleCache.key !== key) {
-      const glyph = rasterGlyph(ds, fill, OUT_SCALE);
-      // 잉크 번짐: 글자를 살짝 블러한 레이어(마스크와 함께 합성 → 젖은 가장자리)
-      const glow = document.createElement('canvas');
-      glow.width = glyph.width; glow.height = glyph.height;
-      const gctx = glow.getContext('2d');
-      if (gctx) {
-        gctx.filter = 'blur(3.2px)';
-        gctx.drawImage(glyph, 0, 0);
-        gctx.filter = 'none';
-      }
-      titleCache = { key, plan: planStrokes(ds), glyph, glow };
+      titleCache = { key, plan: planStrokes(ds), glyph: rasterGlyph(ds, fill, OUT_SCALE) };
     }
     const plan = titleCache.plan;
     const glyph = titleCache.glyph;
-    const glyphGlow = titleCache.glow;
-    const { geoms, end, inkPixels } = plan;
+    const { geoms, end, inkPixels, owner, cov } = plan;
     const n = geoms.length;
 
-    // 렌더 캔버스(960×480) + 글자 원본 + 마스크(600×300) + 스탬프 스프라이트
     const el = document.createElement('div');
     el.className = 'kt-ink kt-ink-write';
     el.setAttribute('aria-hidden', 'true');
@@ -403,164 +364,193 @@ export async function mountKtTitleWrite(root: HTMLElement, sfx?: Sfx): Promise<v
     img.replaceWith(el);
 
     const gl = out.getContext('2d');
-    const mask = document.createElement('canvas');
-    mask.width = MASK_W; mask.height = MASK_H;
-    const mctx = mask.getContext('2d');
-    const sprite = stampSprite();
     const head = root.querySelector<HTMLElement>('.kt-laser-head');
     const screen = root.querySelector<HTMLElement>('.kt-screen');
-    if (!gl || !mctx || !screen) return;
+    if (!gl || !screen) return;
+    const W = out.width, H = out.height;
+    const mk = (): HTMLCanvasElement => { const c = document.createElement('canvas'); c.width = W; c.height = H; return c; };
+    const revealed = mk(), rctx = revealed.getContext('2d');
+    const temp = mk(), tctx = temp.getContext('2d');
+    const partial = mk(), pctx = partial.getContext('2d');
+    const mask = mk(), mctx = mask.getContext('2d');
+    const ownCanvas = document.createElement('canvas');
+    ownCanvas.width = MASK_W; ownCanvas.height = MASK_H;
+    const ownCtx = ownCanvas.getContext('2d');
+    if (!rctx || !tctx || !pctx || !mctx || !ownCtx) return;
+    const ownImg = ownCtx.createImageData(MASK_W, MASK_H);
+    let maskFor = -1;
+
     if (head) {
       head.style.width = '16px';
       head.style.height = '16px';
       head.style.margin = '-8px 0 0 -8px';
       head.style.mixBlendMode = 'screen';
     }
-    screen.style.setProperty('--kt-end', `${(end + 0.12).toFixed(2)}s`);
+    screen.style.setProperty('--kt-end', `${(end + 0.25).toFixed(2)}s`);
     el.dataset.state = 'writing';
 
-    // 프레임 합성: 마스크 안쪽의 글자 잉크만 그린다.
-    const compose = (trail: Pt[]): void => {
-      gl.globalCompositeOperation = 'source-over';
-      gl.clearRect(0, 0, out.width, out.height);
-      gl.globalAlpha = 0.38;
-      gl.drawImage(glyphGlow, 0, 0);
-      gl.globalAlpha = 1;
-      gl.drawImage(glyph, 0, 0);
-      gl.globalCompositeOperation = 'destination-in';
-      gl.imageSmoothingEnabled = true;
-      gl.drawImage(mask, 0, 0, out.width, out.height);
-      gl.globalCompositeOperation = 'source-over';
-      // 붓 끝의 젖은 궤적(짧은 잔광) — 마지막 6점만, 마스크 밖에서도 보이게.
-      if (trail.length > 1) {
-        gl.lineCap = 'round';
-        gl.lineJoin = 'round';
-        gl.strokeStyle = 'rgba(255,243,223,.12)';
-        gl.lineWidth = 7;
-        gl.beginPath();
-        for (let i = 0; i < trail.length; i++) {
-          const p = trail[i]!;
-          if (i === 0) gl.moveTo(p.x * OUT_SCALE, p.y * OUT_SCALE);
-          else gl.lineTo(p.x * OUT_SCALE, p.y * OUT_SCALE);
-        }
-        gl.stroke();
-        gl.strokeStyle = 'rgba(255,243,223,.5)';
-        gl.lineWidth = 1.8;
-        gl.stroke();
+    /** 획 i 가 소유한 glyph 잉크만 담은 마스크를 만든다(960×480). */
+    const buildMask = (i: number): void => {
+      const d = ownImg.data;
+      for (let px = 0; px < owner.length; px++) {
+        const j = px * 4;
+        if (owner[px] === i && cov[px]) { d[j] = 255; d[j + 1] = 255; d[j + 2] = 255; d[j + 3] = 255; }
+        else d[j + 3] = 0;
       }
+      ownCtx.putImageData(ownImg, 0, 0);
+      mctx.globalCompositeOperation = 'source-over';
+      mctx.clearRect(0, 0, W, H);
+      mctx.imageSmoothingEnabled = false;
+      mctx.drawImage(ownCanvas, 0, 0, W, H);
+      mctx.imageSmoothingEnabled = true;
+      mctx.globalCompositeOperation = 'destination-in';
+      mctx.drawImage(glyph, 0, 0);
+      mctx.globalCompositeOperation = 'source-over';
+      maskFor = i;
     };
-    const setHead = (p: Pt, hw: number, on: boolean): void => {
+
+    /** 완료된 획: 그 획의 실제 잉크를 revealed 캔버스에 crisp하게 누적. */
+    const drawCompleted = (i: number): void => {
+      if (maskFor !== i) buildMask(i);
+      tctx.clearRect(0, 0, W, H);
+      tctx.drawImage(glyph, 0, 0);
+      tctx.globalCompositeOperation = 'destination-in';
+      tctx.drawImage(mask, 0, 0);
+      tctx.globalCompositeOperation = 'source-over';
+      rctx.drawImage(temp, 0, 0);
+    };
+
+    const arcForProgress = (g: (typeof geoms)[number], p: number): number => {
+      const target = p * g.wtotal;
+      let k = 0;
+      while (k < g.wcum.length - 2 && g.wcum[k + 1]! < target) k++;
+      const span = (g.wcum[k + 1] ?? g.wcum[k]!) - g.wcum[k]! || 1;
+      const f = clamp01((target - g.wcum[k]!) / span);
+      return g.cum[k]! + ((g.cum[k + 1] ?? g.cum[k]!) - g.cum[k]!) * f;
+    };
+
+    const setHead = (p: Pt, hw: number, on: boolean, angle = 0): void => {
       if (!head) return;
       head.style.left = `${(p.x / VB_W) * 100}%`;
       head.style.top = `${(p.y / VB_H) * 100}%`;
-      head.style.transform = `scale(${Math.max(0.5, Math.min(1.6, hw / 11))})`;
+      head.style.transform = `rotate(${angle}deg) scale(${Math.max(0.45, Math.min(1.5, hw / 12))})`;
       head.style.opacity = on ? '0.9' : '0';
     };
 
     const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
     if (reduce) {
-      mctx.fillStyle = '#fff'; // 전체 마스크 → 글자 그대로
-      mctx.fillRect(0, 0, MASK_W, MASK_H);
-      compose([]);
+      gl.clearRect(0, 0, W, H);
+      gl.drawImage(glyph, 0, 0);
       el.dataset.state = 'done';
-      (screen).classList.add('kt-idle');
+      screen.classList.add('kt-idle');
       if (head) head.style.opacity = '0';
       return;
     }
 
-    let done = false;
-    let finishing = false;
-    let finishAt = 0;
-    let settled = 0;
+    const completed = new Uint8Array(n);
+    let doneCount = 0;
+    let allDoneAt = -1;
     let chime = false;
     let sounded = -1;
     const startAt = performance.now();
-    const drawn = new Float32Array(n); // 획별 현재까지 칠한 호 길이
-    const completed = new Uint8Array(n);
-    const settle = new Map<number, number>(); // 획 index → 잉크 스며들기 시작 시각
     const trail: Pt[] = [];
 
     const frame = (now: number): void => {
       if (!document.contains(el)) return;
       const t = (now - startAt) / 1000;
-
-      // 1) 진행 중 획: **얇은 붓끝(tip)** 으로 중심선을 따라 칠한다.
       let active = -1;
+
+      // 1) 완료된 획은 crisp 잉크로 누적, 진행 중 획만 실시간 부분 노출
       for (let i = 0; i < n; i++) {
         const g = geoms[i]!;
         if (t < g.start) break;
         if (t >= g.start + g.dur) {
-          if (!completed[i]) {
-            if (drawn[i]! < g.len) stampArc(mctx, sprite, g, g.tip, drawn[i]!, g.len);
-            drawn[i] = g.len;
-            completed[i] = 1;
-            settle.set(i, t);
-          }
+          if (!completed[i]) { drawCompleted(i); completed[i] = 1; doneCount++; }
         } else {
           active = i;
           const p = clamp01((t - g.start) / g.dur);
-          const arc = easeInOut(p) * g.len;
-          if (arc > drawn[i]!) stampArc(mctx, sprite, g, g.tip, drawn[i]!, arc);
-          drawn[i] = Math.max(drawn[i]!, arc);
+          const arc = arcForProgress(g, easeInOut(p));
+
+          if (maskFor !== i) buildMask(i);
+          const g2 = geoms[i]!;
+          pctx.clearRect(0, 0, W, H);
+          pctx.save();
+          pctx.beginPath();
+          const step = 3.2;
+          for (let s = 0; s <= arc + step; s += step) {
+            const ss = Math.min(s, arc);
+            const pt = pointAt(g2, ss);
+            const rr = (widthAt(g2, g2.cover, ss) * 1.5 + 3) * OUT_SCALE;
+            const cx = pt.x * OUT_SCALE, cy = pt.y * OUT_SCALE;
+            pctx.moveTo(cx + rr, cy);
+            pctx.arc(cx, cy, rr, 0, Math.PI * 2);
+            if (ss >= arc) break;
+          }
+          pctx.clip();
+          pctx.drawImage(mask, 0, 0);
+          pctx.restore();
+
+          tctx.clearRect(0, 0, W, H);
+          tctx.drawImage(glyph, 0, 0);
+          tctx.globalCompositeOperation = 'destination-in';
+          tctx.drawImage(partial, 0, 0);
+          tctx.globalCompositeOperation = 'source-over';
+
+          gl.clearRect(0, 0, W, H);
+          gl.drawImage(revealed, 0, 0);
+          gl.drawImage(temp, 0, 0);
+
+          const pt = pointAt(g2, arc);
+          const ahead = pointAt(g2, Math.min(g2.len, arc + 2));
+          const behind = pointAt(g2, Math.max(0, arc - 2));
+          const angle = (Math.atan2(ahead.y - behind.y, ahead.x - behind.x) * 180) / Math.PI;
+          const hw = widthAt(g2, g2.cover, arc);
+          setHead(pt, hw, true, angle);
+          trail.push(pt);
+          if (trail.length > 7) trail.shift();
+          if (trail.length > 1) {
+            gl.lineCap = 'round';
+            gl.lineJoin = 'round';
+            gl.strokeStyle = 'rgba(255,243,223,.12)';
+            gl.lineWidth = 7;
+            gl.beginPath();
+            for (let j = 0; j < trail.length; j++) {
+              const q = trail[j]!;
+              if (j === 0) gl.moveTo(q.x * OUT_SCALE, q.y * OUT_SCALE);
+              else gl.lineTo(q.x * OUT_SCALE, q.y * OUT_SCALE);
+            }
+            gl.stroke();
+            gl.strokeStyle = 'rgba(255,243,223,.45)';
+            gl.lineWidth = 1.7;
+            gl.stroke();
+          }
+          if (sounded !== i) { sounded = i; sfx?.play('brush', ((i % 5) * 0.03) - 0.06); }
           break;
         }
       }
 
-      // 2) 방금 끝난 획: 0.2s 동안 tip → cover 로 잉크가 스며들며 두께가 채워진다.
-      //    (획별로 완결되므로 "마지막에 전체가 확" 하는 단계가 없다.)
-      if (settle.size) {
-        for (const [i, at] of settle) {
-          const g = geoms[i]!;
-          const k = clamp01((t - at) / 0.2);
-          if (k >= 1) { settle.delete(i); settled++; continue; }
-          const e = easeOut(k);
-          const widths = g.tip.map((v, j) => v + (g.cover[j]! * 1.06 - v) * e);
-          stampArc(mctx, sprite, g, widths, 0, g.len);
-        }
+      if (active < 0) {
+        gl.clearRect(0, 0, W, H);
+        gl.drawImage(revealed, 0, 0);
+        setHead({ x: 0, y: 0 }, 1, false);
+        trail.length = 0;
       }
 
-      // 3) 모든 획이 잉크로 채워졌으면 원본 글자로 짧게 크로스페이드(팝 없음).
-      if (!finishing && settled >= n) {
-        finishing = true;
-        finishAt = t;
-        if (!chime) { chime = true; sfx?.play('chime'); }
-      }
-      if (finishing) {
-        if (head) head.style.opacity = '0';
-        trail.length = 0;
-        compose(trail);
-        const k = clamp01((t - finishAt) / 0.24);
-        gl.globalCompositeOperation = 'source-over';
-        gl.globalAlpha = k;
-        gl.drawImage(glyph, 0, 0);
-        gl.globalAlpha = 1;
-        if (k >= 1 && !done) {
-          done = true;
-          gl.clearRect(0, 0, out.width, out.height);
-          gl.drawImage(glyph, 0, 0);
+      // 2) 20획이 전부 들어오면 잠깐 머금고 완료(원본 글자로 교체하지 않음 → 팝 없음)
+      if (doneCount >= n) {
+        if (allDoneAt < 0) {
+          allDoneAt = t;
+          if (!chime) { chime = true; sfx?.play('chime'); }
+        }
+        if (t - allDoneAt >= 0.18) {
+          gl.clearRect(0, 0, W, H);
+          gl.drawImage(revealed, 0, 0);
+          if (head) head.style.opacity = '0';
           el.dataset.state = 'done';
           screen.classList.add('kt-idle');
           return;
         }
-        requestAnimationFrame(frame);
-        return;
       }
-
-      // 4) 헤드/잔광 + 합성
-      if (active >= 0) {
-        const g = geoms[active]!;
-        const arc = drawn[active]!;
-        const pt = pointAt(g, arc);
-        const hw = widthAt(g, g.tip, arc);
-        setHead(pt, hw, true);
-        trail.push(pt);
-        if (trail.length > 6) trail.shift();
-        if (sounded !== active) { sounded = active; sfx?.play('brush', ((active % 5) * 0.03) - 0.06); }
-      } else {
-        setHead({ x: 0, y: 0 }, 1, false);
-        trail.length = 0;
-      }
-      compose(trail);
       requestAnimationFrame(frame);
     };
     requestAnimationFrame(frame);

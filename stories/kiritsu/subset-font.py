@@ -24,6 +24,10 @@ import urllib.request
 sys.path.insert(0, "/home/jung/ai_station/sandbox/.pdfdeps")
 from fontTools import subset  # noqa: E402
 from fontTools.ttLib import TTFont  # noqa: E402
+from fontTools.pens.recordingPen import DecomposingRecordingPen  # noqa: E402
+from fontTools.pens.ttGlyphPen import TTGlyphPen  # noqa: E402
+from fontTools.pens.cu2quPen import Cu2QuPen  # noqa: E402
+import pathops  # noqa: E402
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 HANJA = "人功唯審律憑抗月監立能規起零霊"  # unique hanja in work/*.md (novel manuscript)
@@ -33,6 +37,7 @@ URL = "https://raw.githubusercontent.com/google/fonts/main/ofl/yujiboku/YujiBoku
 def main() -> int:
     ap = argparse.ArgumentParser()
     ap.add_argument("--font", help="path to full YujiBoku-Regular.ttf (downloads if omitted)")
+    ap.add_argument("--erode", type=float, default=8.0, help="outline erosion in font units (default 8; 0 = original weight)")
     args = ap.parse_args()
     src = args.font
     if not src:
@@ -55,6 +60,26 @@ def main() -> int:
     sub.subset(font)
     out = os.path.join(HERE, "fonts", "YujiBoku-KIRITSU-subset.ttf")
     subset.save_font(font, out, opts)
+    if args.erode > 0:
+        font = TTFont(out)
+        gs = font.getGlyphSet(); glyf = font["glyf"]
+        for ch in HANJA:
+            gname = font.getBestCmap().get(ord(ch))
+            if not gname:
+                continue
+            rec = DecomposingRecordingPen(gs); gs[gname].draw(rec)
+            orig = pathops.Path(); rec.replay(orig.getPen()); orig.simplify(); orig.convertConicsToQuads()
+            stroke = pathops.Path(); stroke.addPath(orig)
+            stroke.stroke(2 * args.erode, pathops.LineCap.ROUND_CAP, pathops.LineJoin.ROUND_JOIN, 4)
+            stroke.convertConicsToQuads()
+            eroded = pathops.Path()
+            pathops.difference(orig.contours, stroke.contours, eroded.getPen())
+            eroded.simplify(); eroded.convertConicsToQuads()
+            pen = TTGlyphPen(None)
+            eroded.draw(Cu2QuPen(pen, 1.0, reverse_direction=False))
+            glyph = pen.glyph(); glyph.recalcBounds(glyf); glyf[gname] = glyph
+        font.save(out)
+        print(f"eroded outlines by {args.erode} units")
     check = TTFont(out)
     cmap = check.getBestCmap()
     missing = [c for c in HANJA if ord(c) not in cmap]

@@ -8,7 +8,7 @@
 
 - AI 문명 사이버펑크 소설 (프롤로그 + 12장 + 장별 탈무드식 주석).
 - **KIRITSU 게임(부제 VIMLORE) 스토리 모드의 서사 기반**. 세계와 게임이 모두 KIRITSU.
-- 현재: 약 73,000자 / 13편 확정(work/ 정본) / 검토 27건 반영 완료 / 인쇄용 PDF 약 0.8MB(801KB, 72p).
+- 현재: 약 73,000자 / 13편 확정(work/ 정본) / 검토 27건 반영 완료 / 인쇄용 PDF 약 0.8MB(813KB, 72p).
 
 ## Files
 
@@ -30,9 +30,9 @@
 | `optimize-pdf.py` | pikepdf 최적화 (빌드가 자동 실행) |
 | `illustrations.mjs` | CRT 벡터 삽화 (PDF 내) |
 | `subset-font.py` | 소설 한자 15자 **Yuji Boku(구양순체 계열, OFL)** 서브셋 재생성 |
-| `fonts/YujiBoku-KIRITSU-subset.ttf` | 추적되는 유일한 폰트 — 소설 한자 15자 서브셋(~15.7KB) |
+| `fonts/YujiBoku-KIRITSU-subset.ttf` | 추적되는 유일한 폰트 — 소설 한자 15자 **Yuji Boku Light cut**(8 unit 침식, ~22.6KB) |
 | `fixnames2.mjs` | 이름[한자]·은어 규칙 검사 (`--check`) |
-| `KIRITSU.pdf` | 산출물 (인쇄용 801KB/72p; 한자는 Yuji Boku 서브셋으로 조판) |
+| `KIRITSU.pdf` | 산출물 (인쇄용 813KB/72p; 한자는 Yuji Boku Light 서브셋으로 조판) |
 
 ## Build
 

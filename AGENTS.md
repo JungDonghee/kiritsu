@@ -135,14 +135,14 @@ docs/               LEVEL_FORMAT.md (authoring), CURRICULUM.md (the 10 floors)
 ## Design laws
 
 - **Title kanji (規律) has a single source of truth:** `public/kanji/ou-guilv-tight.svg`
-  (구양순체 계열 Yuji Boku, viewBox 600×300, fill `#f2d8c9`). v5 draws the real
-  glyph as a **canvas ink timeline** with **real Japanese stroke order**:
+  (구양순체 계열 Yuji Boku **Light cut**, viewBox 600×300, fill `#f2d8c9`; generated directly from the subset by `tools/gen-title-svg.py`). v6 draws the real
+  glyph as a **per-stroke canvas ink timeline** with **real Japanese stroke order**:
   rasterize the glyph, EDT + nearest-stroke assignment → per-point brush
-  half-widths, then grow a soft stamp mask (thin tip → per-stroke cover fill)
-  and composite the glyph through it. The stroke order/centrelines are derived
+  half-widths, assign every ink pixel to its stroke, then sweep a circular clip
+  along the current stroke's arc and accumulate completed strokes as crisp ink.
+  The stroke order/centrelines are derived
   from KanjiVG (CC BY-SA 3.0, reference only; see `docs/KANJI_ATTRIBUTION.md`)
-  and snapped to the Yuji Boku ink. Never do a final all-strokes spread or clip
-  removal. Read [`docs/TITLE_KANJI.md`](docs/TITLE_KANJI.md) before touching the
+  and snapped to the Yuji Boku ink. Never draw the final glyph over the animated one (no crossfade/pop). Read [`docs/TITLE_KANJI.md`](docs/TITLE_KANJI.md) before touching the
   title — it codifies the v1–v4 mistakes so other AIs do not repeat them.
 
 1. One insight per stage. The puzzle must make the command *necessary*.

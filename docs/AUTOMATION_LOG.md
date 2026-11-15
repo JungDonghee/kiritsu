@@ -375,3 +375,17 @@ GitHub repository renamed `vimlore` → `kiritsu`; VIMLORE is now the **game's**
 - 미사용 `src/ui/ou-kanji.ts`(Noto Serif JP 規律 outlines) 삭제 — 비Yuji 한자
   에셋 제거. 번들 410,477 B raw / 135,647 B gzip(ceiling 420k/140k).
 
+## 2026-11-15 (4) — Yuji Boku Light cut · 타이틀 v6 획 애니메이션
+
+- **폰트 굵기 감소**: Yuji Boku 윤곽을 안쪽으로 8 font unit 침식한 **Light cut**을
+  생성(skia-pathops)해 타이틀 SVG·부트로그 律·소설 PDF 서브셋에 적용. 같은 서체의
+  더 얇은 컷이고, full 폰트는 로컬 소스로만 유지. 재생성 `stories/kiritsu/subset-font.py`.
+- **타이틀 글자 자산**: `public/kanji/ou-guilv-tight.svg`를 이제 Yuji Boku Light
+  서브셋에서 `tools/gen-title-svg.py`로 **직접 생성**(균일 스케일, 트레이싱/찌그러짐
+  없음). 인트로·소설·부트로그가 모두 같은 서체.
+- **획쓰기 v6**: 잉크 픽셀(AA 포함)을 획별 소유권으로 배정하고, 진행 중 획은
+  그 획 마스크를 호(arc) 클립으로 스윕, 완료 획은 실제 잉크 레이어로 누적.
+  다른 획 잔상/미완성 가장자리 제거, 마지막 전체 글자 교체 없음(팝 없음).
+  곡률 가중 시간표로 모서리에서 감속. title-check 38fps headless.
+- 번들 348,236 B raw / 110,893 B gzip. PDF 813KB/72p(한자 Light).
+
