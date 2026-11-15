@@ -152,11 +152,16 @@ docs/               README.md (문서 지도), LEVEL_FORMAT.md (authoring), CURR
   zones they pass through into each stroke, giving exactly **20 strokes**. A zone
   crossed by several lines is shared (same ink colour, so overlaps are invisible
   in the final glyph). Union reproduces the glyph (raster diff <0.1%, AA edges
-  only). Runtime is v10's crisp brush-tip mask sweep (`src/ui/kanji.ts`,
-  0.22–0.55s per stroke, ≈7.55s). Never draw the final glyph over the animated
-  one, never re-introduce v1–v8 masks, and never edit the generated data by
-  hand — rerun `kanji-trace/zones.py` with the user's cuts/lines and re-verify.
-  Read [`docs/TITLE_KANJI.md`](docs/TITLE_KANJI.md) §11 before touching the title.
+  only). v13 runtime (`src/ui/kanji.ts`) removes the laser head completely:
+  only a **small circular wet dab at the current touch point** (radius = the
+  local stroke half-width; destination-out radial gradient, max 62% removed)
+  is lighter; ink the brush has already passed is immediately final-colour.
+  Stroke progress accelerates
+  (`0.12t+0.88t^2.4`, slow start → fast finish) with the old end-slowdown
+  removed; total ≈7.55s. Never draw the final glyph over the animated one,
+  never re-introduce v1–v8 masks, and never edit the generated data by hand —
+  rerun `kanji-trace/zones.py` with the user's cuts/lines and re-verify. Read
+  [`docs/TITLE_KANJI.md`](docs/TITLE_KANJI.md) §11·§12 before touching the title.
 - **Title kanji (規律) has a single source of truth:** `public/kanji/ou-guilv-tight.svg`
   (구양순체 계열 Yuji Boku **Light cut**, viewBox 600×300, fill `#f2d8c9`;
   generated directly from the subset by `tools/gen-title-svg.py`). **Kanji

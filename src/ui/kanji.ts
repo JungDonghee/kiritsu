@@ -1,4 +1,4 @@
-// ── 타이틀 規律 획쓰기 v10 — 20획 완전 붓 획 + 한지 스타일 스윕 ───────────
+// ── 타이틀 規律 획쓰기 v13 — 젖은 먹 + 가속 붓질 (레이저 제거) ────────────
 // 글자형은 Yuji Boku Light(OFL 1.1) 단일 소스(public/kanji/ou-guilv-tight.svg).
 // 획 순서/중심선은 KanjiVG(CC BY-SA 3.0, Ulrich Apel, https://kanjivg.tagaini.net)
 // 를 참고해 Yuji Boku 잉크에 정합시킨 뒤, 각 획을 **겹침/가려진 부분까지 포함한
@@ -57,7 +57,8 @@ function curl(pts: number[][], perSeg = 8): Pt[] {
   return out;
 }
 
-const easeInOut = (t: number): number => (t < 0.5 ? 2 * t * t : 1 - Math.pow(-2 * t + 2, 2) / 2);
+// 사람 붓글씨처럼: 초반은 천천히, 뒤로 갈수록 가속한다.
+const easeAccel = (t: number): number => 0.12 * t + 0.88 * Math.pow(t, 2.4);
 const clamp01 = (t: number): number => Math.min(1, Math.max(0, t));
 
 /**
@@ -91,7 +92,7 @@ function planStrokes(): Plan {
       return wgt;
     });
     wts[0] = wts[0]! * 1.4;
-    wts[wts.length - 1] = wts[wts.length - 1]! * 1.6;
+    wts[wts.length - 1] = wts[wts.length - 1]! * 1.0;
     const wcum: number[] = [wts[0]!];
     for (let k = 1; k < wts.length; k++) wcum.push(wcum[k - 1]! + wts[k]!);
     const wtotal = wcum[wcum.length - 1]! || 1;
@@ -156,6 +157,7 @@ export async function mountKtTitleWrite(root: HTMLElement, sfx?: Sfx): Promise<v
       head.style.margin = '-6px 0 0 -6px';
       head.style.mixBlendMode = 'normal';
     }
+    if (head) head.style.opacity = '0';
     screen.style.setProperty('--kt-end', `${(end + 0.25).toFixed(2)}s`);
     el.dataset.state = 'writing';
 
@@ -167,14 +169,9 @@ export async function mountKtTitleWrite(root: HTMLElement, sfx?: Sfx): Promise<v
       const f = clamp01((target - g.wcum[k]!) / span);
       return g.cum[k]! + ((g.cum[k + 1] ?? g.cum[k]!) - g.cum[k]!) * f;
     };
-    const setHead = (p: Pt, hw: number, on: boolean, angle = 0): void => {
-      if (!head) return;
-      head.style.left = `${(p.x / VB_W) * 100}%`;
-      head.style.top = `${(p.y / VB_H) * 100}%`;
-      head.style.transform = `rotate(${angle}deg) scale(${Math.max(0.45, Math.min(1.5, hw / 12))})`;
-      head.style.opacity = on ? '0.55' : '0';
-    };
-
+    // Wet brush dab: a small circular wet spot (diameter ≈ the stroke's local
+    // width) at the point the brush currently touches; ink behind is final.
+    const WET_ERASE = 0.62;
     const completed = new Uint8Array(n);
     let doneCount = 0;
 
@@ -216,6 +213,41 @@ export async function mountKtTitleWrite(root: HTMLElement, sfx?: Sfx): Promise<v
       lctx.fill(paths[active]!);
       lctx.restore();
 
+      // Wet brush dab: erase a soft circular spot at the current touch point.
+      // The radius follows the stroke's local half-width, so the wet circle is
+      // about as thick as the stroke being written.
+      if (arc > 0.01) {
+        const tip = pointAt(g, arc);
+        const ahead = pointAt(g, Math.min(g.len, arc + 2));
+        const behind = pointAt(g, Math.max(0, arc - 2));
+        let tx = ahead.x - behind.x, ty = ahead.y - behind.y;
+        const tl = Math.hypot(tx, ty) || 1;
+        tx /= tl; ty /= tl;
+        const nx = -ty, ny = tx;
+        let pos = 0, neg = 0;
+        gl.save();
+        gl.setTransform(OUT_SCALE, 0, 0, OUT_SCALE, 0, 0);
+        for (let d = 1; d <= 40; d += 1) {
+          if (gl.isPointInPath(paths[active]!, tip.x + nx * d, tip.y + ny * d)) pos = d;
+          if (gl.isPointInPath(paths[active]!, tip.x - nx * d, tip.y - ny * d)) neg = d;
+        }
+        gl.restore();
+        const wetR = Math.max(3.5, Math.min(18, (pos + neg) / 2 || 6));
+        lctx.save();
+        lctx.setTransform(1, 0, 0, 1, 0, 0);
+        lctx.globalCompositeOperation = 'destination-out';
+        const wet = lctx.createRadialGradient(
+          tip.x * OUT_SCALE, tip.y * OUT_SCALE, 0,
+          tip.x * OUT_SCALE, tip.y * OUT_SCALE, wetR * OUT_SCALE,
+        );
+        wet.addColorStop(0, `rgba(0,0,0,${WET_ERASE})`);
+        wet.addColorStop(0.62, `rgba(0,0,0,${WET_ERASE * 0.4})`);
+        wet.addColorStop(1, 'rgba(0,0,0,0)');
+        lctx.fillStyle = wet;
+        lctx.fillRect(0, 0, W, H);
+        lctx.restore();
+      }
+
       gl.save();
       gl.setTransform(1, 0, 0, 1, 0, 0);
       gl.drawImage(layer, 0, 0);
@@ -255,7 +287,7 @@ export async function mountKtTitleWrite(root: HTMLElement, sfx?: Sfx): Promise<v
         } else {
           active = i;
           const p = clamp01((t - g.start) / g.dur);
-          arc = arcForProgress(g, easeInOut(p));
+          arc = arcForProgress(g, easeAccel(p));
           break;
         }
       }
@@ -263,16 +295,7 @@ export async function mountKtTitleWrite(root: HTMLElement, sfx?: Sfx): Promise<v
       paint(active, arc);
 
       if (active >= 0) {
-        const g = geoms[active]!;
-        const pt = pointAt(g, arc);
-        const ahead = pointAt(g, Math.min(g.len, arc + 2));
-        const behind = pointAt(g, Math.max(0, arc - 2));
-        const angle = (Math.atan2(ahead.y - behind.y, ahead.x - behind.x) * 180) / Math.PI;
-        const hw = KIRITSU_TITLE_STROKE_RADII[active]!;
-        setHead(pt, hw, true, angle);
         if (sounded !== active) { sounded = active; sfx?.play('brush', ((active % 5) * 0.03) - 0.06); }
-      } else {
-        setHead({ x: 0, y: 0 }, 1, false);
       }
 
       if (doneCount >= n) {
@@ -282,7 +305,6 @@ export async function mountKtTitleWrite(root: HTMLElement, sfx?: Sfx): Promise<v
         }
         if (t - allDoneAt >= 0.18) {
           paint(-1, 0);
-          if (head) head.style.opacity = '0';
           el.dataset.state = 'done';
           screen.classList.add('kt-idle');
           return;

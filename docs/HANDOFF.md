@@ -7,17 +7,20 @@
 > `npm run kickoff`.
 > **Last rewritten:** 2026-11-15, after the naming correction, CI/IME fixes and the novel is confirmed (work/ 13편 ~73,000자).
 
-## 0k — 타이틀 한자 인트로 v12 (2026-11-15, 배포 완료)
+## 0k — 타이틀 한자 인트로 v13 (2026-11-15, 배포 완료)
 
 - **상태: v12 완료·라이브 배포.** 사용자가 폰 트레이서에서 그린 **내부 경계선
   51개**로 글자 잉크를 57개 zone으로 나누고, **직선 획 선 22개**를 그렸다.
   `kanji-trace/zones.py`가 선이 지나는 zone들을 합쳐 **20획 territory**를 만들고,
   꺾인 획(6+7, 16+17 직선 두 개)은 자동으로 한 획으로 병합했다. 데이터는
   `src/ui/title-stroke-paths.ts`(30,002 B), union==글자(realMissing 0%).
-- 런타임은 v10 그대로: 선명한 붓촉 마스크 스윕, 획당 0.22~0.55s, 총 ≈7.55s,
-  `--kt-end` 7.80s, 팝 없음.
-- 검증: `tools/title-check.mjs`(20획·done·콘솔 0·FPS 39), `npm run verify`,
-  `zones-report.json`/`zones-diff.png` — `docs/TITLE_KANJI.md` §11.
+- 런타임 v13: **레이저 헤드 제거**, **붓이 닿는 지점의 획 두께 원형 웅덩이만**
+  연하게(destination-out radial, 중심 최대 62% 제거), 지나간 잉크는 즉시 원색.
+  획 진행은 **초반 느림→후반 가속**(`0.12t+0.88t^2.4`), 끝 감속 제거.
+  총 ≈7.55s, `--kt-end` 7.80s, 팝 없음.
+- 검증: `tools/title-check.mjs`(20획·done·콘솔 0·headHidden·FPS 40),
+  `npm run verify`, `zones-report.json`/`zones-diff.png` — `docs/TITLE_KANJI.md`
+  §11·§12.
 - 금지: v1~v8 자동 마스크 재도입, 생성 데이터 수작업 편집, HW/Arphic 형상 사용,
   글자형 교체. 폰트는 Yuji Boku Light cut 고정.
 - 추가/수정 cuts·선이 오면 `zones.py` 재실행 → 데이터 재생성 → 재검증·재배포.
