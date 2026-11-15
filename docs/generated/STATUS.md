@@ -22,10 +22,10 @@
 | raw ceiling | 420,000 B |
 ## Reports
 - Oracle: `tools/oracle-diff.ts` + `tests/vim-expected.json`
-- Grammar matrix: `npm run matrix` → `docs/MATRIX_REPORT.md`
-- Count matrix + manifest: `npm run count-matrix` → `docs/COMMAND_MANIFEST.md`
-- Observable state (local): `npm run state-matrix -- --write` → `docs/STATE_REPORT.md`
-- Command/feature audit: `docs/VIM_COVERAGE.md`, `docs/VIM_ADVENTURES_COVERAGE.md`
-- Debugging: `npm run trace -- --case=m-1234` → `docs/DEBUGGING.md`
-- Browser QA: `npm run browser:qa` → `docs/BROWSER_QA.md` + `docs/browser/`
-- Books: `npm run books:build` → `docs/BOOKS_PIPELINE.md`; `npm run books:search -- ...`
+- Grammar matrix: `npm run matrix` → `docs/generated/MATRIX_REPORT.md`
+- Count matrix + manifest: `npm run count-matrix` → `docs/generated/COMMAND_MANIFEST.md`
+- Observable state (local): `npm run state-matrix -- --write` → `docs/generated/STATE_REPORT.md`
+- Command/feature audit: `docs/VIM_COVERAGE.md`, `docs/CURRICULUM.md`
+- Debugging: `npm run trace -- --case=m-1234` → `docs/QA.md`
+- Browser QA: `npm run browser:qa` → `docs/QA.md` + `docs/browser/`
+- Books: `npm run books:build` → `docs/BOOKS.md`; `npm run books:search -- ...`

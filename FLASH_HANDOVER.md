@@ -3,7 +3,8 @@
 > **대상 독자**: 이 프로젝트를 이어받을 저비용 모델(v4.1 flash). 이 문서 하나로
 > 유지보수 라운드를 돌 수 있어야 한다. **판단이 필요한 일은 하지 말고 사용자에게
 > 묻거나 멈춘다.** 무리한 판단이 이 프로젝트의 캐논·게이트를 깨는 것보다 낫다.
-> 마지막 갱신: 2026-11-15 (v4 pro 인계). **최우선 열린 작업: 타이틀 한자 획 수작업 트레이싱 — [`docs/STROKE_HANDOVER.md`](docs/STROKE_HANDOVER.md) 필독.**
+> 마지막 갱신: 2026-11-15 (v4 pro 인계). **최우선 열린 작업: 타이틀 한자 획 수작업 트레이싱 — [`docs/TITLE_KANJI.md`](docs/TITLE_KANJI.md) 필독.**
+> 문서 지도·읽기 순서·문서 규칙은 [`docs/README.md`](docs/README.md)가 소유한다.
 
 ## 0. 한 줄 요약
 
@@ -15,7 +16,7 @@ KIRITSU = 소설 + vim 교육 게임(부제 VIMLORE). 저장소
 ## 0-b. 최우선 다음 작업 — 타이틀 20획 수작업 트레이싱
 
 사용자는 자동 분할(v1~v8)을 모두 거부했다. **자동 알고리즘을 더 만지지 말고**
-`docs/STROKE_HANDOVER.md`의 절차대로 規 11획 + 律 9획을 **완전한 붓 획 SVG
+`docs/TITLE_KANJI.md`의 절차대로 規 11획 + 律 9획을 **완전한 붓 획 SVG
 path**로 직접 그려 넣는다. 핵심:
 
 1. 각 획은 닫힌 full-stroke path (겹침·가려진 부분 연장 포함)
@@ -35,7 +36,7 @@ Light cut 고정.
 | 소설 | `stories/kiritsu/work/` 13편 확정(~73,000자, 검토 27건 반영, 규칙 0건). **사용자 한국어판 독서·피드백 대기** |
 | 소설 PDF | `stories/kiritsu/KIRITSU.pdf` (인쇄용, 72페이지) |
 | 게임 | 모든 게이트 그린(테스트·오라클 373/373·번들·PWA·타이틀 검사), 라이브 배포 정상 |
-| 타이틀 인트로 | **열린 작업.** v8 자동 재구성이 라이브에 있으나 사용자가 품질 거부 → **수작업 full-stroke 트레이싱 20획**으로 교체 예정. [`docs/STROKE_HANDOVER.md`](docs/STROKE_HANDOVER.md) 필독. 폰트는 Yuji Boku Light cut 고정 |
+| 타이틀 인트로 | **열린 작업.** v8 자동 재구성이 라이브에 있으나 사용자가 품질 거부 → **수작업 full-stroke 트레이싱 20획**으로 교체 예정. [`docs/TITLE_KANJI.md`](docs/TITLE_KANJI.md) 필독. 폰트는 Yuji Boku Light cut 고정 |
 | 보류(사용자 지시) | 영어판·리츠 1인칭(피드백 후), 게임 스토리 슬라이스(원고 확정 후), LIVE 모드(승인 전), 이미지(다른 AI 생성) |
 | 자동화 | v4 pro의 매시간 라운드는 **인계 시점에 일시정지됨** — flash 세션에서 새로 만들 것(아래 §5) |
 
@@ -114,6 +115,7 @@ git remote set-url origin https://github.com/JungDonghee/kiritsu.git   # 스크�
 주의: **코드 변경 커밋에는 같은 커밋에 `npm run status:write` 결과가 있어야
 한다** — 없으면 Pages 배포가 status:check에서 막힌다(실제 사고 있었음).
 PWA 셸(public/·src/ui) 변경 시 `public/sw.js`의 `VERSION`도 bump.
+문서만 바꾼 커밋은 `npm run doc-check && npm run levels:check && npm run surface:check`까지 확인한다.
 
 ## 7. 배포 확인
 
@@ -126,6 +128,7 @@ curl -s https://jungdonghee.github.io/kiritsu/kiritsu.html | grep -c "DAY FILE" 
 
 ## 8. 필독 문서 (작업 전 최소한 이 3개)
 
-1. `AGENTS.md` — 영속 불변식 (특히 Design laws·Performance budget·Shipping)
-2. `docs/TITLE_KANJI.md` — 타이틀 한자 규격(작업 시에만)
-3. `stories/kiritsu/HANDOVER.md` §3 — 소설 캐논(소설 작업 시에만)
+1. `docs/README.md` — 문서 지도·5분 읽기 순서 (여기서 시작)
+2. `AGENTS.md` — 영속 불변식 (특히 Design laws·Performance budget·Shipping)
+3. `docs/TITLE_KANJI.md` — 타이틀 한자 규격 + 수작업 트레이싱 지시서(작업 시)
+4. `stories/kiritsu/HANDOVER.md` §3 — 소설 캐논(소설 작업 시에만)

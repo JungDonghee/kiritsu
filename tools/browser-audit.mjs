@@ -117,7 +117,7 @@ for (const vp of ['1920x1080', '390x844', '320x568', '844x390']) {
 }
 await browser.close();
 server.close();
-writeFileSync(join(root, 'docs', 'UX_AUDIT.json'), JSON.stringify({ report, errors }, null, 2));
+writeFileSync(join(root, 'docs', 'generated', 'UX_AUDIT.json'), JSON.stringify({ report, errors }, null, 2));
 const bad = report.filter((r) => r.overflow.length);
 console.log(`audited ${report.length} screen/viewports; ${bad.length} with overflow; ${errors.length} page errors`);
 for (const r of bad) console.log(`${r.viewport} ${r.screen}: ${r.overflow.slice(0, 3).join(' | ')}`);

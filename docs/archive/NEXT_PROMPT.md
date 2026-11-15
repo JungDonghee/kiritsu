@@ -1,15 +1,15 @@
 > **SUPERSEDED 2026-11-12.** This file is a historical planning snapshot. Its
 > metrics and baseline commit are out of date. For the current green candidate,
 > read [`FINAL_CHECKPOINT.md`](FINAL_CHECKPOINT.md), [`FINAL_REPORT.md`](FINAL_REPORT.md),
-> [`STATE_DEBT.md`](STATE_DEBT.md), [`FUZZ_DEBT.md`](FUZZ_DEBT.md) and
-> [`NEXT_STEPS.md`](NEXT_STEPS.md) before trusting any number below.
+> [`STATE_DEBT.md`](../DEBT.md), [`FUZZ_DEBT.md`](../DEBT.md) and
+> [`NEXT_STEPS.md`](../ROADMAP.md) before trusting any number below.
 
 # NEXT PROMPT — the literal kickoff for the next AI
 
 > **Copy this entire file into the next session.** It is a task packet, a
 > baseline, and a challenge — not a summary to skim.
 >
-> For a single copy-paste startup message, use [`ONE_MESSAGE.md`](ONE_MESSAGE.md)
+> For a single copy-paste startup message, use [`ONE_MESSAGE.md`](../ONE_MESSAGE.md)
 > or run `npm run kickoff` (it fills the current HEAD).
 >
 > Baseline commit: **`20a1c3a`** (2026-11-11). If your checkout is at a different
@@ -17,10 +17,10 @@
 > below**. Old prose is not evidence.
 >
 > Read order if you only read three files:
-> [`PROMPT_SYSTEM.md`](PROMPT_SYSTEM.md) → [`MASTER_PLAN.md`](MASTER_PLAN.md) →
-> [`HANDOFF.md`](HANDOFF.md). Curriculum work additionally requires
-> [`CURRICULUM_PROVENANCE.md`](CURRICULUM_PROVENANCE.md),
-> [`BOOKS_INDEX.md`](BOOKS_INDEX.md) and [`STAGE_PROVENANCE.md`](STAGE_PROVENANCE.md).
+> [`PROMPT_SYSTEM.md`](../PROMPT_SYSTEM.md) → [`MASTER_PLAN.md`](MASTER_PLAN.md) →
+> [`HANDOFF.md`](../HANDOFF.md). Curriculum work additionally requires
+> [`CURRICULUM_PROVENANCE.md`](../CURRICULUM_PROVENANCE.md),
+> [`BOOKS_INDEX.md`](../generated/BOOKS_INDEX.md) and [`STAGE_PROVENANCE.md`](../generated/STAGE_PROVENANCE.md).
 
 ---
 
@@ -228,16 +228,16 @@ file and `MASTER_PLAN.md`/`HANDOFF.md` in the same session.
 ## 9. What to read, in order
 
 1. This file.
-2. [`PROMPT_SYSTEM.md`](PROMPT_SYSTEM.md) — the reusable task/evidence protocol.
+2. [`PROMPT_SYSTEM.md`](../PROMPT_SYSTEM.md) — the reusable task/evidence protocol.
 3. [`MASTER_PLAN.md`](MASTER_PLAN.md) — priorities, board, fuzz table.
-4. [`AGENTS.md`](../AGENTS.md) — invariants and design laws.
-5. [`HANDOFF.md`](HANDOFF.md) — current snapshot, gaps, traps.
-6. [`CURRICULUM_PROVENANCE.md`](CURRICULUM_PROVENANCE.md),
-   [`BOOKS_INDEX.md`](BOOKS_INDEX.md),
-   [`STAGE_PROVENANCE.md`](STAGE_PROVENANCE.md) — curriculum truth.
-7. [`ARCHITECTURE.md`](ARCHITECTURE.md),
-   [`VIM_COVERAGE.md`](VIM_COVERAGE.md) — layers and honest engine boundary.
-8. [`FUTURE_EDITOR.md`](FUTURE_EDITOR.md) — deferred buffers/files/windows.
+4. [`AGENTS.md`](../../AGENTS.md) — invariants and design laws.
+5. [`HANDOFF.md`](../HANDOFF.md) — current snapshot, gaps, traps.
+6. [`CURRICULUM_PROVENANCE.md`](../CURRICULUM_PROVENANCE.md),
+   [`BOOKS_INDEX.md`](../generated/BOOKS_INDEX.md),
+   [`STAGE_PROVENANCE.md`](../generated/STAGE_PROVENANCE.md) — curriculum truth.
+7. [`ARCHITECTURE.md`](../ARCHITECTURE.md),
+   [`VIM_COVERAGE.md`](../VIM_COVERAGE.md) — layers and honest engine boundary.
+8. [`FUTURE_EDITOR.md`](../VIM_COVERAGE.md) — deferred buffers/files/windows.
 
 **One sentence:** keep the engine matching real Vim, keep the curriculum
 book-derived and repetitive enough to embody, keep the build/page honest, and

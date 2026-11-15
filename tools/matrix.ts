@@ -14,7 +14,7 @@
  *   - 20 motions, 18 text objects, 8 operators, counts {none, 2}
  *   - normal, visual, visual-line, visual-block, plus doubled operators
  *
- * `--write` regenerates docs/MATRIX_REPORT.md. Exit 1 on any divergence or
+ * `--write` regenerates docs/generated/MATRIX_REPORT.md. Exit 1 on any divergence or
  * engine exception; Vim errors are skipped (the sentinel detects them).
  */
 import { execFileSync } from 'node:child_process';
@@ -177,8 +177,8 @@ if (WRITE) {
     }
     out.push('');
   }
-  writeFileSync('docs/MATRIX_REPORT.md', out.join('\n'));
-  console.log('wrote docs/MATRIX_REPORT.md');
+  writeFileSync('docs/generated/MATRIX_REPORT.md', out.join('\n'));
+  console.log('wrote docs/generated/MATRIX_REPORT.md');
 }
 
 if (failures.length || engineErrors.length) process.exit(1);

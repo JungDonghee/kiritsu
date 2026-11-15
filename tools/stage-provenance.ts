@@ -56,5 +56,5 @@ lines.push(
   '4. Keep one insight per stage; do not add stages in this program.',
   '',
 );
-writeFileSync(new URL('../docs/STAGE_PROVENANCE.md', import.meta.url), lines.join('\n'));
-console.log(`stage provenance worksheet: ${CHAPTERS.reduce((n, c) => n + c.stages.length, 0)} stages -> docs/STAGE_PROVENANCE.md`);
+writeFileSync(new URL('../docs/generated/STAGE_PROVENANCE.md', import.meta.url), lines.join('\n'));
+console.log(`stage provenance worksheet: ${CHAPTERS.reduce((n, c) => n + c.stages.length, 0)} stages -> docs/generated/STAGE_PROVENANCE.md`);

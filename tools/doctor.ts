@@ -18,12 +18,13 @@ line(existsSync('/home/jung/ai_station/sandbox/.secrets/github_token'), 'deploy 
 
 console.log(`
 NEXT
-  1. read AGENTS.md            (invariants, voice, known gaps, shipping)
-  2. read docs/ARCHITECTURE.md (how the layers fit together)
-  3. read docs/LEVEL_FORMAT.md (how to add a stage)
-  4. npm test                  (engine fidelity + trials)
-  5. npm run lint:levels       (all 51 stages must be green)
-  6. npm run dev               (play at http://localhost:5173)
+  1. read AGENTS.md              (invariants, voice, known gaps, shipping)
+  2. read docs/README.md         (문서 지도·5분 읽기 순서·문서 규칙)
+  3. read docs/ARCHITECTURE.md   (how the layers fit together)
+  4. read docs/LEVEL_FORMAT.md   (how to add a stage)
+  5. npm test                    (engine fidelity + trials)
+  6. npm run lint:levels         (all 51 stages must be green)
+  7. npm run dev                 (play at http://localhost:5173)
 
 RULES THAT ARE NOT NEGOTIABLE
   · the engine must keep matching real Vim  (tools/oracle-diff.ts)

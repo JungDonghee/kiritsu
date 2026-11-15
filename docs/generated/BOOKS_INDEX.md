@@ -1,14 +1,14 @@
 > **SUPERSEDED 2026-11-12.** This file is a historical planning snapshot. Its
 > metrics and baseline commit are out of date. For the current green candidate,
-> read [`FINAL_CHECKPOINT.md`](FINAL_CHECKPOINT.md), [`FINAL_REPORT.md`](FINAL_REPORT.md),
-> [`STATE_DEBT.md`](STATE_DEBT.md), [`FUZZ_DEBT.md`](FUZZ_DEBT.md) and
-> [`NEXT_STEPS.md`](NEXT_STEPS.md) before trusting any number below.
+> read [`FINAL_CHECKPOINT.md`](../archive/FINAL_CHECKPOINT.md), [`FINAL_REPORT.md`](../archive/FINAL_REPORT.md),
+> [`STATE_DEBT.md`](../DEBT.md), [`FUZZ_DEBT.md`](../DEBT.md) and
+> [`NEXT_STEPS.md`](../ROADMAP.md) before trusting any number below.
 
 # BOOKS INDEX — section-level map of the ten source books
 
 > **Generated locally** from `books-text/` (gitignored) by
 > `npm run books:index`. Raw text is not committed. This index is the
-> starting point for [`CURRICULUM_PROVENANCE.md`](CURRICULUM_PROVENANCE.md):
+> starting point for [`CURRICULUM_PROVENANCE.md`](../CURRICULUM_PROVENANCE.md):
 > every stage citation must point at a section here, not at a plausible
 > summary.
 

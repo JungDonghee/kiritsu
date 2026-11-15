@@ -6,7 +6,7 @@
  * Compares buffer, cursor, unnamed register (text + type) and the state after
  * `u` against real Vim. Fails if a manifest row marked count:yes/ignored has no
  * case for 1, 2 and 3 (the CI structural gate). `--write` regenerates
- * docs/COMMAND_MANIFEST.md.
+ * docs/generated/COMMAND_MANIFEST.md.
  */
 import { execFileSync } from 'node:child_process';
 import { mkdtempSync, readFileSync, writeFileSync } from 'node:fs';
@@ -21,7 +21,7 @@ const WRITE = argv.includes('--write');
 const CHECK_DOCS = argv.includes('--check-docs');
 const SHOW = Number(argv.find((a) => a.startsWith('--show='))?.split('=')[1] ?? 8);
 
-const manifestFile = 'docs/COMMAND_MANIFEST.md';
+const manifestFile = 'docs/generated/COMMAND_MANIFEST.md';
 const manifestText = manifestMarkdown();
 if (WRITE) {
   writeFileSync(manifestFile, manifestText);

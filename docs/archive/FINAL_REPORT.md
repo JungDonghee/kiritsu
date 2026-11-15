@@ -67,9 +67,9 @@
 
 - Playable core **~90%**; full product **~67%**; Drew Neil tip coverage
   **~32%** (Practical 48 of 123; Modern 0 of 28). See
-  [`COMPLETION.md`](COMPLETION.md) and [`COMPARISON.md`](COMPARISON.md).
+  [`COMPLETION.md`](../COMPLETION.md) and [`COMPARISON.md`](../COMPARISON.md).
 - Public repository presentation audited in
-  [`REPO_PRESENTATION.md`](REPO_PRESENTATION.md).
+  [`REPO_PRESENTATION.md`](../REPO_PRESENTATION.md).
 
 ## Honest remaining gaps
 

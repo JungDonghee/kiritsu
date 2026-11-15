@@ -12,6 +12,6 @@ const block = /```text\n([\s\S]*?)```/.exec(source)?.[1];
 if (!block) throw new Error('kickoff block not found in docs/ONE_MESSAGE.md');
 const msg = block
   .replace('/home/jung/ai_station/sandbox/vimlore', '/home/jung/ai_station/sandbox/kiritsu')
-  .replace('HEAD 20a1c3a', `HEAD ${head}`);
+  .replace(/HEAD [0-9a-f]{7,40}/, `HEAD ${head}`);
 console.log(`# KIRITSU kickoff — ${branch}@${head} — ${new Date().toISOString().slice(0, 10)}`);
 console.log(msg);

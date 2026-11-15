@@ -1,7 +1,7 @@
 # KIRITSU title 規 (U+898F) / 律 (U+5F8B) — per-stroke ink segmentation research
 
 > KIRITSU 리포에 보존된 조사 보고서(2026-11-15). 현재 결론과 다음 작업은
-> [`STROKE_HANDOVER.md`](STROKE_HANDOVER.md)를 우선한다.
+> [`STROKE_HANDOVER.md`](../TITLE_KANJI.md)를 우선한다.
 
 **Author:** stroke-research (read-only research; repo untouched, no commits)
 **Date:** 2026-11-15

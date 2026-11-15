@@ -1,7 +1,7 @@
 /**
  * Generated project status — the single source of truth for numbers.
  *
- *   npm run status:write   # regenerate docs/STATUS.md
+ *   npm run status:write   # regenerate docs/generated/STATUS.md
  *   npm run status:check   # fail if the committed status is stale
  *
  * Numbers are derived from generated artifacts, never hand-copied:
@@ -22,7 +22,7 @@ const count = countCases().length;
 const countedRows = MANIFEST.filter((m) => m.count === 'yes' || m.count === 'ignored').length;
 const stages = CHAPTERS.reduce((n, c) => n + c.stages.length, 0);
 
-const report = readFileSync('docs/STATE_REPORT.md', 'utf8');
+const report = readFileSync('docs/generated/STATE_REPORT.md', 'utf8');
 const pick = (name: string) => new RegExp(`^\\| ${name} \\| (\\d+) \\|$`, 'm').exec(report)?.[1];
 const total = pick('cases'), matched = pick('matched'), open = pick('divergences');
 const state = total && matched && open ? { matched: Number(matched), total: Number(total), open: Number(open) } : null;
@@ -31,7 +31,7 @@ const raw = existsSync('dist/kiritsu.html') ? statSync('dist/kiritsu.html').size
 const booksMeta = exists('books-index/books.json') ? JSON.parse(read('books-index/books.json', 'utf8')) as { lines: number; headings: number; partial_source?: boolean; slug?: string }[] : null;
 const coverage = exists('books-index/coverage.json') ? JSON.parse(read('books-index/coverage.json', 'utf8')) as { complete: boolean; chunks: number } : null;
 const audit = exists('books-index/agent-audit.json') ? JSON.parse(read('books-index/agent-audit.json', 'utf8')) as { headings: unknown[]; problems: unknown[]; rejected: unknown[] } : null;
-const gameReport = exists('docs/GAME_USED_STATE.md') ? read('docs/GAME_USED_STATE.md', 'utf8') : '';
+const gameReport = exists('docs/generated/GAME_USED_STATE.md') ? read('docs/generated/GAME_USED_STATE.md', 'utf8') : '';
 const gameSolution = /solution matched: (\d+)\/(\d+)/.exec(gameReport);
 const gameUndo = /solution\+undo matched: (\d+)\/(\d+)/.exec(gameReport);
 const priority = exists('books-index/priority/audit.json') ? JSON.parse(read('books-index/priority/audit.json', 'utf8')) as { chapters: { commands: unknown[]; concepts: unknown[]; problems: unknown[] }[]; rejected: unknown[] } : null;
@@ -65,24 +65,24 @@ const lines = [
   '## Reports',
   '',
   '- Oracle: `tools/oracle-diff.ts` + `tests/vim-expected.json`',
-  '- Grammar matrix: `npm run matrix` → `docs/MATRIX_REPORT.md`',
-  '- Count matrix + manifest: `npm run count-matrix` → `docs/COMMAND_MANIFEST.md`',
-  '- Observable state (local): `npm run state-matrix -- --write` → `docs/STATE_REPORT.md`',
-  '- Command/feature audit: `docs/VIM_COVERAGE.md`, `docs/VIM_ADVENTURES_COVERAGE.md`',
-  '- Debugging: `npm run trace -- --case=m-1234` → `docs/DEBUGGING.md`',
-  '- Browser QA: `npm run browser:qa` → `docs/BROWSER_QA.md` + `docs/browser/`',
-  '- Books: `npm run books:build` → `docs/BOOKS_PIPELINE.md`; `npm run books:search -- ...`',
+  '- Grammar matrix: `npm run matrix` → `docs/generated/MATRIX_REPORT.md`',
+  '- Count matrix + manifest: `npm run count-matrix` → `docs/generated/COMMAND_MANIFEST.md`',
+  '- Observable state (local): `npm run state-matrix -- --write` → `docs/generated/STATE_REPORT.md`',
+  '- Command/feature audit: `docs/VIM_COVERAGE.md`, `docs/CURRICULUM.md`',
+  '- Debugging: `npm run trace -- --case=m-1234` → `docs/QA.md`',
+  '- Browser QA: `npm run browser:qa` → `docs/QA.md` + `docs/browser/`',
+  '- Books: `npm run books:build` → `docs/BOOKS.md`; `npm run books:search -- ...`',
   '',
 ].filter(Boolean).join('\n');
 
-const file = 'docs/STATUS.md';
+const file = 'docs/generated/STATUS.md';
 if (process.argv.includes('--check')) {
   const old = existsSync(file) ? readFileSync(file, 'utf8') : '';
   if (old !== lines) {
     console.error('STATUS OUT OF DATE: run `npm run status:write` (reports/build changed)');
     process.exit(1);
   }
-  console.log('status: docs/STATUS.md is current');
+  console.log('status: docs/generated/STATUS.md is current');
 } else {
   writeFileSync(file, lines);
   console.log(`wrote ${file}`);

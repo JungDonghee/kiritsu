@@ -69,7 +69,7 @@ Read [`COMPLETION.md`](docs/COMPLETION.md) and
 
 **Next direction:** story canon → story vertical slice → LIVE/puzzle systems →
 integrated story → full Practical Vim engine. The ordered plan is
-[`docs/UPGRADE_MASTER_PLAN.md`](docs/UPGRADE_MASTER_PLAN.md).
+[`docs/ROADMAP.md`](docs/ROADMAP.md).
 
 ## Why it is different
 
@@ -89,24 +89,24 @@ integrated story → full Practical Vim engine. The ordered plan is
 - **Bug-resistant by construction.** Real-Vim oracle, stage level-oracle,
   game-used state matrix, per-stage simulation, grammar/count matrices, seeded
   differential fuzzing, invariants and docs/CI/build checks. Remaining debt is
-  written down, not waived: [`FUZZ_DEBT.md`](docs/FUZZ_DEBT.md),
-  [`STATE_DEBT.md`](docs/STATE_DEBT.md).
+  written down, not waived: [`FUZZ_DEBT.md`](docs/DEBT.md),
+  [`STATE_DEBT.md`](docs/DEBT.md).
 - **Breadth is the product.** 88 grimoire commands, 51 chambers, 373 oracle
   cases — and no artificial cap: motions, operators, text objects, registers,
   macros, marks, search, `:s`/`:g`, undo/jumps, visual/block, ex, and eventually
   buffers/files/splits/tabs. Deferred is not rejected; the roadmap is
-  [`FUTURE_EDITOR.md`](docs/FUTURE_EDITOR.md).
+  [`FUTURE_EDITOR.md`](docs/VIM_COVERAGE.md).
 - **It runs on a potato.** Zero runtime dependencies, a hard
   **420 kB / 140 kB** bundle gate, one canvas with a cached opaque composite
   frame, cursorline/numbers on a cheap FX pass, and a CRT switch for weak
   devices. Current measured: mobile **60.5 FPS**, desktop headless
-  **55.4–57.6 FPS**; [`BROWSER_QA.md`](docs/BROWSER_QA.md). 144fps is not claimed.
+  **55.4–57.6 FPS**; [`BROWSER_QA.md`](docs/QA.md). 144fps is not claimed.
 - **It plays on a phone in landscape** with a Bluetooth keyboard — fully
   keyboard-only; touch/mouse is optional.
 - **It trains for mastery, not just completion.** Par/3-star, best keys, F3
   ghost, GOLF retry over par, TRIALS weakness/daily, and a documented
   introduce → drill → transfer → spaced-review loop:
-  [`MASTERY_VIM_GOLF.md`](docs/MASTERY_VIM_GOLF.md).
+  [`MASTERY_VIM_GOLF.md`](docs/CURRICULUM.md).
 - **It never runs out.** After the tower, TRIALS generates endless chambers (12
   verified skill generators), biases a WEAKNESS mode from telemetry, and keeps
   the rooms you save. No account, no server: one export code carries your profile.
@@ -178,7 +178,7 @@ src/core/game/    session (keys, hearts, coins), goals, progress
 src/content/      commands.ts (the Grimoire) and chapters/cNN.ts (the game)
 src/ui/           canvas CRT renderer, screens, WebAudio synth, kanji paths
 tools/            level linter, real-vim oracle, single-file inliner, PWA gates
-docs/             STORY_BIBLE.md, COMPLETION.md, CURRICULUM_SPINE.md, STATE_DEBT.md
+docs/             README.md (지도), HANDOFF.md, ROADMAP.md, generated/ (수치), archive/ (기록)
 ```
 
 ## Adding content
@@ -210,8 +210,7 @@ Have fun, and never park in insert mode.
 
 ## Honest current limits
 
-See [`FINAL_REPORT.md`](docs/FINAL_REPORT.md) and
-[`NEXT_STEPS.md`](docs/NEXT_STEPS.md). In short: three visual fuzz edges, 104
+See [`HANDOFF.md`](docs/HANDOFF.md) and [`ROADMAP.md`](docs/ROADMAP.md). In short: three visual fuzz edges, 104
 full-state (non-game-used) edges, 75 not-yet-staged Practical Vim tips, and
 Modern Vim's deferred editor surface. The oracle numbers are not a claim of
 global Vim completeness.

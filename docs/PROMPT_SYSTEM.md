@@ -1,7 +1,7 @@
 # PROMPT SYSTEM — how an AI is allowed to work on KIRITSU (VIMLORE)
 
 > This file is the **contract for every AI session** on this repository. The
-> literal per-session brief is [`NEXT_PROMPT.md`](NEXT_PROMPT.md); this file is
+> literal per-session brief is [`NEXT_PROMPT.md`](archive/NEXT_PROMPT.md); this file is
 > the reusable protocol behind it. If a prompt conflicts with this file, this
 > file wins; if either conflicts with real `vim -u NONE`, real Vim wins.
 >
@@ -27,7 +27,7 @@ A task is done only when it strengthens one of these without weakening another.
 Read in this order; earlier wins on conflicts:
 
 1. **Real Vim** (`vim -u NONE`) — executable truth.
-2. [`MASTER_PLAN.md`](MASTER_PLAN.md) — priorities and task board.
+2. [`MASTER_PLAN.md`](archive/MASTER_PLAN.md) — priorities and task board.
 3. [`AGENTS.md`](../AGENTS.md) — invariants, design laws, shipping rules.
 4. [`CURRICULUM_PROVENANCE.md`](CURRICULUM_PROVENANCE.md) — curriculum authority.
 5. [`VIM_COVERAGE.md`](VIM_COVERAGE.md) — honest engine boundary.

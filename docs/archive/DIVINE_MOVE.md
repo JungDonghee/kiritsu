@@ -46,7 +46,7 @@ First run (2026-11-11): `tools/state-matrix.ts` built; 15,289/21,712 matched,
 undo cursor policy for common cases; now 21,593/21,712, 119 open (undo cursor
 941, register 32). 4 oracle cases added (363 → 363). Mode is not comparable in
 `vim -es`; it needs a pty/Nvim probe before it can be asserted. Report:
-`docs/STATE_REPORT.md`.
+`docs/generated/STATE_REPORT.md`.
 
 ### 2. Corpus from the giants
 

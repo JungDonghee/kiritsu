@@ -1,8 +1,13 @@
 /**
- * Generate docs/LEVELS.md from the live chapter data so the documentation can
+ * Generate docs/generated/LEVELS.md from the live chapter data so the documentation can
  * never drift from the game. Run after adding or editing content.
+ *
+ *   node --experimental-strip-types tools/gen-docs.ts [--check]
+ *
+ * `--check` compares instead of writing and exits 1 when the file is stale
+ * (CI gate: `npm run levels:check`).
  */
-import { writeFileSync } from 'node:fs';
+import { existsSync, readFileSync, writeFileSync } from 'node:fs';
 import { CHAPTERS } from '../src/content/chapters/index.ts';
 import { COMMAND_BY_ID } from '../src/content/commands.ts';
 
@@ -25,5 +30,16 @@ for (const ch of CHAPTERS) {
   });
 }
 out += `\n**${total} stages · par total ${par} keystrokes.**\n`;
-writeFileSync('docs/LEVELS.md', out);
-console.log(`docs/LEVELS.md: ${total} stages`);
+
+const file = 'docs/generated/LEVELS.md';
+if (process.argv.includes('--check')) {
+  const old = existsSync(file) ? readFileSync(file, 'utf8') : '';
+  if (old !== out) {
+    console.error('LEVELS OUT OF DATE: run `npm run levels:write`');
+    process.exit(1);
+  }
+  console.log('levels: docs/generated/LEVELS.md is current');
+} else {
+  writeFileSync(file, out);
+  console.log(`docs/generated/LEVELS.md: ${total} stages`);
+}

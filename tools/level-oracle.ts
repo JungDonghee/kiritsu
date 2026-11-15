@@ -7,7 +7,7 @@
  *
  *   npm run level-oracle -- [--stage=c01s1] [--undo] [--dump] [--write]
  *
- * `--write` regenerates docs/GAME_USED_STATE.md (undo is diagnostic; failure of
+ * `--write` regenerates docs/generated/GAME_USED_STATE.md (undo is diagnostic; failure of
  * the undo diagnostic does not fail the command).
  */
 import { execFileSync } from 'node:child_process';
@@ -129,7 +129,7 @@ if (WRITE) {
     ...rows.filter((r) => r.undo === false).map((r) => `- ${r.stage}: ${r.fields.filter((f) => f.startsWith('undo-')).join(', ')}`),
     '',
   ];
-  writeFileSync('docs/GAME_USED_STATE.md', md.join('\n'));
-  console.log('wrote docs/GAME_USED_STATE.md');
+  writeFileSync('docs/generated/GAME_USED_STATE.md', md.join('\n'));
+  console.log('wrote docs/generated/GAME_USED_STATE.md');
 }
 process.exit(bad ? 1 : 0);

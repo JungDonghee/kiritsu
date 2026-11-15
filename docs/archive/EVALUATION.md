@@ -1,7 +1,7 @@
 # EVALUATION — KIRITSU(VIMLORE) 코드 심층 평가와 완성 전략
 
 > 이 문서는 **완성을 가로막는 진짜 리스크**를 파악하고, 그에 맞는 설계 태도·단계를
-> 제시한다. 새 AI는 [`HANDOFF.md`](HANDOFF.md)와 이 문서를 함께 읽어야 한다.
+> 제시한다. 새 AI는 [`HANDOFF.md`](../HANDOFF.md)와 이 문서를 함께 읽어야 한다.
 > 측정 시점: 2026-11-10 (엔진 med/low 수정 진행 중, oracle 373/373).
 
 ---

@@ -13,7 +13,7 @@
 > checked by subagents and merged into `books-index/curriculum-map/stages.json`.
 > **Order is not the literal Tip order**: 19 explicit inversions remain because
 > Practical Vim assumes basics and opens at the dot command. See
-> [`CURRICULUM_SPINE.md`](CURRICULUM_SPINE.md) and
+> [`CURRICULUM_SPINE.md`](CURRICULUM.md) and
 > [`../books-index/curriculum-map/STAGE_MAP.md`](../books-index/curriculum-map/STAGE_MAP.md).
 > Do not describe the game as a literal 1:1 reading of the book.
 
@@ -72,7 +72,7 @@ elastic.
 The citations are now complete, but the **order** and **drill/transfer plan**
 are not: 19 tip-order inversions are recorded, and the mastery layer is a
 design/incremental task. The generated per-stage report is
-[`STAGE_PROVENANCE.md`](STAGE_PROVENANCE.md).
+[`STAGE_PROVENANCE.md`](generated/STAGE_PROVENANCE.md).
 
 ## 4. Audit method (the next curriculum program)
 
@@ -86,7 +86,7 @@ For each book, extract a heading-level table of contents and tag sections with:
 - prerequisites implied by the text;
 - a short quote or line range for the citation.
 
-Store as [`BOOKS_INDEX.md`](BOOKS_INDEX.md) (human) and, when useful,
+Store as [`BOOKS_INDEX.md`](generated/BOOKS_INDEX.md) (human) and, when useful,
 `docs/books-index.json` (machine). Keep the raw books gitignored; the derived
 index may be committed if it contains only our summaries and short citations.
 
@@ -108,7 +108,7 @@ other as an optional advanced path.
 
 ### Step 3 — annotate every stage
 
-Start from the generated worksheet [`STAGE_PROVENANCE.md`](STAGE_PROVENANCE.md).
+Start from the generated worksheet [`STAGE_PROVENANCE.md`](generated/STAGE_PROVENANCE.md).
 Add a provenance record per stage (proposed schema; not yet in `Stage`):
 
 ```ts

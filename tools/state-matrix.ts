@@ -207,8 +207,8 @@ if (WRITE) {
     out.push(`  - vim: \`${JSON.stringify(f.vim)}\``);
     out.push(`  - eng: \`${JSON.stringify(f.eng)}\``);
   }
-  writeFileSync('docs/STATE_REPORT.md', out.join('\n'));
-  console.log('wrote docs/STATE_REPORT.md');
+  writeFileSync('docs/generated/STATE_REPORT.md', out.join('\n'));
+  console.log('wrote docs/generated/STATE_REPORT.md');
 }
 
 if (failures.length || engineErrors.length) process.exit(1);

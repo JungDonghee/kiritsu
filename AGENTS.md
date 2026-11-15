@@ -4,11 +4,11 @@
 > [`FLASH_HANDOVER.md`](FLASH_HANDOVER.md)를 먼저 읽어라** — 허용/금지 경계가
 > 그 파일에 명시되어 있다.
 
-> **진행 중인 작업을 이어받는 중이라면** [`docs/NORTH_STAR.md`](docs/NORTH_STAR.md), [`docs/SPRINT_2026-11-12.md`](docs/SPRINT_2026-11-12.md), [`docs/MASTER_PLAN.md`](docs/MASTER_PLAN.md),
-> [`docs/PROMPT_SYSTEM.md`](docs/PROMPT_SYSTEM.md), [`docs/CURRICULUM_PROVENANCE.md`](docs/CURRICULUM_PROVENANCE.md)를
-> 먼저 읽어라. **우선순위·5시간 슬라이스·태스크 보드·인수인계 규칙은 그 파일이
-> 소유한다.** 그다음 [`docs/HANDOFF.md`](docs/HANDOFF.md)(현재 상태·열린 버그)와
-> [`docs/EVALUATION.md`](docs/EVALUATION.md)(리스크·완성 전략)를 읽어라.
+> **새 세션이라면 [`docs/README.md`](docs/README.md)의 5분 읽기 순서부터.**
+> 문서의 정본·생성물(`docs/generated/`)·기록(`docs/archive/`) 구분과 문서 규칙이
+> 그 파일에 있다. 그다음 [`docs/HANDOFF.md`](docs/HANDOFF.md)(현재 상태·열린 작업),
+> [`docs/NORTH_STAR.md`](docs/NORTH_STAR.md)(불변식),
+> [`docs/ROADMAP.md`](docs/ROADMAP.md)(우선순위) 순으로 읽어라.
 > 이 파일은 영속 불변식이다.
 
 **KIRITSU is the world and the game; VIMLORE is the game's subtitle.** The
@@ -58,11 +58,11 @@ inside the `pwa:start…pwa:end` block (the single-file inliner strips them);
 never add a third-party service worker or remote icon.
 
 Current priority is **story canon → story vertical slice → game feel/puzzles → integrated story → PV-FULL engine**, not an engine rewrite.
-Read [`docs/UPGRADE_MASTER_PLAN.md`](docs/UPGRADE_MASTER_PLAN.md) and
+Read [`docs/ROADMAP.md`](docs/ROADMAP.md) and
 [`docs/STORY_BIBLE.md`](docs/STORY_BIBLE.md) before starting a feature. Dynamic
 hazards must not enter deterministic campaign first-clears until the LIVE mode
 is verified. Puzzle devices are turn-based and use observable effects, not raw
-key scripts; read [`docs/PUZZLE_DEVICES.md`](docs/PUZZLE_DEVICES.md) first.
+key scripts; read [`docs/ROADMAP.md`](docs/ROADMAP.md) first.
 
 Public presentation is a gate too: run `npm run presentation:check` after any
 README, hero, social card, icon or OG-meta change. `docs/COMPLETION.md` is the
@@ -84,7 +84,7 @@ npm run invariants     # cross-layer command/stage/unlock consistency (CI gate)
 npm run surface        # engine surface audit; --strict is a CI gate
 npm run matrix         # grammar matrix vs real Vim (CI gate)
 npm run count-matrix   # manifest commands at counts 1-3 vs real Vim (CI gate)
-npm run status:write   # regenerate docs/STATUS.md (never hand-edit it)
+npm run status:write   # regenerate docs/generated/STATUS.md (never hand-edit it)
 npm run status:check   # fail if STATUS.md is stale (CI gate)
 npm run verify         # unit + lint + tsc + docs + invariants
 npm run fuzz           # seeded differential fuzzer (local, needs vim)
@@ -115,15 +115,24 @@ src/core/game/      session (hearts, keys, coins), goals, progress types
 src/content/        commands.ts (the Grimoire) + chapters/cNN.ts (the game)
 src/ui/             canvas renderer, screens, WebAudio sfx
 tools/              level linter, vim oracle, single-file inliner
-docs/               LEVEL_FORMAT.md (authoring), CURRICULUM.md (the 10 floors)
+docs/               README.md (문서 지도), LEVEL_FORMAT.md (authoring), CURRICULUM.md, generated/ (수치 정본), archive/ (기록)
 ```
+
+## Documentation system
+
+- 지도·읽기 순서·규칙: [`docs/README.md`](docs/README.md).
+- **정본(canonical)** ↔ **생성물(`docs/generated/`, 손대지 않음)** ↔ **기록(`docs/archive/`, 정본 아님)** 을 구분한다.
+- 새 문서는 (a) `docs/README.md` 표에 등록, (b) `tools/doc-check.ts`의 `CANONICAL` 목록에 추가해야 통과한다.
+- **수치는 `docs/generated/STATUS.md`만 정본.** 서술 문서에 숫자를 복제하지 말고 링크한다.
+- 생성물 신선도 게이트: `npm run levels:check`, `npm run surface:check`, `npm run count-matrix -- --check-docs`, `npm run status:check` — 모두 `npm run verify`/CI에 포함.
+- 금지: 루트 `docs/`에 새 `FINAL_*`/`SPRINT_*`/`*_HANDOVER` 문서 만들기. 역사 기록은 `docs/archive/`에만.
 
 ## Adding content
 
 - **A stage**: edit `src/content/chapters/cNN.ts`. Read `docs/LEVEL_FORMAT.md`
-  and [`docs/CURRICULUM_PROVENANCE.md`](docs/CURRICULUM_PROVENANCE.md) + [`docs/BOOKS_INDEX.md`](docs/BOOKS_INDEX.md). Every
+  and [`docs/CURRICULUM_PROVENANCE.md`](docs/CURRICULUM_PROVENANCE.md) + [`docs/generated/BOOKS_INDEX.md`](docs/generated/BOOKS_INDEX.md). Every
   stage must cite a source-book section and fit the prerequisite graph; start
-  from `docs/STAGE_PROVENANCE.md` (all rows are unmapped) and `docs/BOOKS_INDEX.md`;
+  from `docs/generated/STAGE_PROVENANCE.md` (all rows are unmapped) and `docs/generated/BOOKS_INDEX.md`;
   never invent a plausible lesson. Run `npm run lint:levels -- NN` until green.
 - **A chapter**: copy `c01.ts`, set `id`/`index`/`unlocks`/`stages`, register it
   in `src/content/chapters/index.ts`. Then lint it.
@@ -138,7 +147,7 @@ docs/               LEVEL_FORMAT.md (authoring), CURRICULUM.md (the 10 floors)
   v1–v8 stroke segmentation as not HW-quality. The accepted next step is
   **manual full-stroke tracing of the 20 strokes** (each a closed SVG path,
   overlaps included, union = Yuji Boku Light glyph). Read
-  [`docs/STROKE_HANDOVER.md`](docs/STROKE_HANDOVER.md) before touching the title.
+  [`docs/TITLE_KANJI.md`](docs/TITLE_KANJI.md) before touching the title.
   Do not ship another automated partition.
 - **Title kanji (規律) has a single source of truth:** `public/kanji/ou-guilv-tight.svg`
   (구양순체 계열 Yuji Boku **Light cut**, viewBox 600×300, fill `#f2d8c9`; generated directly from the subset by `tools/gen-title-svg.py`). **Kanji font is LOCKED** to this Yuji Boku Light cut for every view. v8 (deployed, but user-rejected quality) draws the real
@@ -174,7 +183,7 @@ The game targets a cheap phone with a Bluetooth keyboard.
 
 - Zero runtime dependencies. Stretch goal: 200 kB raw / 70 kB gzip. **Hard
   ceiling enforced by `npm run budget`: 420,000 B raw / 140,000 B gzip**. Current
-  measured size lives in `docs/STATUS.md`; do not raise the ceiling without a
+  measured size lives in `docs/generated/STATUS.md`; do not raise the ceiling without a
   deliberate, measured reason.
 - The renderer bakes one **opaque composite frame** (background, highlights,
   glyphs, bloom) and blits it once per frame; cursor, cursorline, line numbers,
@@ -191,9 +200,9 @@ The game targets a cheap phone with a Bluetooth keyboard.
 - `<Del>` is **not** a universal key: it is gated as `x` in Normal and `d` in
   Visual, so a locked deletion skill cannot be reached through Delete. (It was
   universal until 2026-11-14; that was a real gate bypass, pinned by tests.)
-- **Numbers are generated, not copied.** `docs/STATUS.md` is the single source
-  for measured counts/build size; `docs/COMMAND_MANIFEST.md` and
-  `docs/STATE_REPORT.md` are generated too. Re-run the reports and
+- **Numbers are generated, not copied.** `docs/generated/STATUS.md` is the single source
+  for measured counts/build size; `docs/generated/COMMAND_MANIFEST.md` and
+  `docs/generated/STATE_REPORT.md` are generated too. Re-run the reports and
   `npm run status:write`; never hand-edit generated files.
 - **The command echo renders only while `vim.awaitingKey` is true.** Failed
   commands must clear `count`/`cmdKeys` before returning; otherwise `u` at the
@@ -238,19 +247,18 @@ The authoritative matrix of what the engine does and does not do is
 [`docs/VIM_COVERAGE.md`](docs/VIM_COVERAGE.md). The oracle is **373/373**
 against a real vim (jumplist, `(`/`)`, `<C-a>`/`<C-x>` with octal/hex, insert
 `<C-r>`/`<C-o>`). Not in the current single-buffer slice: multi-buffer/files/
-windows/tabs (deferred, not rejected: `FUTURE_EDITOR.md`), folds, completion, `:!`,
+windows/tabs (deferred, not rejected; `docs/VIM_COVERAGE.md` 부록 B), folds, completion, `:!`,
 quickfix/LSP, Vimscript/Lua, and viewport motions (`zz`, `zt`, exact `H/M/L`). `gn` / `g*` / `g#`, `\zs`/`\ze` and interactive `:s///c` are
 implemented; simple brace-depth `=`/`gg=G` is also implemented. Next Tier 2:
 `g;`/`g,`.
 
 **Engine-completeness program:** the surface manifest, the normalization/
 cursor extraction and the matrix/compose-fuzz gates are defined in
-[`docs/ENGINE_PROGRAM.md`](docs/ENGINE_PROGRAM.md); read it before adding an
-engine feature or a quirk patch.
+`docs/VIM_COVERAGE.md` 부록 A; read it before adding an engine feature or a quirk patch.
 
 **Buffers, files, splits and tabs are deliberately deferred, not rejected.**
 The engine is single-buffer today. The target model, phases, invariants and
-tests are in [`docs/FUTURE_EDITOR.md`](docs/FUTURE_EDITOR.md); never fake
+tests are in `docs/VIM_COVERAGE.md` 부록 B; never fake
 `:b`/`:sp` by mutating `Vim.buf`, and do not start that program before Tier 2
 plus the cursor-only fuzz backlog are green.
 

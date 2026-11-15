@@ -5,7 +5,7 @@
 > generated from the current stage data. A row may become `cited` only when it has a
 > `book → section → command/tip` citation from [`BOOKS_INDEX.md`](BOOKS_INDEX.md),
 > a prerequisite check and a varied-repetition plan. See
-> [`CURRICULUM_PROVENANCE.md`](CURRICULUM_PROVENANCE.md).
+> [`CURRICULUM_PROVENANCE.md`](../CURRICULUM_PROVENANCE.md).
 
 | stage | chapter | teaches | par | source section | drill / transfer | status |
 |---|---:|---|---:|---|---|---|

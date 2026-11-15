@@ -83,5 +83,5 @@ out.push(
   '',
 );
 
-writeFileSync(new URL('../docs/BOOKS_INDEX.md', import.meta.url), out.join('\n'));
-console.log(`books index: ${books.length} books -> docs/BOOKS_INDEX.md`);
+writeFileSync(new URL('../docs/generated/BOOKS_INDEX.md', import.meta.url), out.join('\n'));
+console.log(`books index: ${books.length} books -> docs/generated/BOOKS_INDEX.md`);

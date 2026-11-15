@@ -417,7 +417,7 @@ GitHub repository renamed `vimlore` → `kiritsu`; VIMLORE is now the **game's**
 - v8(자동 Voronoi 소유 + 전체 붓 튜브)을 라이브에 배포했으나 사용자가
   "여전히 부정확하고 발전 없음"으로 판정. **자동 분할 접근 종료.**
 - 다음 AI 작업: 規 11획 + 律 9획을 **완전한 붓 획 SVG path로 수작업 트레이싱**.
-  단일 지시서 `docs/STROKE_HANDOVER.md` (절차·검증·리서치·실패 기록 포함).
+  단일 지시서 `docs/TITLE_KANJI.md` (절차·검증·리서치·실패 기록 포함).
 - 리서치 요약: HW/Arphic per-stroke outline은 다른 폰트·PRC 획순·APL
   라이선스라 Yuji Boku 형상에 부적합. KanjiVG는 중심선(CC BY-SA)만 제공.
   contourpy/numpy/pathops는 `.pdfdeps`에서 사용 가능.

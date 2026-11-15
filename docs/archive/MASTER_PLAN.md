@@ -1,15 +1,15 @@
 > **SUPERSEDED 2026-11-12.** This file is a historical planning snapshot. Its
 > metrics and baseline commit are out of date. For the current green candidate,
 > read [`FINAL_CHECKPOINT.md`](FINAL_CHECKPOINT.md), [`FINAL_REPORT.md`](FINAL_REPORT.md),
-> [`STATE_DEBT.md`](STATE_DEBT.md), [`FUZZ_DEBT.md`](FUZZ_DEBT.md) and
-> [`NEXT_STEPS.md`](NEXT_STEPS.md) before trusting any number below.
+> [`STATE_DEBT.md`](../DEBT.md), [`FUZZ_DEBT.md`](../DEBT.md) and
+> [`NEXT_STEPS.md`](../ROADMAP.md) before trusting any number below.
 
 # MASTER PLAN — KIRITSU completion program (subtitle VIMLORE)
 
 > **Status: ACTIVE** · Orchestrator: the AI that wrote this file (2026-11-11)
-> **Read order for the next AI:** [`PROMPT_SYSTEM.md`](PROMPT_SYSTEM.md) → this file → [`AGENTS.md`](../AGENTS.md) →
-> [`ARCHITECTURE.md`](ARCHITECTURE.md) → [`VIM_COVERAGE.md`](VIM_COVERAGE.md) →
-> [`HANDOFF.md`](HANDOFF.md) → [`CURRICULUM_PROVENANCE.md`](CURRICULUM_PROVENANCE.md) →
+> **Read order for the next AI:** [`PROMPT_SYSTEM.md`](../PROMPT_SYSTEM.md) → this file → [`AGENTS.md`](../../AGENTS.md) →
+> [`ARCHITECTURE.md`](../ARCHITECTURE.md) → [`VIM_COVERAGE.md`](../VIM_COVERAGE.md) →
+> [`HANDOFF.md`](../HANDOFF.md) → [`CURRICULUM_PROVENANCE.md`](../CURRICULUM_PROVENANCE.md) →
 > [`EVALUATION.md`](EVALUATION.md).
 > If any of those disagree with this file about **priority**, this file wins.
 > If any of them disagree about **Vim semantics**, real `vim -u NONE` wins.
@@ -53,7 +53,7 @@
    professional Vim books in `books-text/` are the syllabus authority; every
    stage must trace to a book section and the prerequisite graph must support a
    gradual, nearly painless path. Read
-   [`CURRICULUM_PROVENANCE.md`](CURRICULUM_PROVENANCE.md). The current audit is
+   [`CURRICULUM_PROVENANCE.md`](../CURRICULUM_PROVENANCE.md). The current audit is
    incomplete — do not claim otherwise.
 
 ## 1. Invariants — never violate these
@@ -83,7 +83,7 @@
 | engine oracle | **373/373** vs `vim -u NONE` (266 at pass-2 start, +77 cases) |
 | level lint | **51/51 stages valid** |
 | surface | **86 of 88 commands with engine evidence**, 9 engine-only features, 0 orphan cases (`npm run surface -- --strict`, CI gate) |
-| matrix | 21,712 grammar cases: **21,712 matched, 0 divergences** (CI gate; `docs/MATRIX_REPORT.md`) |
+| matrix | 21,712 grammar cases: **21,712 matched, 0 divergences** (CI gate; `docs/generated/MATRIX_REPORT.md`) |
 | unit tests | **28 pass**; `tsc --noEmit` clean; `doc-check` OK |
 | build | JS 242,140 B · single `dist/kiritsu.html` 276,101 B · gzip 85,991 B · budget gate 277k/87k (raised this pass) |
 | fuzz | 12 seeds at n=1000: **0 divergences** |
@@ -131,7 +131,7 @@ shapes the corpus produces; see HANDOFF §2.
 
 > **Engine-completeness program:** the surface manifest, the
 > normalization/cursor extraction and the systematic matrix/compose-fuzz gates
-> are owned by [`ENGINE_PROGRAM.md`](ENGINE_PROGRAM.md). "Advanced Vim" below is
+> are owned by [`ENGINE_PROGRAM.md`](../VIM_COVERAGE.md). "Advanced Vim" below is
 > feature breadth; ENGINE_PROGRAM is how the covered breadth becomes provably
 > complete.
 
@@ -250,7 +250,7 @@ acceptance criteria:
 
 | id | task | workstream | status | files |
 |---|---|---|---|---|
-| D1 | write master plan + handoff protocol | W5 | **done** | `docs/MASTER_PLAN.md` |
+| D1 | write master plan + handoff protocol | W5 | **done** | `docs/archive/MASTER_PLAN.md` |
 | E1 | fuzz harness | W1 | **done** | `tools/fuzz.ts` |
 | E2 | triage/fix fuzz divergences | W1 | **done** (seed 7; seeds 11/23 listed above) | `src/core/vim/**`, `tools/cases.ts` |
 | E3 | `gn` / `g*` / `g#` | W2 | **done** | `src/core/vim/engine.ts`, `search.ts` |
@@ -275,13 +275,13 @@ acceptance criteria:
 | E10 | visual-block outdent, counted WORD failure | W1 | **done** — 12 of 12 fuzz seeds at n=1000, 0 divergences | `engine.ts` |
 | D4 | fix c04s3 to a Vim-valid solution (par 8) | W5 | **done** | `src/content/chapters/c04.ts` |
 | D5 | deliberate budget raises (258→260→277k) | W5 | **done** | `tools/bundle-budget.ts`, docs |
-| A1 | surface manifest + `surface-audit.ts` | W0 | **done** — strict CI gate | `tools/surface-audit.ts`, `docs/ENGINE_SURFACE.md` |
+| A1 | surface manifest + `surface-audit.ts` | W0 | **done** — strict CI gate | `tools/surface-audit.ts`, `docs/generated/ENGINE_SURFACE.md` |
 | A2 | CI native-Vim oracle job | W0 | **done** — oracle + fuzz smoke | `.github/workflows/ci.yml` |
 | A3 | extract delete normalization (Q02/Q10) | W0 | **done** — Phase B pilot | `src/core/vim/normalize.ts`, `engine.ts` |
 | A4 | extract cursor policy (Q04/Q09) | W0 | **done** | `src/core/vim/cursor.ts`, `engine.ts` |
-| C1 | grammar matrix harness (feedkeys semantics) | W0 | **done** — 21,712/21,712, CI gate | `tools/matrix.ts`, `docs/MATRIX_REPORT.md` |
+| C1 | grammar matrix harness (feedkeys semantics) | W0 | **done** — 21,712/21,712, CI gate | `tools/matrix.ts`, `docs/generated/MATRIX_REPORT.md` |
 | C2 | close matrix divergences by family | W0 | **done** — 0 divergences | `engine.ts`, `motions.ts`, `objects.ts` |
-| ED0 | deferred buffer/file/window architecture | later | **design done** | `docs/FUTURE_EDITOR.md` |
+| ED0 | deferred buffer/file/window architecture | later | **design done** | `docs/VIM_COVERAGE.md` |
 
 ## 7. Handoff protocol (for the next AI)
 
@@ -308,7 +308,7 @@ acceptance criteria:
 - **Scope creep**: no stages in this program; no server, no plugin system. New
   chapters are allowed only after Tier 2 coverage is green. Buffers/files/splits/
   tabs are a deliberate later editor program — **design and phases in
-  [`FUTURE_EDITOR.md`](FUTURE_EDITOR.md)**; never fake `:b`/`:sp` by mutating the
+  [`FUTURE_EDITOR.md`](../VIM_COVERAGE.md)**; never fake `:b`/`:sp` by mutating the
   single `buf`.
 - **Doc drift**: the oracle count, command count and perf numbers are checked
   by `doc-check` only partially; update them by hand in the same commit.
@@ -330,7 +330,7 @@ acceptance criteria:
 Buffers (`:ls/:b/:bn/:bp/:bd/:bufdo`, alternate `#`, hidden), files
 (`:e/:r/:w file` over a browser VFS), splits, tabs and `<C-w>` are **not** in the
 current slice. The concrete architecture, phases, invariants and tests are in
-[`FUTURE_EDITOR.md`](FUTURE_EDITOR.md). Do not start Phase A until Tier 2 and the
+[`FUTURE_EDITOR.md`](../VIM_COVERAGE.md). Do not start Phase A until Tier 2 and the
 cursor-only fuzz backlog are green.
 
 ## 10. Command reference (unchanged)
