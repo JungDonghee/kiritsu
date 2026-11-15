@@ -1,12 +1,16 @@
-# KIRITSU — new session handoff (2026-11-14)
+# KIRITSU — new session handoff (2026-11-15)
+
+> 역사적 문서. 현재 상태의 단일 진실은 `stories/kiritsu/HANDOVER.md` §3(캐논)와
+> `stories/kiritsu/NOVEL_STATUS.md`(원고 상태·검토 이력)다. 이 파일은
+> "처음 오는 AI가 읽을 순서"만 안내한다.
 
 ## Read first
 
 1. `AGENTS.md`
-2. `docs/STORY_BIBLE.md`
-3. `docs/stories/kiritsu/HANDOVER.md`
-4. `docs/stories/kiritsu/story-a.md`
-5. `docs/AUTOMATION_LOG.md`
+2. `stories/kiritsu/HANDOVER.md` — LOCKED CANON (필독)
+3. `stories/kiritsu/NOVEL_STATUS.md` — 원고 상태·검토 27건·열린 결정
+4. `stories/kiritsu/STORY_TO_GAME.md` — 게임 이식 매핑
+5. `stories/kiritsu/ART_HANDOVER.md` — 일러스트 생성(다른 AI 담당)
 6. `docs/STATUS.md`
 7. `docs/DESIGN.md`
 8. `README.md`
@@ -14,54 +18,21 @@
 ## Locked state
 
 - Repository: `/home/jung/ai_station/sandbox/vimlore` (GitHub `JungDonghee/kiritsu`)
-- Latest automation commit: `1b41b65` (repo renamed to `kiritsu`; **KIRITSU is the world and the game, VIMLORE is the subtitle**)
 - Live: https://jungdonghee.github.io/kiritsu/
 - Design is **locked**: kanji-first `規律`, `CALL kiritsu` code strip, no Russian
   lettering, no sakura branch, laser reveal, centered VIMLORE layout.
 - Do not redesign the title. Do not touch campaign first-clear solutions, par,
   gates, or level solutions.
-- Engine baseline: 104 full-editor state-matrix edges open; game-used
-  solution+undo is 51 of 51. This is documented debt, not a game blocker.
-- Story/LIVE/puzzle implementation was deliberately not started.
+- Engine baseline: state-matrix/document debt는 `docs/STATUS.md` 기준.
+- **스토리 원고는 확정 상태다**: `stories/kiritsu/work/` 13편, 약 73,000자,
+  검토 27건 반영, 규칙 검사 0건. 재집필하지 말 것.
+- **미착수 항목**: 게임 이식(스토리 브리프/코덱스), 영어판·리츠 1인칭(사용자
+  한국어판 독서 후 — 보류), 이미지 교체(다른 AI).
 
-## Today's job
+## Today's job (확정분 요약)
 
-Story only. Start with a short decision pass, then one vertical slice.
-The canon is **locked** in [`stories/kiritsu/HANDOVER.md`](stories/kiritsu/HANDOVER.md);
-the novel rewrite mandate is [`stories/kiritsu/WRITING_BRIEF.md`](stories/kiritsu/WRITING_BRIEF.md).
-
-Decisions to confirm with the user before porting the novel into the game:
-
-1. How do the novel's 12 chapters + prologue map to the game's 10 floors?
-2. What is the player's relationship to 리츠[律] — identical, replay, or the
-   copy that becomes 리츠[立]?
-3. Do 선택지 (신고/묵인, 수정/방치) branch the game, or does the game play the
-   canon path with Vim skill as the only variation?
-4. Which single ending is canon, and how do the 도달 방식 differ?
-5. Does 칸노[監能]'s execution appear as a timer/interrogation, or as ex-mode
-   verdicts?
-6. Is the final 제1조 collapse a playable edit or a cutscene?
-
-Deliverable after decisions:
-
-- one c01 vertical slice: title → prologue beat → first Vim task → diegetic
-  consequence → save/persistence;
-- no new engine commands unless a story beat requires them;
-- no LIVE or puzzle redesign yet;
-- Korean UI copy plain/banmal only.
-
-## Rules
-
-- Run `npm run korean:check`, `doc-check`, tests, `status:check` before commit.
-- Commit/push only when green.
-- Do not claim the 104 state edges are zero.
-- Do not restore Russian or the branch.
-- Keep the page installable/offline and the single-file build self-contained.
-
-## Suggested first message for the new session
-
-> KIRITSU 스토리 작업 시작. 먼저 AGENTS.md, docs/STORY_BIBLE.md,
-> docs/stories/kiritsu/HANDOVER.md, docs/stories/kiritsu/story-a.md,
-> docs/AUTOMATION_LOG.md, docs/DESIGN.md를 읽어라. 디자인과 엔진은 동결됐고
-> 캠페인/스토리 캐논은 네가 임의로 바꾸지 마라. 오늘은 스토리 결정 6개를
-> 나랑 확정한 뒤 c01 수직 슬라이스 하나만 구현한다. 한국어는 반말로.
+- 한국어판은 **사용자 독서·피드백 대기**. 피드백 도착 전에는 구조 변경 금지.
+- 다음 단계 순서(피드백 반영 후): 영어판 → 리츠 1인칭 → 게임 이식
+  (STORY_TO_GAME.md의 F0+F4 수직 슬라이스부터).
+- 규칙: `stories/kiritsu/HANDOVER.md` §3.7(이름[한자]·은어 표기·PDF 요구),
+  §3.8(여섯 가지 모호성 — 설명 금지) 절대 준수.

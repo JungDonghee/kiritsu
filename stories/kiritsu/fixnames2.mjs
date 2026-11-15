@@ -2,7 +2,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 const dir = path.dirname(fileURLToPath(import.meta.url));
-const files = ['story-a.md', 'story-b.md', 'story-c.md'];
+const files = []  // 수정 모드 기본 대상 없음 — work/는 --check로만 검사(정본 보호);
 const key = { '키리츠': 'kiritsu', '리츠': 'ritsu', '츠키': 'tsuki', '레이': 'rei', '코우': 'kou', '칸노': 'kanno', '유이토': 'yuito' };
 const other = /(키리츠|리츠|츠키|레이|코우|칸노|유이토)(?!\[)/g;
 const shin = /(?<![\uAC00-\uD7A3])(신)(?!\[)(?=\[|들|은|는|이|가|을|를|의|에게|과|와|도|만|께|로|으로|[\s.,!?"'…—]|$)/g;

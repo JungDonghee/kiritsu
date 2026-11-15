@@ -30,9 +30,9 @@
 ## Where the canon lives
 
 - **LOCKED / FREE 규칙**: [`stories/kiritsu/HANDOVER.md`](../stories/kiritsu/HANDOVER.md)
-- **원고**: [`stories/kiritsu/story-a.md`](../stories/kiritsu/story-a.md), `story-b.md`, `story-c.md`
+- **원고(정본)**: [`stories/kiritsu/work/`](../stories/kiritsu/work/) 13편 (story-a/b/c는 낡은 참고 초고). 상태: `NOVEL_STATUS.md`.
 - **요약/이름 규칙**: [`stories/kiritsu/summary.md`](../stories/kiritsu/summary.md)
-- **삽화**: CRT 벡터 + (예정) FLUX 1.1 [pro] — 키는 `.secrets/bfl_api_key`
+- **삽화**: CRT 벡터 + ART_HANDOVER.md(다른 AI 생성) — 키는 `.secrets/bfl_api_key`
 
 ## Story-mode mapping
 

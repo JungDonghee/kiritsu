@@ -5,7 +5,7 @@
 > true now, what is broken, and which traps cost the last session hours.
 > For a single copy-paste start, use [`ONE_MESSAGE.md`](ONE_MESSAGE.md) or run
 > `npm run kickoff`.
-> **Last rewritten:** 2026-11-15, after the naming correction, CI/IME fixes and the novel rewrite mandate.
+> **Last rewritten:** 2026-11-15, after the naming correction, CI/IME fixes and the novel is confirmed (work/ 13편 ~73,000자).
 
 ## 0j. Naming, CI fix, IME input, novel mandate (2026-11-15)
 
@@ -39,13 +39,13 @@ Hangul key events.
 deleted on the user's instruction. The AI-only KIRITSU canon is the only
 story; it lives in [`stories/kiritsu/`](stories/kiritsu/README.md).
 
-**Novel mandate.** Full rewrite of the 42,927-char draft per
+**Novel mandate.** work/ 13편 확정(~73,000자) — NOVEL_STATUS.md 참조 per
 [`stories/kiritsu/WRITING_BRIEF.md`](stories/kiritsu/WRITING_BRIEF.md):
 중편소설 이상 (100,000+ chars, capped only by plausibility/immersion), Korean
-first then an English adaptation, then a 리츠[律] first-person version as the
+first; the English adaptation and 리츠[律] first-person version are **held** until the user finishes reading the Korean version (user directive)
 game-port source. Every chapter passes a **subagent cross-review** before the
 next one starts. The PDF is white-background book-style with emotional
-FLUX illustrations (JPEG q80 @1024px) and must stay **≤5 MB** for phone
+illustrations are produced by a separate AI per ART_HANDOVER.md; print PDF ~7MB, mobile ≤5MB produced separately in a gs environment (§3.7-1)
 loading — `build.mjs` now auto-runs `optimize-pdf.py` (pikepdf: object
 streams + linearize); the hardcoded-dir trap in `build.mjs` is resolved.
 
@@ -133,7 +133,7 @@ only finalize by 23:50; the machine shuts down at 00:00.
 
 - Master plan: [`UPGRADE_MASTER_PLAN.md`](UPGRADE_MASTER_PLAN.md).
 - Narrative canon: [`STORY_BIBLE.md`](STORY_BIBLE.md) — AI-only KIRITSU (리츠[律], 츠키[月], 신[審], 칸노[監能]); LOCKED canon in [`stories/kiritsu/HANDOVER.md`](stories/kiritsu/HANDOVER.md).
-- First bilingual scene: [`stories/kiritsu/story-a.md`](stories/kiritsu/story-a.md).
+- Story canon lives in [`stories/kiritsu/work/`](stories/kiritsu/work/) (13 confirmed parts); English is held. See [`stories/kiritsu/NOVEL_STATUS.md`](stories/kiritsu/NOVEL_STATUS.md).
 - Priority: story vertical slice (prologue + c01 epigraph/interlude + codex),
   then LIVE CIRCUIT/puzzle devices, then PV-FULL Practical Vim engine.
 - Do not retrofit moving hazards into deterministic campaign first-clears;

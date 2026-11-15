@@ -13,7 +13,7 @@
 **Order is a file. You are the cursor.**
 
 KIRITSU (規律, *kiritsu* — order, discipline) is a real-Vim cyberpunk bureaucratic
-noir. The city is a legal document; you are the audit cursor. Every keystroke
+noir. The system is a legal document; you are the audit cursor. Every keystroke
 is an edit, every edit is a law, and your own file is the last unresolved line.
 
 **KIRITSU is the world — and the game.** The novel, the world and the game

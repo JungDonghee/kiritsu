@@ -268,4 +268,4 @@ failures. Automation stops at 23:58 KST.
 
 ## Repo rename
 
-GitHub repository renamed `vimlore` → `kiritsu`; VIMLORE is now the series/world subtitle. Live moved to <https://jungdonghee.github.io/kiritsu/>. README hero, desktop title, first chamber, PWA/portrait screenshots, OG/social cards, package name, and the downloadable `kiritsu.html` were refreshed. Legacy `vimlore.html` download remains as an alias.
+GitHub repository renamed `vimlore` → `kiritsu`; VIMLORE is now the **game's** subtitle (정정: 세계 이름은 KIRITSU, VIMLORE는 게임 부제 — 사용자 최종 확정). Live moved to <https://jungdonghee.github.io/kiritsu/>. README hero, desktop title, first chamber, PWA/portrait screenshots, OG/social cards, package name, and the downloadable `kiritsu.html` were refreshed. Legacy `vimlore.html` download remains as an alias.

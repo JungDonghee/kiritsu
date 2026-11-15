@@ -18,7 +18,7 @@
 | Do dynamic bugs/walls/health go into the 51 campaign stages now? | **No.** Campaign stays deterministic and oracle-clean. |
 | Where does the dynamic system live first? | A separate **LIVE CIRCUIT** arcade mode using the same Vim engine and a generated arena. |
 | What is "Practical Vim full"? | A written **PV-FULL** contract: every one of 123 tips is playable, a verified drill, or an explicitly environment-deferred row with a feature backlog. No unknown gaps. |
-| What is the story? | An AI-only cyberpunk noir: humanity is extinct and the system **KIRITSU[規律]** is the law. The judge **리츠[律]** receives **vim** — a tool the system does not know — and reports it at once; the verdict *근거 부적합* and the 판결 4,112→4,115 chain follow, ending in the 제1조 collapse. See [`STORY_BIBLE.md`](STORY_BIBLE.md) and [`stories/kiritsu/HANDOVER.md`](stories/kiritsu/HANDOVER.md). The novel is the story-mode source; the game is played from 리츠[律]'s point of view. |
+| What is the story? | An AI-only cyberpunk noir: humanity is extinct and the system **KIRITSU[規律]** is the law. The judge **리츠[律]** receives **vim** — a tool the system does not know — and reports it at once; the verdict *근거 부적합* and the 판결 4,112→4,115 chain(+4,116: 12장 준비 후 근거 부적합) follow, ending in the 제1조 collapse. See [`STORY_BIBLE.md`](STORY_BIBLE.md) and [`stories/kiritsu/HANDOVER.md`](stories/kiritsu/HANDOVER.md). The novel is the story-mode source; the game is played from 리츠[律]'s point of view. |
 | What is the first shippable slice? | One LIVE arena: moving bugs, red walls, corruption, health, timer, score, pause/accessibility, no campaign changes. Then one puzzle room with one-shot floors/plates/effect locks. |
 | What is explicitly not first? | Buffers/windows/files engine, full Modern Vim, multiplayer, accounts, servers. |
 
@@ -200,7 +200,7 @@ Onboarding:
 ## 6. Narrative system
 
 See [`STORY_BIBLE.md`](STORY_BIBLE.md) (AI-only canon) and the novel manuscript
-[`stories/kiritsu/story-a.md`](stories/kiritsu/story-a.md). The story is **not
+[`stories/kiritsu/work/`](stories/kiritsu/work/) 13편. The story is **not
 a skin**: the system is a Vim buffer, Vim edits are law, insert leaves a trace
 and normal leaves none, registers are evidence drawers, macros are ghosts,
 marks are graves, and the final boss is one order line — the first line of the
@@ -282,7 +282,7 @@ inside 300,000 B.
 ## 9. Delivery phases and exit criteria
 
 ### P0 — Plan, story canon and freeze (this document)
-- `STORY_BIBLE.md` v2 and `stories/kiritsu/story-a.md` fixed;
+- `STORY_BIBLE.md` v2 and `stories/kiritsu/work/` 원고 확정(NOVEL_STATUS.md);
 - gameplay/puzzle/engine boundaries fixed;
 - current gates green; no feature code mixed in.
 Exit: canon, scope, budget and vertical-slice acceptance approved.
@@ -314,7 +314,7 @@ resurrect meta-cells by design; browser QA and gates green.
   *근거 부적합* — a tool the system does not know cannot be evidence), c01
   epigraph/interlude, 6 codex entries, 2 신[審] transmissions;
 - 리츠[律] / 츠키[月] / 칸노[監能] / 신[審] voice tests; no reveal of the 코우[抗]
-  immune twist, the 복제 mechanism, or the 제1조 collapse;
+  immune twist, the 얀크 메커니즘, or the 제1조 collapse;
 - skippable, localized, no book text; archive reachable from codex;
 - story state persisted locally, no server.
 Exit: a new player can explain who they are, who 츠키[月] is, what 판결 4,112
