@@ -20,7 +20,7 @@ if (process.argv[2] === '--check') {
         .map((f) => path.join(dir, 'work', f));
   let bad = 0;
   const kana = /[\u3040-\u30ff\u31f0-\u31ff]/;
-  const deadTerms = /(읽는 손|쓰는 손|쓴 손|만든 손|시스템의 손|재검증의 손|그 손|손의 주인|손이 지나간|손이 써넣은|같은 손|다른 손|저 손)/;
+  const deadTerms = /(모숀|인사토)/;
   for (const p of list) {
     const rel = p.startsWith(dir) ? p.slice(dir.length + 1) : p;
     const s = fs.readFileSync(p, 'utf8');
