@@ -365,3 +365,13 @@ GitHub repository renamed `vimlore` → `kiritsu`; VIMLORE is now the **game's**
 - 게이트: tests 54/54, lint 51/51, tsc/doc-check/invariants, build/budget,
   pwa/title/presentation/korean 그린, level-oracle 51개 스테이지 일치.
 
+## 2026-11-15 (3) — 한자 폰트 최종: Yuji Boku 원본(A)
+
+- 무료 후보(A Yuji Boku/B Yuji Syuku/C~H 명조·거친 디스플레이)와 커스텀 붓 거침
+  컷까지 비교한 뒤 **A(Yuji Boku 원본)로 확정**.
+- 게임 UI에서 마지막으로 비(非)Yuji였던 타이틀 부트로그 `리츠[律]`의 律을
+  **Yuji Boku 단일 글리프 서브셋(~2.9KB, CSS 인라인)** 으로 교체. 이제 타이틀
+  SVG·부트로그·소설 PDF 한자 15자가 전부 같은 서체.
+- 미사용 `src/ui/ou-kanji.ts`(Noto Serif JP 規律 outlines) 삭제 — 비Yuji 한자
+  에셋 제거. 번들 410,477 B raw / 135,647 B gzip(ceiling 420k/140k).
+

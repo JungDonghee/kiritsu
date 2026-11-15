@@ -340,7 +340,7 @@ export class App {
       'BUILD 2006.06.23',
       'MEMORY ......... 640K OK',
       'MOUNT /dev/names ......... <b>FAILED</b>',
-      '리츠[律] ................. <b>NOT FOUND</b>',
+      '리츠[<k>律</k>] ................. <b>NOT FOUND</b>',
       'IDENTITY LINE ............. <b>OPEN</b>',
       '> WAITING FOR A CURSOR_',
     ];
@@ -389,8 +389,13 @@ export class App {
           { class: 'kt-boot' },
           ...log.map((line, i) => h('div', {},
             h('span', { class: 'kt-line', style: { animationDelay: `${0.16 + i * 0.13}s` } }, ...(() => {
-              const parts = line.split(/<b>|<\/b>/);
-              return parts.map((p, j) => (j % 2 ? h('b', {}, p) : document.createTextNode(p)));
+              // <b>…</b> 강조, <k>…</k> Yuji Boku 한자 글리프(부트로그 律)
+              const parts = line.split(/(<b>.*?<\/b>|<k>.*?<\/k>)/g).filter(Boolean);
+              return parts.map((p) => {
+                if (p.startsWith('<b>')) return h('b', {}, p.slice(3, -4));
+                if (p.startsWith('<k>')) return h('span', { class: 'kj' }, p.slice(3, -4));
+                return document.createTextNode(p);
+              });
             })()),
           )),
         ),

@@ -33,4 +33,23 @@ the same brush style as the title while the Korean body stays NanumGothic.
 - If the manuscript gains new hanja, add them to `HANJA` in `subset-font.py`,
   rerun it and rebuild the PDF; the full Yuji Boku font is not committed.
 
+## Final choice (2026-11-15)
+
+After comparing free alternatives (Yuji family, LXGW WenKai, Shippori Mincho B1,
+Kaisei Decol/HarunoUmi, Hina Mincho, New Tegomin, Zen Old Mincho, Yusei Magic,
+Reggae/RocknRoll/Rampart One) and custom rough-cut experiments, **A — Yuji Boku
+(original) is the project typeface.** It is the only face that keeps the
+Ouyang-style brush flavour the title was designed around; the others either
+lost the brush (Mincho) or were too display-heavy.
+
+All rendered hanja now use it:
+
+- title / hanko icon: Yuji Boku outlines (`public/kanji/ou-guilv-tight.svg`)
+- title boot-log `리츠[律]`: a **single-glyph 律 subset (~2.9 KB)** is inlined in
+  `src/style.css` as `KIRI_KANJI` (only non-SVG hanja in the game UI)
+- novel PDF: 15-hanja subset `fonts/YujiBoku-KIRITSU-subset.ttf`
+
+`src/ui/ou-kanji.ts` (Noto Serif JP outlines, unused) was deleted so no
+non-Yuji hanja asset remains in the game bundle.
+
 If the mark is replaced, remove these paths and this attribution.
