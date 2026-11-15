@@ -7,23 +7,19 @@
 > `npm run kickoff`.
 > **Last rewritten:** 2026-11-15, after the naming correction, CI/IME fixes and the novel is confirmed (work/ 13편 ~73,000자).
 
-## 0k — 타이틀 한자 인트로 (2026-11-15)
+## 0k — 타이틀 한자 인트로 (2026-11-15, v2)
 
-- 타이틀의 規律 표시를 **붓글씨 획 단위 레이저 쓰기**로 교체함: `src/ui/kanji.ts`의
-  `kiritsuStrokes()`(Yuji Boku 아웃라인을 Z 경계로 분할, 글자당 4획·총 8획) →
-  `kiritsuStrokeSvg()`(획별 clipPath 잉크 레이어) → `runKtLaserWrite()`(레이저
-  헤드가 현재 획의 아웃라인을 따라감 — rAF는 인트로 동안만, 종료 후 정지).
-- 제약: 디자인 잠금 유지(글자·그라디언트·레이아웃 불변), `crt-off`에서 글로우
-  없이 페이드만, `prefers-reduced-motion`에서 즉시 표시. KANJI_STAND_SVG(起立)는
-  사용처가 없어 미적용.
-- 타이밍 기준: 시작 0.85s, 획당 0.26s+0.07s 간격(8획 ≈ 3.4s 종료), 캡션은
-  `src/style.css`의 kt-rise/kt-flash 지연값으로 정렬.
-- **성능 증거**: 레이저 궤적은 인트로 전에 64-샘플로 미리 계산(프레임당
-  getPointAtLength·할당 0), 잉크 애니메이션은 opacity 전용(blur/brightness
-  래스터 제거). 헤드리스 소프트웨어 렌더링에서 인트로 ~23fps(기존 타이틀
-  이펙트 스택이 환경 상한 — 실기 GPU 합성 대상), 지속 게임플레이는
-  browser:qa 57fps 증거. `tools/title-check.mjs`가 8획·유령·헤드·reduced-motion·
-  콘솔 에러와 FPS≥18(재해 감지)을 verify 체인에서 검사한다.
+- **단독 규격서: `docs/TITLE_KANJI.md`** — v1 실수 2건(잘못된 글자 변형 사용,
+  페이드 팝 연출)을 체계화해 재발 방지. 타이틀 한자는 그 문서만 따른다.
+- v2 연출: 원본 `public/kanji/ou-guilv-tight.svg`(구양순체, fill #f2d8c9)를
+  런타임에 fetch(단일 파일 빌드에서는 data URI로 인라인 — 경로 문자열 중복
+  금지, 번들 예산)해, 20획(規11+律9) 스켈레톤(`src/ui/kanji.ts`
+  `KIRITSU_TITLE_STROKES`)을 따라 **레이저 코어가 먼저 그어지고 잉크 밴드가
+  뒤따라 드러나며**, 마지막 settle 번짐이 가장자리를 채운다(최종 글자형 100%).
+- rAF는 인트로 동안만(샘플 사전 계산), FPS 게이트 ≥18(재해 감지), reduced-
+  motion 즉시 표시, crt-off는 코어 색만 흰색. 검증: `tools/title-check.mjs`
+  (verify 체인에 편입: 20획·유령 2·settle·헤드·콘솔 에러·FPS).
+- 번들: 단일 파일 398.7kB raw/133.5kB gzip (예산 420/140 안).
 
 ## 0j. Naming, CI fix, IME input, novel mandate (2026-11-15)
 

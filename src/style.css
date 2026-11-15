@@ -1362,7 +1362,7 @@ h2,
   .kt-boot, .kt-petals, .kt-code, .kt-foot { display: none; }
 }
 
-.crt-off .kt-stroke { animation-name: kst-in-plain; }
+.crt-off .kts-core { stroke: #fff; }
 @keyframes kst-in-plain { from { opacity: 0; } to { opacity: 1; } }
 .crt-off .kt-laser-head { box-shadow: none; background: #fff; }
 
@@ -1961,22 +1961,33 @@ body.crt-off .board::after { display: none; }
 }
 .kt-ink svg { display: block; width: 100%; height: 100%; }
 /* 붓글씨 획쓰기: 획(서브패스) 단위로 잉크가 번지며 나타난다 (레이저 헤드가 획을 따라감) */
-.kt-ghost {
+/* 획쓰기 v2: 스켈레톤 밴드가 지나가며 잉크(원본 글자 fill)를 드러낸다 */
+.kts-band {
+  fill: none; stroke: #000; stroke-width: 58; stroke-linecap: round; stroke-linejoin: round;
+  stroke-dasharray: 1 1; stroke-dashoffset: 1;
+  animation: kts-draw .3s ease both;
+}
+@keyframes kts-draw { to { stroke-dashoffset: 0; } }
+.kts-core {
+  fill: none; stroke: #fff3df; stroke-width: 7; stroke-linecap: round; stroke-linejoin: round;
+  stroke-dasharray: 1 1; stroke-dashoffset: 1; opacity: .95;
+  animation: kts-draw .21s ease-out both;
+}
+/* 레이저 코어의 가짜 글로우(필터 없음 — 래스터 비용 0) */
+.kts-laser-layer {
+  paint-order: stroke;
+}
+.kts-ghost {
   opacity: .13;
-  filter: blur(.4px);
-  animation: kst-ghost-out .5s ease 3.5s both;
+  animation: kst-ghost-out .4s ease 7.25s both;
 }
-@keyframes kst-ghost-out { to { opacity: 0; } }
-.crt-off .kt-ghost { filter: none; }
-.kt-stroke {
+/* 밴드가 못 닿은 가장자리를 마지막에 잉크 번짐으로 채운다 — 최종 글자형 보장 */
+.kts-settle {
   opacity: 0;
-  animation: kst-in .26s ease both;
+  animation: kts-settle-in .32s ease 7.2s both;
 }
-@keyframes kst-in {
-  from { opacity: 0; }
-  55%  { opacity: .88; }
-  to   { opacity: 1; }
-}
+@keyframes kts-settle-in { to { opacity: 1; } }
+@keyframes kst-ghost-out { to { opacity: 0; } }
 .kt-laser-head {
   position: absolute; top: 0; left: 0; width: 9px; height: 9px; margin: -4.5px 0 0 -4.5px;
   background: #fff4f6; transform: rotate(45deg);
@@ -1985,7 +1996,7 @@ body.crt-off .board::after { display: none; }
 }
 .kt-flash {
   position: absolute; inset: 0; background: #ffe8ee; opacity: 0; pointer-events: none;
-  animation: kt-flash 3.55s ease-out both;
+  animation: kt-flash 7.3s ease-out both;
 }
 @keyframes kt-flash {
   0%, 68% { opacity: 0; }
@@ -1996,16 +2007,16 @@ body.crt-off .board::after { display: none; }
 .kt-caption {
   margin-top: 18px; font-size: 9px; letter-spacing: .32em; color: #c9a299;
   text-transform: uppercase;
-  opacity: 0; animation: kt-rise .5s ease 3.65s both;
+  opacity: 0; animation: kt-rise .5s ease 7.5s both;
 }
 .kt-tag {
   margin-top: 26px; font-size: 16px; letter-spacing: .11em; color: #c7f5d5;
-  opacity: 0; animation: kt-rise .5s ease 3.8s both;
+  opacity: 0; animation: kt-rise .5s ease 7.65s both;
 }
 .kt-press {
   margin-top: 46px; font-size: 10px; letter-spacing: .44em; color: #b7f7ca;
   text-transform: uppercase; opacity: 0;
-  animation: kt-rise .45s ease 3.95s both, kt-blink 1.2s 4.5s steps(2, end) infinite;
+  animation: kt-rise .45s ease 7.85s both, kt-blink 1.2s 8.4s steps(2, end) infinite;
 }
 .kt-press::after { content: "▌"; margin-left: 4px; color: #ff5a72; }
 @keyframes kt-blink { 50% { opacity: .1; } }
@@ -2040,7 +2051,9 @@ body.crt-off .board::after { display: none; }
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .kt-stroke { opacity: 1; animation: none; }
+  .kts-band, .kts-core { animation: none; stroke-dashoffset: 0; }
+  .kts-ghost { opacity: 0; }
+  .kts-settle { opacity: 1; animation: none; }
   .kt-laser-head { display: none; }
   .kt-caption, .kt-tag, .kt-press { opacity: 1; animation: none; }
   .kt-petal { animation: none; opacity: .18; }

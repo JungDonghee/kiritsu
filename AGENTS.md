@@ -120,6 +120,14 @@ docs/               LEVEL_FORMAT.md (authoring), CURRICULUM.md (the 10 floors)
 
 ## Design laws
 
+- **Title kanji (規律) has a single source of truth:** `public/kanji/ou-guilv-tight.svg`
+  (구양순체 Yuji Boku, viewBox 600×300, fill `#f2d8c9`). The stroke-by-stroke
+  laser/brush intro must *draw* strokes (dashoffset reveal along
+  `KIRITSU_TITLE_STROKES` skeletons + settle layer), never fade/pop them. Read
+  [`docs/TITLE_KANJI.md`](docs/TITLE_KANJI.md) before touching the title — it
+  codifies two past mistakes (wrong glyph variant; fade instead of drawing) so
+  other AIs do not repeat them.
+
 1. One insight per stage. The puzzle must make the command *necessary*.
 2. `par` is the lesson: 3 stars = the elegant solution.
 3. Show, don't tell. Briefs are 1–3 sentences of story.

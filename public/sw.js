@@ -1,5 +1,5 @@
 /* VIMLORE service worker: installable, offline shell, no third-party requests. */
-const VERSION = 'kiritsu-v11';
+const VERSION = 'kiritsu-v12';
 const SHELL = [
   './',
   './index.html',

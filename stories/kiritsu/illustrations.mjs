@@ -8,7 +8,6 @@ const DEFS = `<defs>
   <radialGradient id="vig" cx="50%" cy="48%" r="70%"><stop offset="50%" stop-color="#000" stop-opacity="0"/><stop offset="100%" stop-color="#000" stop-opacity=".9"/></radialGradient>
   <linearGradient id="glass" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#fff" stop-opacity=".07"/><stop offset="32%" stop-color="#fff" stop-opacity="0"/><stop offset="100%" stop-color="#fff" stop-opacity=".02"/></linearGradient>
   <linearGradient id="phos" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#0a2a1d"/><stop offset="1" stop-color="#020a07"/></linearGradient>
-  <filter id="glow" x="-40%" y="-40%" width="180%" height="180%"><feGaussianBlur stdDeviation="2.4" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
   <clipPath id="screen"><rect x="26" y="26" width="1148" height="548" rx="26"/></clipPath>
   <clipPath id="screenP"><rect x="26" y="26" width="1148" height="1648" rx="26"/></clipPath>
 </defs>`;
@@ -20,10 +19,8 @@ ${DEFS}
 <rect x="18" y="18" width="1164" height="${h - 36}" rx="28" fill="none" stroke="#0f1c18" stroke-width="6"/>
 <g clip-path="url(#${clipId})">
   <rect x="26" y="26" width="1148" height="${h - 52}" fill="url(#phos)"/>
-  <rect x="26" y="26" width="1148" height="${h - 52}" fill="url(#grid)" opacity=".5"/>
   ${inner}
   <rect x="26" y="26" width="1148" height="${h - 52}" fill="url(#vig)"/>
-  <rect x="26" y="26" width="1148" height="${h - 52}" fill="url(#scan)"/>
   <rect x="26" y="26" width="1148" height="${h - 52}" fill="url(#glass)"/>
 </g>
 <rect x="26" y="26" width="1148" height="${h - 52}" rx="26" fill="none" stroke="#1e3a30" stroke-width="2"/>
@@ -34,7 +31,7 @@ const crt = (inner) => frame(inner, 600, 'screen');
 const crtP = (inner) => frame(inner, 1700, 'screenP');
 
 const T = (x, y, t, size = 16, color = G, anchor = 'start', op = .95) =>
-  `<text x="${x}" y="${y}" font-family="NanumGothic" font-size="${size}" fill="${color}" opacity="${op}" text-anchor="${anchor}" filter="url(#glow)">${t}</text>`;
+  `<text x="${x}" y="${y}" font-family="NanumGothic" font-size="${size}" fill="${color}" opacity="${op}" text-anchor="${anchor}">${t}</text>`;
 
 const CH = {
   ritsu:   { c: G, id: 'K-01', name: '리츠[律]',   role: '신[審] · 심판' },
@@ -104,15 +101,13 @@ const portrait = (n, x, y, s = 1, labels = true) => {
   const { c, id, name, role } = CH[n];
   return `<g transform="translate(${x} ${y}) scale(${s})">
     <rect width="260" height="340" fill="#030f0a" stroke="${c}" stroke-opacity=".45"/>
-    <rect width="260" height="340" fill="url(#dots)" opacity=".28"/>
     ${motif(n, c)}
     ${silhouette(c)}
     ${hair(n, c)}
     ${face(n, c)}
-    <rect width="260" height="340" fill="url(#scan)" opacity=".8"/>
     <rect x="8" y="8" width="244" height="324" fill="none" stroke="${c}" stroke-opacity=".18"/>
     <text x="248" y="22" font-family="monospace" font-size="9" fill="${c}" opacity=".45" text-anchor="end">${id}</text>
-    ${labels ? `<text x="14" y="308" font-family="NanumGothic" font-size="13" fill="${c}" filter="url(#glow)">${name}</text>
+    ${labels ? `<text x="14" y="308" font-family="NanumGothic" font-size="13" fill="${c}">${name}</text>
     <text x="14" y="326" font-family="NanumGothic" font-size="10" fill="#4a9a74">${role}</text>` : ''}
   </g>`;
 };
@@ -249,7 +244,7 @@ const ch8 = () => crt(`
 
 const ch9 = () => crt(`
   ${T(90,84,'GHOST PROCESS',14,G)}
-  <g opacity=".5" filter="url(#glow)">
+  <g opacity=".5">
     <circle cx="400" cy="260" r="50" fill="none" stroke="${M}" stroke-width="2"/>
     <path d="M315 420 Q400 322 485 420" fill="none" stroke="${M}" stroke-width="2"/>
   </g>
