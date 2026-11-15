@@ -389,3 +389,13 @@ GitHub repository renamed `vimlore` → `kiritsu`; VIMLORE is now the **game's**
   곡률 가중 시간표로 모서리에서 감속. title-check 38fps headless.
 - 번들 348,236 B raw / 110,893 B gzip. PDF 813KB/72p(한자 Light).
 
+## 2026-11-15 (5) — 한자 폰트 LOCK · 타이틀 v7 획별 벡터 패스
+
+- 사용자 확정: **한자 폰트 = Yuji Boku Light cut(8 unit 침식)으로 전 뷰 고정.**
+- 타이틀 v7: `tools/gen-title-strokes.py`가 글자 아웃라인을 pathops 불리언으로
+  **20개 획별 disjoint 벡터 패스**로 미리 분할(union=글자, 남는 영역은 마지막
+  획에 귀속). 런타임 `src/ui/kanji.ts`는 이 패스를 실제 일본어 획순대로 채우고
+  진행 중 획만 호 클립으로 스윕 — 마스크 기반 v6의 계단 경계/잔상 제거.
+  `tools/title-plan.json`(중심선/커버 폭) + `src/ui/title-stroke-paths.ts` 생성.
+- 번들 365,1xx B raw / ~118k B gzip(빌드 후 실측은 STATUS). title-check headless 통과, 팝/콘솔 에러/잔상 없음.
+

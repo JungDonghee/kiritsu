@@ -18,6 +18,7 @@
 // 없고, 각 획이 끝날 때 그 획의 잉크가 100% 덮이도록 반폭을 계산하므로 마지막
 // 클립 제거(팝)가 없다. 최종 프레임은 원본 글자를 그대로 그려 글자형 100%.
 import type { Sfx } from './sfx.ts';
+import { KIRITSU_TITLE_STROKE_PATHS, KIRITSU_TITLE_STROKE_RADII, KIRITSU_TITLE_INK_PIXELS } from './title-stroke-paths.ts';
 
 export interface KtTitleChar {
   transform: string;
@@ -180,7 +181,7 @@ function analyzeInk(ds: string[]): { ink: Uint8Array; cov: Uint8Array; edt: Floa
 }
 
 // 타이틀 재진입 시 잉크 분석(EDT/보로노이)과 글자 래스터를 재사용한다.
-let titleCache: { key: string; plan: Plan; glyph: HTMLCanvasElement } | null = null;
+let titleCache: { key: string; plan: Plan; paths: Path2D[] } | null = null;
 
 const edtAt = (edt: Float32Array, w: number, h: number, x: number, y: number): number => {
   const px = Math.round(x), py = Math.round(y);
@@ -328,7 +329,7 @@ function widthAt(g: StrokeGeom, widths: number[], s: number): number {
   return widths[k]! + ((widths[k + 1] ?? widths[k]!) - widths[k]!) * f;
 }
 
-/** 원본 SVG를 받아 캔버스 기반 획쓰기 인트로를 띄운다. */
+/** 원본 SVG를 받아 **획별로 미리 분할된 벡터 패스**를 순서대로 그리는 인트로. */
 export async function mountKtTitleWrite(root: HTMLElement, sfx?: Sfx): Promise<void> {
   const img = root.querySelector<HTMLImageElement>('.kt-ink img');
   if (!img) return;
@@ -343,18 +344,23 @@ export async function mountKtTitleWrite(root: HTMLElement, sfx?: Sfx): Promise<v
     const ds = chars.map((c) => transformDToViewBox(c.full, c.transform));
     const key = `${ds.length}:${ds[0]!.length}:${ds[1]?.length ?? 0}:${fill}`;
     if (!titleCache || titleCache.key !== key) {
-      titleCache = { key, plan: planStrokes(ds), glyph: rasterGlyph(ds, fill, OUT_SCALE) };
+      titleCache = {
+        key,
+        plan: planStrokes(ds),
+        paths: KIRITSU_TITLE_STROKE_PATHS.map((d) => new Path2D(d)),
+      };
     }
     const plan = titleCache.plan;
-    const glyph = titleCache.glyph;
-    const { geoms, end, inkPixels, owner, cov } = plan;
+    const paths = titleCache.paths;
+    const { geoms, end } = plan;
     const n = geoms.length;
+    if (paths.length !== n) return;
 
     const el = document.createElement('div');
     el.className = 'kt-ink kt-ink-write';
     el.setAttribute('aria-hidden', 'true');
     el.dataset.strokes = String(n);
-    el.dataset.ink = String(inkPixels);
+    el.dataset.ink = String(KIRITSU_TITLE_INK_PIXELS);
     const out = document.createElement('canvas');
     out.className = 'kts-canvas';
     out.width = Math.round(VB_W * OUT_SCALE);
@@ -368,18 +374,21 @@ export async function mountKtTitleWrite(root: HTMLElement, sfx?: Sfx): Promise<v
     const screen = root.querySelector<HTMLElement>('.kt-screen');
     if (!gl || !screen) return;
     const W = out.width, H = out.height;
-    const mk = (): HTMLCanvasElement => { const c = document.createElement('canvas'); c.width = W; c.height = H; return c; };
-    const revealed = mk(), rctx = revealed.getContext('2d');
-    const temp = mk(), tctx = temp.getContext('2d');
-    const partial = mk(), pctx = partial.getContext('2d');
-    const mask = mk(), mctx = mask.getContext('2d');
-    const ownCanvas = document.createElement('canvas');
-    ownCanvas.width = MASK_W; ownCanvas.height = MASK_H;
-    const ownCtx = ownCanvas.getContext('2d');
-    if (!rctx || !tctx || !pctx || !mctx || !ownCtx) return;
-    const ownImg = ownCtx.createImageData(MASK_W, MASK_H);
-    let maskFor = -1;
-
+    const layer = document.createElement('canvas');
+    layer.width = W; layer.height = H;
+    const lctx = layer.getContext('2d');
+    if (!lctx) return;
+    const tip = document.createElement('canvas');
+    tip.width = 64; tip.height = 64;
+    const ttx = tip.getContext('2d');
+    if (ttx) {
+      const tg = ttx.createRadialGradient(32, 32, 0, 32, 32, 32);
+      tg.addColorStop(0, 'rgba(255,255,255,.95)');
+      tg.addColorStop(0.35, 'rgba(255,224,214,.65)');
+      tg.addColorStop(0.7, 'rgba(255,120,150,.18)');
+      tg.addColorStop(1, 'rgba(255,120,150,0)');
+      ttx.fillStyle = tg; ttx.beginPath(); ttx.arc(32, 32, 32, 0, Math.PI * 2); ttx.fill();
+    }
     if (head) {
       head.style.width = '16px';
       head.style.height = '16px';
@@ -389,37 +398,6 @@ export async function mountKtTitleWrite(root: HTMLElement, sfx?: Sfx): Promise<v
     screen.style.setProperty('--kt-end', `${(end + 0.25).toFixed(2)}s`);
     el.dataset.state = 'writing';
 
-    /** 획 i 가 소유한 glyph 잉크만 담은 마스크를 만든다(960×480). */
-    const buildMask = (i: number): void => {
-      const d = ownImg.data;
-      for (let px = 0; px < owner.length; px++) {
-        const j = px * 4;
-        if (owner[px] === i && cov[px]) { d[j] = 255; d[j + 1] = 255; d[j + 2] = 255; d[j + 3] = 255; }
-        else d[j + 3] = 0;
-      }
-      ownCtx.putImageData(ownImg, 0, 0);
-      mctx.globalCompositeOperation = 'source-over';
-      mctx.clearRect(0, 0, W, H);
-      mctx.imageSmoothingEnabled = false;
-      mctx.drawImage(ownCanvas, 0, 0, W, H);
-      mctx.imageSmoothingEnabled = true;
-      mctx.globalCompositeOperation = 'destination-in';
-      mctx.drawImage(glyph, 0, 0);
-      mctx.globalCompositeOperation = 'source-over';
-      maskFor = i;
-    };
-
-    /** 완료된 획: 그 획의 실제 잉크를 revealed 캔버스에 crisp하게 누적. */
-    const drawCompleted = (i: number): void => {
-      if (maskFor !== i) buildMask(i);
-      tctx.clearRect(0, 0, W, H);
-      tctx.drawImage(glyph, 0, 0);
-      tctx.globalCompositeOperation = 'destination-in';
-      tctx.drawImage(mask, 0, 0);
-      tctx.globalCompositeOperation = 'source-over';
-      rctx.drawImage(temp, 0, 0);
-    };
-
     const arcForProgress = (g: (typeof geoms)[number], p: number): number => {
       const target = p * g.wtotal;
       let k = 0;
@@ -428,7 +406,6 @@ export async function mountKtTitleWrite(root: HTMLElement, sfx?: Sfx): Promise<v
       const f = clamp01((target - g.wcum[k]!) / span);
       return g.cum[k]! + ((g.cum[k + 1] ?? g.cum[k]!) - g.cum[k]!) * f;
     };
-
     const setHead = (p: Pt, hw: number, on: boolean, angle = 0): void => {
       if (!head) return;
       head.style.left = `${(p.x / VB_W) * 100}%`;
@@ -437,10 +414,87 @@ export async function mountKtTitleWrite(root: HTMLElement, sfx?: Sfx): Promise<v
       head.style.opacity = on ? '0.9' : '0';
     };
 
+    const paint = (active: number, arc: number): void => {
+      gl.setTransform(1, 0, 0, 1, 0, 0);
+      gl.clearRect(0, 0, W, H);
+      gl.setTransform(OUT_SCALE, 0, 0, OUT_SCALE, 0, 0);
+      gl.fillStyle = fill;
+      for (let i = 0; i < n; i++) {
+        if (!completed[i] || i === active) continue;
+        gl.fill(paths[i]!);
+      }
+      if (active < 0) return;
+
+      const g = geoms[active]!;
+      const pt = pointAt(g, arc);
+      const ahead = pointAt(g, Math.min(g.len, arc + 2));
+      const behind = pointAt(g, Math.max(0, arc - 2));
+      let dx = ahead.x - behind.x, dy = ahead.y - behind.y;
+      const dl = Math.hypot(dx, dy) || 1;
+      dx /= dl; dy /= dl;
+
+      // 1) 진행 중 획을 호 클립으로 칠하고, 앞쪽 끝을 부드러운 그라디언트로
+      //    페더링한다(딱딱하게 잘린 단면 대신 젖은 붓 끝).
+      lctx.setTransform(1, 0, 0, 1, 0, 0);
+      lctx.clearRect(0, 0, W, H);
+      lctx.setTransform(OUT_SCALE, 0, 0, OUT_SCALE, 0, 0);
+      lctx.fillStyle = fill;
+      lctx.save();
+      lctx.beginPath();
+      const feather = 12;
+      const sweepTo = Math.min(g.len, arc + feather);
+      const step = 2.5;
+      for (let s = 0; s <= sweepTo + step; s += step) {
+        const ss = Math.min(s, sweepTo);
+        const q = pointAt(g, ss);
+        const rr = KIRITSU_TITLE_STROKE_RADII[active]! + 2;
+        lctx.moveTo(q.x + rr, q.y);
+        lctx.arc(q.x, q.y, rr, 0, Math.PI * 2);
+        if (ss >= sweepTo) break;
+      }
+      lctx.clip();
+      lctx.fill(paths[active]!);
+      lctx.restore();
+
+      lctx.globalCompositeOperation = 'destination-in';
+      const grad = lctx.createLinearGradient(
+        pt.x - dx * feather, pt.y - dy * feather,
+        pt.x + dx * feather, pt.y + dy * feather,
+      );
+      grad.addColorStop(0, 'rgba(0,0,0,1)');
+      grad.addColorStop(0.52, 'rgba(0,0,0,1)');
+      grad.addColorStop(1, 'rgba(0,0,0,0)');
+      lctx.fillStyle = grad;
+      lctx.fillRect(-40, -40, VB_W + 80, VB_H + 80);
+      lctx.globalCompositeOperation = 'source-over';
+
+      gl.save();
+      gl.setTransform(1, 0, 0, 1, 0, 0);
+      // 젖은 잉크 번짐: 진행 중 획의 가장자리를 살짝 번지게 한 뒤 선명한 획을 올린다.
+      gl.globalAlpha = 0.4;
+      gl.filter = 'blur(2.2px)';
+      gl.drawImage(layer, 0, 0);
+      gl.filter = 'none';
+      gl.globalAlpha = 1;
+      gl.drawImage(layer, 0, 0);
+      // 2) 붓끝의 젖은 잔광(캔버스) — CSS 헤드와 별개로 항상 보이게.
+      const rad = (KIRITSU_TITLE_STROKE_RADII[active]! * 1.35 + 4) * OUT_SCALE;
+      gl.globalCompositeOperation = 'lighter';
+      gl.globalAlpha = 0.55;
+      gl.drawImage(tip, pt.x * OUT_SCALE - rad, pt.y * OUT_SCALE - rad, rad * 2, rad * 2);
+      gl.globalAlpha = 1;
+      gl.globalCompositeOperation = 'source-over';
+      gl.restore();
+      gl.setTransform(OUT_SCALE, 0, 0, OUT_SCALE, 0, 0);
+    };
+
     const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
     if (reduce) {
+      gl.setTransform(1, 0, 0, 1, 0, 0);
       gl.clearRect(0, 0, W, H);
-      gl.drawImage(glyph, 0, 0);
+      gl.setTransform(OUT_SCALE, 0, 0, OUT_SCALE, 0, 0);
+      gl.fillStyle = fill;
+      for (const p of paths) gl.fill(p);
       el.dataset.state = 'done';
       screen.classList.add('kt-idle');
       if (head) head.style.opacity = '0';
@@ -459,92 +513,63 @@ export async function mountKtTitleWrite(root: HTMLElement, sfx?: Sfx): Promise<v
       if (!document.contains(el)) return;
       const t = (now - startAt) / 1000;
       let active = -1;
+      let arc = 0;
 
-      // 1) 완료된 획은 crisp 잉크로 누적, 진행 중 획만 실시간 부분 노출
       for (let i = 0; i < n; i++) {
         const g = geoms[i]!;
         if (t < g.start) break;
         if (t >= g.start + g.dur) {
-          if (!completed[i]) { drawCompleted(i); completed[i] = 1; doneCount++; }
+          if (!completed[i]) { completed[i] = 1; doneCount++; }
         } else {
           active = i;
           const p = clamp01((t - g.start) / g.dur);
-          const arc = arcForProgress(g, easeInOut(p));
-
-          if (maskFor !== i) buildMask(i);
-          const g2 = geoms[i]!;
-          pctx.clearRect(0, 0, W, H);
-          pctx.save();
-          pctx.beginPath();
-          const step = 3.2;
-          for (let s = 0; s <= arc + step; s += step) {
-            const ss = Math.min(s, arc);
-            const pt = pointAt(g2, ss);
-            const rr = (widthAt(g2, g2.cover, ss) * 1.5 + 3) * OUT_SCALE;
-            const cx = pt.x * OUT_SCALE, cy = pt.y * OUT_SCALE;
-            pctx.moveTo(cx + rr, cy);
-            pctx.arc(cx, cy, rr, 0, Math.PI * 2);
-            if (ss >= arc) break;
-          }
-          pctx.clip();
-          pctx.drawImage(mask, 0, 0);
-          pctx.restore();
-
-          tctx.clearRect(0, 0, W, H);
-          tctx.drawImage(glyph, 0, 0);
-          tctx.globalCompositeOperation = 'destination-in';
-          tctx.drawImage(partial, 0, 0);
-          tctx.globalCompositeOperation = 'source-over';
-
-          gl.clearRect(0, 0, W, H);
-          gl.drawImage(revealed, 0, 0);
-          gl.drawImage(temp, 0, 0);
-
-          const pt = pointAt(g2, arc);
-          const ahead = pointAt(g2, Math.min(g2.len, arc + 2));
-          const behind = pointAt(g2, Math.max(0, arc - 2));
-          const angle = (Math.atan2(ahead.y - behind.y, ahead.x - behind.x) * 180) / Math.PI;
-          const hw = widthAt(g2, g2.cover, arc);
-          setHead(pt, hw, true, angle);
-          trail.push(pt);
-          if (trail.length > 7) trail.shift();
-          if (trail.length > 1) {
-            gl.lineCap = 'round';
-            gl.lineJoin = 'round';
-            gl.strokeStyle = 'rgba(255,243,223,.12)';
-            gl.lineWidth = 7;
-            gl.beginPath();
-            for (let j = 0; j < trail.length; j++) {
-              const q = trail[j]!;
-              if (j === 0) gl.moveTo(q.x * OUT_SCALE, q.y * OUT_SCALE);
-              else gl.lineTo(q.x * OUT_SCALE, q.y * OUT_SCALE);
-            }
-            gl.stroke();
-            gl.strokeStyle = 'rgba(255,243,223,.45)';
-            gl.lineWidth = 1.7;
-            gl.stroke();
-          }
-          if (sounded !== i) { sounded = i; sfx?.play('brush', ((i % 5) * 0.03) - 0.06); }
+          arc = arcForProgress(g, easeInOut(p));
           break;
         }
       }
 
-      if (active < 0) {
-        gl.clearRect(0, 0, W, H);
-        gl.drawImage(revealed, 0, 0);
+      paint(active, arc);
+
+      if (active >= 0) {
+        const g = geoms[active]!;
+        const pt = pointAt(g, arc);
+        const ahead = pointAt(g, Math.min(g.len, arc + 2));
+        const behind = pointAt(g, Math.max(0, arc - 2));
+        const angle = (Math.atan2(ahead.y - behind.y, ahead.x - behind.x) * 180) / Math.PI;
+        const hw = KIRITSU_TITLE_STROKE_RADII[active]!;
+        setHead(pt, hw, true, angle);
+        trail.push(pt);
+        if (trail.length > 7) trail.shift();
+        if (sounded !== active) { sounded = active; sfx?.play('brush', ((active % 5) * 0.03) - 0.06); }
+      } else {
         setHead({ x: 0, y: 0 }, 1, false);
         trail.length = 0;
       }
 
-      // 2) 20획이 전부 들어오면 잠깐 머금고 완료(원본 글자로 교체하지 않음 → 팝 없음)
+      if (trail.length > 1) {
+        gl.lineCap = 'round';
+        gl.lineJoin = 'round';
+        gl.strokeStyle = 'rgba(255,243,223,.12)';
+        gl.lineWidth = 7;
+        gl.beginPath();
+        for (let j = 0; j < trail.length; j++) {
+          const q = trail[j]!;
+          if (j === 0) gl.moveTo(q.x, q.y);
+          else gl.lineTo(q.x, q.y);
+        }
+        gl.stroke();
+        gl.strokeStyle = 'rgba(255,243,223,.45)';
+        gl.lineWidth = 1.7;
+        gl.stroke();
+      }
+
       if (doneCount >= n) {
         if (allDoneAt < 0) {
           allDoneAt = t;
           if (!chime) { chime = true; sfx?.play('chime'); }
         }
         if (t - allDoneAt >= 0.18) {
-          gl.clearRect(0, 0, W, H);
-          gl.drawImage(revealed, 0, 0);
+          paint(-1, 0);
           if (head) head.style.opacity = '0';
           el.dataset.state = 'done';
           screen.classList.add('kt-idle');

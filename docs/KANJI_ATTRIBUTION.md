@@ -33,6 +33,14 @@ the same brush style as the title while the Korean body stays NanumGothic.
 - If the manuscript gains new hanja, add them to `HANJA` in `subset-font.py`,
   rerun it and rebuild the PDF; the full Yuji Boku font is not committed.
 
+## FONT LOCKED (2026-11-15)
+
+The kanji typeface for every KIRITSU surface — title intro, novel PDF, boot-log
+律, future hanja — is **Yuji Boku Light cut** (Yuji Boku Regular eroded 8 font
+units, OFL). This is final; do not reintroduce other kanji fonts. The title
+glyph is generated from this cut by `tools/gen-title-svg.py`, and the intro's
+20 per-stroke vector paths by `tools/gen-title-strokes.py`.
+
 ## Final choice (2026-11-15)
 
 After comparing free alternatives (Yuji family, LXGW WenKai, Shippori Mincho B1,
