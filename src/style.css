@@ -701,6 +701,15 @@ h2,
   margin-top: 9px;
 }
 
+/* Chapter picker: every unlocked brief is part of the log the terminal prints,
+   so all of them are visible and the entrance typing can stagger row by row. */
+.chapter-screen .floor .story {
+  max-height: 240px;
+  opacity: 1;
+  margin-top: 7px;
+}
+.chapter-screen .floor { padding-top: 11px; padding-bottom: 11px; }
+
 .floor .stars {
   font-size: 12px;
   letter-spacing: 0.22em;
@@ -1194,6 +1203,14 @@ h2,
   color: #03130a;
 }
 
+/* Keyboard-only: the focused control must be unmistakable at a glance. */
+.btn.focused {
+  box-shadow: 0 0 0 1px rgb(102 255 158 / 0.7), 0 0 26px rgb(102 255 158 / 0.26);
+}
+.btn.primary.focused {
+  box-shadow: 0 0 0 2px rgb(194 255 214 / 0.85), 0 0 30px rgb(102 255 158 / 0.5);
+}
+
 .btn kbd {
   font-size: 9px;
   opacity: 0.55;
@@ -1347,7 +1364,11 @@ h2,
 }
 
 .fade-in {
-  animation: fade 0.3s var(--ease);
+  animation: screen-in 0.34s var(--ease) both;
+}
+@keyframes screen-in {
+  from { opacity: 0; transform: translateY(6px); }
+  to { opacity: 1; transform: none; }
 }
 
 @media (max-width: 640px) {
@@ -1829,6 +1850,41 @@ body.crt-off .board::after { display: none; }
   line-height: 1.5;
 }
 
+/* The results card is a keyboard scroller: j/k · PgUp/PgDn · Ctrl-d/u · g/G.
+   A thin visible rail and a bottom fade tell the player more text exists. */
+.results-card {
+  scrollbar-width: thin;
+  scrollbar-color: var(--ph-dim) transparent;
+  outline: none;
+}
+.results-card .res-hint {
+  margin-top: 2px;
+  text-align: center;
+  font-size: 8px;
+  letter-spacing: 0.18em;
+  color: var(--ph-ghost);
+  text-transform: uppercase;
+}
+
+/* Short landscape phones: most of the result must fit without scrolling, and
+   what is left scrolls with the keyboard. */
+@media (max-height: 560px) {
+  .results-card { padding: 9px 18px 8px; max-height: 96vh; }
+  .results-card .eyebrow { font-size: 8px; }
+  .results-card .stars-big { font-size: 26px; min-height: 0; margin: 1px 0 0; gap: 9px; }
+  .results-card .res-keys { font-size: 9.5px; margin-top: 1px; letter-spacing: 0.1em; }
+  .results-card .res-drill { margin-top: 5px; font-size: 9.5px; line-height: 1.4; }
+  .results-card .learned { margin-top: 6px; display: flex; flex-wrap: wrap; gap: 3px 7px; }
+  .results-card .learned .kicker { width: 100%; margin-bottom: 0 !important; font-size: 8px; }
+  .results-card .learned .item { padding: 2px 7px; font-size: 9px; }
+  .results-card .learned .item code { font-size: 10px; min-width: 0; }
+  .results-card .learned .item span:last-child { display: none; }
+  .results-card .rule { margin: 7px 0; }
+  .results-card .actions { margin-top: 7px; gap: 6px; }
+  .results-card .btn { padding: 6px 10px; font-size: 9px; }
+  .results-card .res-hint { display: none; }
+}
+
 .ghost-hud {
   position: absolute;
   left: 50%;
@@ -1908,31 +1964,59 @@ body.crt-off .board::after { display: none; }
   background: radial-gradient(ellipse at 50% 100%, rgb(225 110 140 / 0.16), transparent 68%);
 }
 
-@keyframes kt-fall {
-  0% { transform: translate3d(0, -8vh, 0) rotate(var(--r)); }
-  100% { transform: translate3d(var(--drift), 112vh, 0) rotate(calc(var(--r) + 260deg)); }
+/* ── 픽셀 벚꽃 ───────────────────────────────────────────────────────────
+   8×9 격자 벚꽃 픽셀 스프라이트(끝 노치 · 둥근 밑동)를 mask로 쓴다. 세 겹의
+   transform 전용 애니메이션: 낙하(.kt-petal) · 좌우 흔들림(.kt-blossom) ·
+   나비 스케일 플립(::before). 테두리는 같은 mask를 1px 키운 어두운 겹으로
+   그려 CRT 초록 위에서 분홍이 하얗게 날아가지 않게 한다(블렌드/필터 없음). */
+.kt-petals { position: absolute; inset: 0; z-index: 45; pointer-events: none; overflow: hidden;
+  --kt-blossom: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 8 9' shape-rendering='crispEdges'%3E%3Cpath fill='%23fff' d='M3 0h1v1H3zM5 0h1v1H5zM2 1h4v1H2zM1 2h4v1H1zM1 3h4v1H1zM1 4h4v1H1zM2 5h3v1H2zM2 6h3v1H2zM3 7h2v1H3zM4 8h1v1H4z'/%3E%3C/svg%3E");
 }
-.kt-petals { position: absolute; inset: 0; z-index: 45; pointer-events: none; overflow: hidden; }
 .kt-petal {
-  position: absolute; left: calc(var(--x) * 1%); top: -6%;
-  width: var(--s); height: calc(var(--s) * 1.18);
-  background: linear-gradient(140deg, #fffdfd, #ffe0e8 55%, #ffb9ca);
-  -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 28'%3E%3Cpath fill='white' d='M12 0C15 6 20 7 23 5C23 12 21 18 16 22C14 24 13 26 12 28C11 26 10 24 8 22C3 18 1 12 1 5C4 7 9 6 12 0Z'/%3E%3C/svg%3E") center / contain no-repeat;
-  mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 28'%3E%3Cpath fill='white' d='M12 0C15 6 20 7 23 5C23 12 21 18 16 22C14 24 13 26 12 28C11 26 10 24 8 22C3 18 1 12 1 5C4 7 9 6 12 0Z'/%3E%3C/svg%3E") center / contain no-repeat;
-  opacity: calc(var(--o) * 1.65);
-  mix-blend-mode: screen;
-  animation: kt-fall var(--d) linear infinite;
+  position: absolute; left: calc(var(--x) * 1%); top: -8%;
+  width: var(--s); height: calc(var(--s) * 1.125);
+  animation: kt-fall var(--d) linear var(--delay) infinite;
   will-change: transform;
-  animation-delay: var(--delay);
-  transform: rotate(var(--r));
 }
-.kt-petal.kt-still { animation: none !important; top: var(--y); opacity: calc(var(--o) * 1.45); mix-blend-mode: screen; }
+.kt-blossom {
+  position: absolute; inset: 0; display: block;
+  animation: kt-sway var(--sway) ease-in-out var(--delay) infinite alternate;
+  transform-origin: 50% 40%;
+}
+.kt-blossom::after,
+.kt-blossom::before {
+  content: ""; position: absolute;
+  -webkit-mask: var(--kt-blossom) center / 100% 100% no-repeat;
+  mask: var(--kt-blossom) center / 100% 100% no-repeat;
+  image-rendering: pixelated;
+}
+.kt-blossom::after { inset: 0; background: var(--pe); opacity: calc(var(--o) * 1.15); }
+.kt-blossom::before {
+  inset: 1px;
+  background: var(--pc);
+  opacity: calc(var(--o) * 1.55);
+  transform-origin: 50% 50%;
+  animation: kt-flip var(--flip) ease-in-out var(--delay) infinite;
+}
 @keyframes kt-fall {
-  0% { transform: translate3d(0, -8vh, 0) rotate(var(--r)); }
-  100% { transform: translate3d(var(--drift), 112vh, 0) rotate(calc(var(--r) + 260deg)); }
+  0% { transform: translate3d(0, -10vh, 0); }
+  100% { transform: translate3d(var(--drift), 112vh, 0); }
 }
+@keyframes kt-sway {
+  0% { transform: translateX(calc(var(--swayAmp) * -1)) rotate(calc(var(--tilt) * -1)); }
+  100% { transform: translateX(var(--swayAmp)) rotate(var(--tilt)); }
+}
+@keyframes kt-flip {
+  0%, 100% { transform: scaleX(1) scaleY(1); }
+  25% { transform: scaleX(0.22) scaleY(0.94); }
+  50% { transform: scaleX(-1) scaleY(1); }
+  75% { transform: scaleX(0.22) scaleY(1.05); }
+}
+/* The intro is over: the tube is idle, the rain is not. Keep every petal. */
+/* The intro is over: the tube is idle, the rain is not. Keep every petal. */
 .kt-screen.kt-idle .kt-sweep { display: none; }
-.kt-screen.kt-idle .kt-petal:nth-child(n+13) { display: none; }
+/* crt-off: the same pixels, no tube bloom — still a deliberate sakura frame. */
+.crt-off .kt-blossom::before { opacity: calc(var(--o) * 1.3); }
 .kt-scan {
   position: absolute; inset: 0; z-index: 40; pointer-events: none;
   background: repeating-linear-gradient(0deg, transparent 0 2px, rgb(0 0 0 / 0.12) 3px);
@@ -2043,7 +2127,7 @@ body.crt-off .board::after { display: none; }
   .kt-code div:first-child { display: none; }
   .kt-foot { right: 16px; bottom: 8px; font-size: 7px; }
   .kt-touch { display: none; }
-  .kt-petal:nth-child(n+15) { display: none; }
+  .kt-petal:nth-child(n+21) { display: none; }
 }
 
 /* ── v3 공용 UI: 인트로 등장 · 타이핑 캐럿 · veiled board ───────────── */
@@ -2066,11 +2150,15 @@ body.crt-off .board::after { display: none; }
 @media (prefers-reduced-motion: reduce) {
   .type-caret { animation: none; opacity: 1; }
   .intro-card, .btn.primed { animation: none; }
+  .fade-in { animation: none; }
 }
 
 @media (prefers-reduced-motion: reduce) {
   .kt-laser-head, .kts-tip, .kt-bloom { display: none; }
   .kt-caption, .kt-tag, .kt-press { opacity: 1; animation: none; }
-  .kt-petal { animation: none; opacity: .18; }
+  /* Static pixel blossoms: still a frame of the title, nothing moves. */
+  .kt-petal { animation: none; top: var(--y); }
+  .kt-blossom { animation: none; transform: rotate(var(--tilt)); }
+  .kt-blossom::before { animation: none; }
   .kt-sweep { display: none; }
 }

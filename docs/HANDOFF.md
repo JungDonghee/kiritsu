@@ -7,21 +7,19 @@
 > `npm run kickoff`.
 > **Last rewritten:** 2026-11-15, after the naming correction, CI/IME fixes and the novel is confirmed (work/ 13편 ~73,000자).
 
-## 0k — 타이틀 한자 인트로 (2026-11-15, v3)
+## 0k — 타이틀 한자 인트로 (2026-11-15, v4)
 
-- **단독 규격서: `docs/TITLE_KANJI.md`** — v1/v2 실수(다른 글자형·페이드, CSS 클립
-  애니메이션 미동작으로 얇은 선만 그려지다 끝에 글자 전체가 튀어나옴)를 기록.
-- v3: `src/ui/kanji.ts`가 글자를 오프스크린 캔버스에 채워 **잉크 마스크/무게중심**을
-  구하고, 스켈레톤을 잉크 중심으로 다단계 스냅해 획별 **테이퍼 붓 리본**을 만든다.
-  rAF가 clipPath를 직접 갱신하며 앞에서부터 잉크를 드러내고, 획별 잉크 번짐 →
-  마지막 전체 번짐 후 clip을 제거해 최종 글자형 100%. CSS 클립 애니메이션 없음.
-- 타이밍: 쓰기 시작 0.62s, 총 쓰기 ≈4.1–4.5s. 캡션/태그/PRESS는 JS가 `--kt-end`로
-  실제 종료 시각에 맞춘다. 단일 파일 빌드는 `inline.mjs`가 칸지 SVG 좌표를 정수
-  반올림/공백 압축해 인라인(원본 파일 불변, **약 30KB raw 절감**).
-- 검증: `tools/title-check.mjs` (20 리본·`data-state=done`·clip 제거·팁/헤드 제거·
-  캡션 노출·Esc 내비·reduced-motion·콘솔 0·FPS≥18). 인트로 FPS 40±(headless
-  1920), long task 1건(초기 부팅).
-- 번들: `docs/STATUS.md` 기준(현재 420k/140k 이내, 여유 확보됨).
+- **단독 규격서: `docs/TITLE_KANJI.md`** — v1(다른 글자형·페이드) → v2(CSS
+  클립 애니메이션 미동작) → v3(리본 폴리곤 커버리지 ~80%)의 실수를 기록.
+- v4: `src/ui/kanji.ts`가 글자를 래스터화하고 잉크 EDT + 보로노이 배정으로
+  획별 점별 반폭을 구한 뒤, **캔버스 붓 스탬프 마스크**로 잉크를 드러낸다.
+  획이 끝나면 그 획 잉크는 100% 덮이고, 마지막 프레임은 원본 글자를 그대로
+  그려 **팝 없이 글자형 100%**(커버리지 20.48%→20.90% 측정).
+- 타이밍: 쓰기 ≈4.4s, 캡션/태그/PRESS는 `--kt-end`로 실제 종료에 정렬.
+  단일 파일 칸지 인라인 경량화(약 30KB raw 절감).
+- 검증: `tools/title-check.mjs` (20획·done·캔버스 커버리지·헤드 제거·캡션·
+  Esc·reduced-motion·콘솔 0·FPS≥18). 인트로 FPS 43(1920 headless).
+- 번들: `docs/STATUS.md` 기준(420k/140k 이내).
 
 ## 0j. Naming, CI fix, IME input, novel mandate (2026-11-15)
 

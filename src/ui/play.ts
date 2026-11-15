@@ -216,6 +216,9 @@ export class PlayScreen {
   private ghostRun = 0;
   private ghostLive: Session | null = null;
   private starTimers: number[] = [];
+  // Results overlay: a keyboard-scrollable card with a typed drill line.
+  private resultsCard: HTMLElement | null = null;
+  private resultsType: Typing | null = null;
 
   constructor(root: HTMLElement, host: PlayHost) {
     this.host = host;
@@ -518,7 +521,12 @@ export class PlayScreen {
       this.coachStep = 0;
       this.hideCoach();
     }
-    if (e.repeat) return true; // our own repeat loop handles held keys
+    if (e.repeat) {
+      // Results is a scrolling list: a held j/PgDn must keep scrolling even
+      // though the gameplay path swallows repeat events.
+      if ((this.state === 'won' || this.state === 'lost') && this.scrollResults(e)) return true;
+      return true; // our own repeat loop handles held keys
+    }
     if (this.state === 'intro') {
       // The briefing is modal: any key first finishes the typing. Only once the
       // BEGIN prompt is live can a key start the chamber, and a short Enter
@@ -554,13 +562,27 @@ export class PlayScreen {
       return true;
     }
     if (this.state === 'won' || this.state === 'lost') {
-      // Overlay buttons are navigated with Vim keys: h/l or j/k moves the
-      // focus, Enter activates. Escape always leaves.
-      if (e.key === 'j' || e.key === 'l') {
+      // First key completes the short typed result line; it never blocks.
+      this.resultsType?.finish();
+      this.resultsType = null;
+      // Scrolling keys drive the card (keyboard-only, no touch drag needed).
+      if (this.scrollResults(e)) return true;
+      // Focus lives on the actions: h/l or Tab move it, Enter activates.
+      if (e.key === 'l' || e.key === 'ArrowRight' || (e.key === 'Tab' && !e.shiftKey)) {
+        if (this.actions) focusStep(this.actions, 1);
+        this.host.sfx.play('move');
+        return true;
+      }
+      if (e.key === 'h' || e.key === 'ArrowLeft' || (e.key === 'Tab' && e.shiftKey)) {
+        if (this.actions) focusStep(this.actions, -1);
+        this.host.sfx.play('back');
+        return true;
+      }
+      if (e.key === 'j' && this.state === 'lost') {
         if (this.actions) focusStep(this.actions, 1);
         return true;
       }
-      if (e.key === 'k' || e.key === 'h') {
+      if (e.key === 'k' && this.state === 'lost') {
         if (this.actions) focusStep(this.actions, -1);
         return true;
       }
@@ -730,6 +752,9 @@ export class PlayScreen {
     this.session.vim.number = this.host.lineNumbers === 'abs' || this.host.lineNumbers === 'both';
     this.session.vim.relativenumber = this.host.lineNumbers === 'rel' || this.host.lineNumbers === 'both';
     this.state = 'playing';
+    this.resultsType?.cancel();
+    this.resultsType = null;
+    this.resultsCard = null;
     this.overlay?.remove();
     this.overlay = null;
     this.echo.classList.remove('on');
@@ -1027,6 +1052,27 @@ export class PlayScreen {
     this.host.sfx.play('select');
   }
 
+  /**
+   * Results overlay is a keyboard scroller: j/k, Ctrl-d/u, PgUp/PgDn, g/G,
+   * Home/End move the card. Returns false when the key is not a scroll key.
+   */
+  private scrollResults(e: KeyboardEvent): boolean {
+    const card = this.resultsCard;
+    if (!card) return false;
+    const page = Math.max(140, Math.round(card.clientHeight * 0.85));
+    let delta: number | null = null;
+    if (e.key === 'j' || e.key === 'ArrowDown') delta = 64;
+    else if (e.key === 'k' || e.key === 'ArrowUp') delta = -64;
+    else if (e.key === 'PageDown' || e.key === ' ' || (e.key === 'd' && e.ctrlKey) || (e.key === 'D' && e.ctrlKey)) delta = page;
+    else if (e.key === 'PageUp' || (e.key === 'u' && e.ctrlKey) || (e.key === 'U' && e.ctrlKey)) delta = -page;
+    else if (e.key === 'g' || e.key === 'Home') { card.scrollTop = 0; this.host.sfx.play('move'); return true; }
+    else if (e.key === 'G' || e.key === 'End') { card.scrollTop = card.scrollHeight; this.host.sfx.play('move'); return true; }
+    if (delta === null) return false;
+    card.scrollTop += delta;
+    this.host.sfx.play('move');
+    return true;
+  }
+
   private showResults(stars: Stars, keys: number, par: number): void {
     this.hideCoach();
     this.hideHint();
@@ -1036,9 +1082,13 @@ export class PlayScreen {
       .map((id) => COMMAND_BY_ID.get(id))
       .filter(Boolean)
       .slice(0, 4);
+    const drillText = keys <= par
+      ? this.t('GOLF — par. DRILL it once more; the hand remembers what the head forgets.', 'GOLF — par. 한 번 더 반복하라. 머리가 잊은 것을 손이 기억한다.')
+      : this.t(`GOLF — +${keys - par} key${keys - par === 1 ? '' : 's'} over par. RETRY and close the gap.`, `GOLF — par보다 ${keys - par}키 많음. RETRY로 격차를 좁혀라.`);
+    const drill = this.typed(drillText);
     const card = h(
       'div',
-      { class: 'card' },
+      { class: 'card results-card' },
       h('div', { class: 'res-head' }, h('div', { class: 'eyebrow' }, lang === 'ko' ? '챔버 정화 완료' : 'CHAMBER CLEARED')),
       h('div', { class: 'stars-big' }, ...starEls),
       h(
@@ -1048,13 +1098,7 @@ export class PlayScreen {
         lang === 'ko' ? ` 키  ·  3별 기준 ${par}` : ` keys  ·  par ${par}`,
         this.host.bestKeys !== null ? (lang === 'ko' ? `  ·  최고 ${this.host.bestKeys}` : `  ·  best ${this.host.bestKeys}`) : '',
       ),
-      h(
-        'div',
-        { class: 'res-drill' },
-        keys <= par
-          ? this.t('GOLF — par. DRILL it once more; the hand remembers what the head forgets.', 'GOLF — par. 한 번 더 반복하라. 머리가 잊은 것을 손이 기억한다.')
-          : this.t(`GOLF — +${keys - par} key${keys - par === 1 ? '' : 's'} over par. RETRY and close the gap.`, `GOLF — par보다 ${keys - par}키 많음. RETRY로 격차를 좁혀라.`),
-      ),
+      h('div', { class: 'res-drill' }, drill.shell),
       learned.length
         ? h(
             'div',
@@ -1081,10 +1125,15 @@ export class PlayScreen {
         this.host.canSave ? h('button', { class: 'btn', onclick: () => { this.host.onSave?.(); this.host.sfx.play('yank'); } }, lang === 'ko' ? '저장' : 'SAVE') : null,
         h('button', { class: 'btn', onclick: () => this.host.onExit() }, `${lang === 'ko' ? '챕터' : 'CHAPTER'} ${String(chapter.index).padStart(2, '0')}`),
       ),
+      h('div', { class: 'res-hint' }, this.t('J/K · PgUp/PgDn scroll · H/L move · Enter choose', 'J/K · PgUp/PgDn 스크롤 · H/L 이동 · Enter 선택')),
     );
+    this.resultsType?.cancel();
+    this.resultsType = null;
     this.overlay?.remove();
     this.overlay = h('div', { class: 'overlay' }, card);
     this.root.append(this.overlay);
+    this.resultsCard = card;
+    this.resultsType = this.startTyped(drill, drillText, { base: 13, tickEvery: 9, startDelay: 140 });
     this.actions = focusGroup(card);
     focusIndex(this.actions, 0);
     this.host.onWin(stars, keys, par);
@@ -1107,6 +1156,8 @@ export class PlayScreen {
       h('div', { class: 'brief ko' }, lang === 'ko' ? '정전기는 밟으면 아프다. t는 문자 앞에서 멈추고, f는 그 위에 착지한다.' : 'Static bites when you land on it. t stops before a character; f lands on it.'),
       h('div', { class: 'actions' }, h('button', { class: 'btn primary', onclick: () => this.restart() }, lang === 'ko' ? '재시작' : 'RETRY', h('kbd', {}, '↵'))),
     );
+    this.resultsCard = null;
+    this.resultsType = null;
     this.overlay?.remove();
     this.overlay = h('div', { class: 'overlay' }, card);
     this.root.append(this.overlay);
@@ -1415,6 +1466,8 @@ export class PlayScreen {
     if (this.introRevealTimer) window.clearTimeout(this.introRevealTimer);
     this.introType?.cancel();
     this.introType = null;
+    this.resultsType?.cancel();
+    this.resultsType = null;
     cancelAnimationFrame(this.raf);
     this.ro?.disconnect();
     this.overlay?.remove();

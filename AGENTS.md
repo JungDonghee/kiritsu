@@ -135,12 +135,14 @@ docs/               LEVEL_FORMAT.md (authoring), CURRICULUM.md (the 10 floors)
 ## Design laws
 
 - **Title kanji (規律) has a single source of truth:** `public/kanji/ou-guilv-tight.svg`
-  (구양순체 Yuji Boku, viewBox 600×300, fill `#f2d8c9`). v3 draws the real glyph
-  ink through ink-mask-centroid skeletons + tapered brush ribbons whose clip is
-  updated from rAF (never CSS clip animations, never fade/pop). Read
+  (구양순체 Yuji Boku, viewBox 600×300, fill `#f2d8c9`). v4 draws the real glyph
+  as a **canvas ink timeline**: rasterize the glyph, EDT + nearest-stroke
+  assignment → per-point brush half-widths, then grow a soft stamp mask and
+  composite the glyph through it. Every stroke is 100% inked when it completes;
+  the final frame draws the original glyph (no clip removal, no pop). Never go
+  back to CSS clip/dash or polygon-ribbon reveals. Read
   [`docs/TITLE_KANJI.md`](docs/TITLE_KANJI.md) before touching the title — it
-  codifies the v1/v2 mistakes (wrong glyph variant; fade; dead clipPath CSS
-  animation) so other AIs do not repeat them.
+  codifies the v1–v3 mistakes so other AIs do not repeat them.
 
 1. One insight per stage. The puzzle must make the command *necessary*.
 2. `par` is the lesson: 3 stars = the elegant solution.

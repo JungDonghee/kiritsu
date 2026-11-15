@@ -45,6 +45,98 @@ function rankOf(stars: number): { en: string; ko: string } {
   return { en: 'Initiate', ko: '입문자' };
 }
 
+/** The title's pixel blossoms: bright sakura pink with a deeper rim. */
+const PETAL_COLORS = ['#ffb3c9', '#ff8fb3', '#ffd6e2', '#ffa0bd', '#ffc2d4', '#ff9bb8'];
+const PETAL_EDGES = ['#b34a72', '#a8395f', '#c76a8c', '#ab3f66', '#bc587c', '#a8466d'];
+
+interface TypeOpts {
+  /** ms per character baseline. */
+  base?: number;
+  /** Wait before the first character (the row must land first). */
+  startDelay?: number;
+  /** Play one tick every Nth visibly typed character; 0 disables. */
+  tickEvery?: number;
+}
+
+/**
+ * Shared typewriter for the non-modal screens (map floors, chapter briefs).
+ * It grows a single text node and owns the shared `.type-caret`; the final text
+ * never exists twice in the DOM. Screen navigation calls cancel()/finish() so a
+ * detached row can never keep writing, and keyboard input is never blocked —
+ * App finishes the animation from the key handler instead of swallowing keys.
+ */
+class Typewriter {
+  private node = document.createTextNode('');
+  private caret: HTMLElement;
+  private timer = 0;
+  private index = 0;
+  private seen = 0;
+  private state: 'typing' | 'done' | 'cancelled' = 'typing';
+
+  constructor(
+    host: HTMLElement,
+    private text: string,
+    private opts: TypeOpts,
+    private tick: () => void,
+  ) {
+    host.textContent = '';
+    this.caret = h('span', { class: 'type-caret', 'aria-hidden': 'true' });
+    host.append(this.node, this.caret);
+    const reduced = typeof window.matchMedia === 'function' && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    if (reduced || text.length === 0) {
+      this.complete();
+      return;
+    }
+    this.timer = window.setTimeout(this.step, opts.startDelay ?? 70);
+  }
+
+  private step = (): void => {
+    if (this.state !== 'typing') return;
+    if (this.index >= this.text.length) {
+      this.complete();
+      return;
+    }
+    const ch = this.text[this.index++];
+    this.node.data = this.text.slice(0, this.index);
+    if (ch !== ' ' && ch !== '\n' && this.opts.tickEvery) {
+      this.seen++;
+      if (this.seen % this.opts.tickEvery === 0) this.tick();
+    }
+    this.timer = window.setTimeout(this.step, this.delay(ch));
+  };
+
+  private delay(ch: string): number {
+    const len = Math.max(1, this.text.length);
+    const base = this.opts.base ?? Math.min(26, Math.max(7, 2400 / len));
+    let d = base + (this.index % 5 === 0 ? 7 : 0);
+    if (ch === '\n') d += 60;
+    else if ('.!?…'.includes(ch)) d += 78;
+    else if (',;:—'.includes(ch)) d += 30;
+    return d;
+  }
+
+  private complete(): void {
+    this.state = 'done';
+    this.index = this.text.length;
+    this.node.data = this.text;
+    this.caret.remove();
+  }
+
+  /** Any key: write the rest now. */
+  finish(): void {
+    if (this.state !== 'typing') return;
+    window.clearTimeout(this.timer);
+    this.complete();
+  }
+
+  /** The row/screen is going away: stop without touching the DOM further. */
+  cancel(): void {
+    if (this.state === 'typing') window.clearTimeout(this.timer);
+    this.state = 'cancelled';
+    this.caret.remove();
+  }
+}
+
 export class App {
   root: HTMLElement;
   sfx = new Sfx();
@@ -71,6 +163,11 @@ export class App {
   private confirmEl: HTMLElement | null = null;
   private confirmYes: (() => void) | null = null;
   private confirmActions: FocusGroup | null = null;
+  // Non-modal screen typing (map floor story, chapter briefs): cancelled on
+  // every screen change and finished by the first key, so it never blocks input.
+  private typers: Typewriter[] = [];
+  private mapStoryEls: (HTMLElement | null)[] = [];
+  private mapStoryTexts: string[] = [];
 
   constructor(root: HTMLElement) {
     this.root = root;
@@ -184,9 +281,51 @@ export class App {
     this.play = null;
   }
 
+  // ------------------------------------------------------- screen typewriter
+
+  /** The screen is changing: timers die with the rows they wrote into. */
+  private cancelTyping(): void {
+    for (const tw of this.typers) tw.cancel();
+    this.typers = [];
+  }
+
+  /** First key on a list screen: show the rest at once, then handle the key. */
+  private finishTyping(): void {
+    if (!this.typers.length) return;
+    for (const tw of this.typers) tw.finish();
+    this.typers = [];
+  }
+
+  private typeText(host: HTMLElement | null | undefined, text: string | null | undefined, opts: TypeOpts = {}): void {
+    if (!host || !text) return;
+    this.typers.push(new Typewriter(host, text, opts, () => this.sfx.play('type')));
+  }
+
+  /** Map: only the selected floor's story is on screen, so type that one. */
+  private typeMapStory(): void {
+    const story = this.mapStoryEls[this.mapSel];
+    const text = this.mapStoryTexts[this.mapSel];
+    if (!story || !text) return;
+    this.typeText(story, text, { base: 12, startDelay: 110, tickEvery: 6 });
+  }
+
+  /** Chapter: the whole stage list prints like a terminal dumping a log. */
+  private typeChapterBriefs(): void {
+    let row = 0;
+    for (const el of this.chapterStages) {
+      const story = el.querySelector<HTMLElement>('.story');
+      const text = story?.dataset.text ?? '';
+      if (!story || !text) continue;
+      this.typeText(story, text, { base: 9, startDelay: 120 + row * 120, tickEvery: 7 });
+      row++;
+    }
+  }
+
   // ----------------------------------------------------------------- screens
 
   goTitle(): void {
+    this.cancelTyping();
+    this.sfx.play('back');
     this.killPlay();
     this.screen = 'title';
     this.hue(128);
@@ -198,20 +337,28 @@ export class App {
       'IDENTITY LINE ............. <b>OPEN</b>',
       '> WAITING FOR A CURSOR_',
     ];
+    // 24 pixel blossoms: fall + sway + butterfly flip are three separate
+    // transform-only animations so the flutter loops forever and never reflows.
     const petals = Array.from({ length: 24 }, (_, i) => h('i', {
-      class: i < 10 ? 'kt-petal kt-still' : 'kt-petal',
+      class: 'kt-petal',
       'aria-hidden': 'true',
       style: {
         '--x': String((i * 37 + 4) % 96),
-        '--y': `${8 + (i * 19) % 78}%`,
-        '--s': `${5 + (i * 7) % 10}px`,
-        '--d': `${10 + (i * 7) % 10}s`,
-        '--delay': `-${(i * 1.7) % 12}s`,
-        '--r': `${(i * 43) % 360}deg`,
-        '--drift': `${(i % 2 ? 1 : -1) * (10 + (i * 11) % 28)}px`,
-        '--o': String(0.3 + (i % 5) * 0.08),
+        '--y': `${6 + (i * 29) % 84}%`,
+        // 8px sprite grid × integer-ish scale: 8/10/12/14px.
+        '--s': `${8 + (i % 4) * 2}px`,
+        '--d': `${11 + (i * 7) % 11}s`,
+        '--delay': `-${((i * 1.7) % 12).toFixed(2)}s`,
+        '--drift': `${(i % 2 ? 1 : -1) * (8 + (i * 11) % 34)}px`,
+        '--sway': `${3.4 + (i % 5) * 0.9}s`,
+        '--swayAmp': `${5 + (i * 13) % 14}px`,
+        '--tilt': `${(i % 2 ? 1 : -1) * (10 + (i * 17) % 22)}deg`,
+        '--flip': `${2.4 + (i % 7) * 0.42}s`,
+        '--o': String(0.5 + (i % 5) * 0.1),
+        '--pc': PETAL_COLORS[i % PETAL_COLORS.length],
+        '--pe': PETAL_EDGES[i % PETAL_EDGES.length],
       },
-    }));
+    }, h('i', { class: 'kt-blossom' })));
     mount(
       this.root,
       h(
@@ -265,17 +412,24 @@ export class App {
     void mountKtTitleWrite(this.root, this.sfx);
   }
 
-  goMap(): void {
-    this.sfx.play('select');
+  goMap(back = false): void {
+    this.cancelTyping();
+    this.sfx.play(back ? 'back' : 'select');
     this.killPlay();
     this.screen = 'map';
     const stars = this.totalStars();
     const rank = rankOf(stars);
+    const storyEls: (HTMLElement | null)[] = [];
+    const storyTexts: string[] = [];
     this.mapFloors = CHAPTERS.map((c, i) => {
       const unlocked = chapterUnlocked(this.progress, i);
       const total = c.stages.length * 3;
       const got = c.stages.reduce((n, s) => n + (this.progress.stages[s.id]?.stars ?? 0), 0);
       const cleared = chapterCleared(this.progress, i);
+      const storyText = unlocked ? (this.lang === 'ko' ? c.story.ko : c.story.en) : '';
+      const storyEl = unlocked ? h('div', { class: 'story ko', 'data-text': storyText }, storyText) : null;
+      storyEls.push(storyEl);
+      storyTexts.push(storyText);
       const el = h(
         'div',
         {
@@ -289,7 +443,7 @@ export class App {
           {},
           h('div', { class: 'name' }, h('span', { class: 'num' }, `FLOOR ${String(i + 1).padStart(2, '0')}`), this.lang === 'ko' ? c.title.ko : c.title.en),
           h('div', { class: 'sub ko' }, unlocked ? (this.lang === 'ko' ? c.subtitle.ko : c.subtitle.en) : this.t('sealed — clear the floor below', '봉인됨 — 아래층을 먼저')),
-          unlocked ? h('div', { class: 'story ko' }, this.lang === 'ko' ? c.story.ko : c.story.en) : null,
+          storyEl,
         ),
         h('div', { class: 'stars' }, cleared ? '★' : '☆', ' ', h('span', { class: got > 0 ? '' : 'off' }, `${got}/${total}`)),
       );
@@ -300,7 +454,7 @@ export class App {
       this.root,
       h(
         'div',
-        { class: 'screen fade-in' },
+        { class: 'screen fade-in chapter-screen' },
         h(
           'div',
           { class: 'topbar' },
@@ -323,7 +477,10 @@ export class App {
         ),
       ),
     );
+    this.mapStoryEls = storyEls;
+    this.mapStoryTexts = storyTexts;
     this.paintMap();
+    this.typeMapStory();
   }
 
   /** Repaint only the selection: no DOM rebuild, no flash, no scroll jump. */
@@ -353,6 +510,7 @@ export class App {
   }
 
   private selectFloor(i: number, enter: boolean): void {
+    const prev = this.mapSel;
     this.mapSel = clamp(i, 0, CHAPTERS.length - 1);
     if (this.mapSel >= this.mapFloors.length) return;
     if (!chapterUnlocked(this.progress, this.mapSel)) {
@@ -362,10 +520,15 @@ export class App {
     }
     this.paintMap();
     if (enter) this.goChapter(this.mapSel);
+    else {
+      if (this.mapSel !== prev) this.sfx.play('move');
+      this.typeMapStory();
+    }
   }
 
   /** Stage picker: cleared stages are replayable; future stages stay sealed. */
   goChapter(i: number): void {
+    this.cancelTyping();
     this.sfx.play('select');
     this.killPlay();
     this.chapterIndex = i;
@@ -398,7 +561,9 @@ export class App {
           {},
           h('div', { class: 'name' }, this.lang === 'ko' ? st.name.ko : st.name.en),
           h('div', { class: 'sub ko' }, `${this.t('par', '기준')} ${st.par}${(st.teaches ?? []).length ? ' · ' + (st.teaches ?? []).join(' ') : ''}`),
-          unlocked ? h('div', { class: 'story ko' }, this.lang === 'ko' ? st.brief.ko : st.brief.en) : h('div', { class: 'sub' }, this.t('sealed — clear the previous chamber', '봉인됨 — 이전 챔버를 먼저')),
+          unlocked
+            ? h('div', { class: 'story ko', 'data-text': this.lang === 'ko' ? st.brief.ko : st.brief.en }, this.lang === 'ko' ? st.brief.ko : st.brief.en)
+            : h('div', { class: 'sub' }, this.t('sealed — clear the previous chamber', '봉인됨 — 이전 챔버를 먼저')),
         ),
         unlocked ? h('div', { class: 'stars' }, `${'★'.repeat(stars)}${'☆'.repeat(3 - stars)}`) : h('div', { class: 'stars' }, '⊘'),
       );
@@ -409,7 +574,7 @@ export class App {
       this.root,
       h(
         'div',
-        { class: 'screen fade-in' },
+        { class: 'screen fade-in chapter-screen' },
         h(
           'div',
           { class: 'topbar' },
@@ -426,6 +591,7 @@ export class App {
       ),
     );
     this.paintChapter();
+    this.typeChapterBriefs();
   }
 
   private stageUnlocked(i: number): boolean {
@@ -435,8 +601,10 @@ export class App {
   }
 
   private selectChapterStage(i: number): void {
+    const prev = this.chapterSel;
     this.chapterSel = clamp(i, 0, CHAPTERS[this.chapterIndex].stages.length - 1);
     this.paintChapter();
+    if (this.chapterSel !== prev) this.sfx.play('move');
   }
 
   private paintChapter(): void {
@@ -462,6 +630,7 @@ export class App {
   }
 
   startStage(): void {
+    this.cancelTyping();
     const ch = CHAPTERS[this.chapterIndex];
     const stage = ch.stages[this.stageIndex];
     if (!stage) return;
@@ -536,6 +705,7 @@ export class App {
   // ------------------------------------------------------------------ trials
 
   goTrials(): void {
+    this.cancelTyping();
     this.sfx.play('select');
     this.killPlay();
     this.trialRuns = [];
@@ -713,6 +883,7 @@ export class App {
   }
 
   goProgress(): void {
+    this.cancelTyping();
     this.sfx.play('select');
     this.killPlay();
     this.screen = 'progress';
@@ -750,6 +921,7 @@ export class App {
   }
 
   goCodex(): void {
+    this.cancelTyping();
     this.sfx.play('select');
     this.killPlay();
     this.screen = 'codex';
@@ -790,6 +962,7 @@ export class App {
   }
 
   goAbout(): void {
+    this.cancelTyping();
     this.sfx.play('select');
     this.killPlay();
     this.screen = 'about';
@@ -1113,6 +1286,7 @@ export class App {
       return;
     }
     if (this.screen === 'chapter') {
+      this.finishTyping();
       if (e.key === 'ArrowUp' || e.key === 'k') {
         e.preventDefault();
         this.selectChapterStage(this.chapterSel - 1);
@@ -1130,11 +1304,12 @@ export class App {
         this.startStageAt(this.chapterSel);
       } else if (e.key === 'Escape' || e.key === 'h' || e.key === 'ArrowLeft') {
         e.preventDefault();
-        this.goMap();
+        this.goMap(true);
       }
       return;
     }
     if (this.screen === 'map') {
+      this.finishTyping();
       if (e.key === 'ArrowUp' || e.key === 'k') {
         e.preventDefault();
         this.selectFloor(this.mapSel - 1, false);
@@ -1181,12 +1356,12 @@ export class App {
       else if (e.key === 'PageDown' || (e.key === 'd' && e.ctrlKey)) { e.preventDefault(); this.moveTrial(5); }
       else if (e.key === 'PageUp' || (e.key === 'u' && e.ctrlKey)) { e.preventDefault(); this.moveTrial(-5); }
       else if (e.key === 'Enter' || e.key === 'l' || e.key === 'ArrowRight') { e.preventDefault(); this.runTrial(this.trialSel); }
-      else if (e.key === 'Escape' || e.key === 'h' || e.key === 'ArrowLeft') this.goMap();
+      else if (e.key === 'Escape' || e.key === 'h' || e.key === 'ArrowLeft') this.goMap(true);
       return;
     }
     if (this.screen === 'progress' || this.screen === 'codex') {
       if (e.key === 'Escape' || e.key === 'h' || e.key === 'ArrowLeft') {
-        this.goMap();
+        this.goMap(true);
         return;
       }
       if (e.key === 'j' || e.key === 'ArrowDown') { e.preventDefault(); this.scrollStep(1); }
@@ -1202,7 +1377,7 @@ export class App {
     if (this.screen === 'about') {
       if (e.key === 'Escape') {
         e.preventDefault();
-        this.goMap();
+        this.goMap(true);
       } else if (e.key === 'j' || e.key === 'l') {
         e.preventDefault();
         if (this.actions) focusStep(this.actions, 1);

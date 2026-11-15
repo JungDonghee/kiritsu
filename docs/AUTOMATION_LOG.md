@@ -315,3 +315,27 @@ GitHub repository renamed `vimlore` → `kiritsu`; VIMLORE is now the **game's**
 - 검증: tests 54/54, lint 51/51, tsc·doc-check·invariants clean,
   build/budget/pwa/title/presentation/korean 그린, level-oracle 51개 스테이지 전부 일치, STATUS current.
   ui-audit: P0 없음, P1(Enter-mash) 수정 확인, ghost 복원 diff [] 확인.
+
+## 2026-11-15 — 타이틀 v4(캔버스 잉크 타임라인) · 픽셀 벚꽃 · 결과 키보드 · 타자 연출
+
+- **타이틀 規律 v4**: 클립/폴리곤 리빌을 버리고 **캔버스 잉크 타임라인**으로 재설계.
+  글자 래스터 + EDT + 보로노이 잉크 배정 → 점별 필요 반폭 → 소프트 붓 스탬프로
+  마스크를 키우고 글자를 `destination-in` 합성. **획이 끝나면 그 획 잉크는 100%
+  덮이고**, 마지막 프레임은 원본 글자를 그대로 그려 **팝이 없다**(커버리지
+  20.48%→20.90% 측정). 타이틀 재진입 시 잉크 분석/글자 캔버스 캐시.
+  title-check는 캔버스 커버리지·완료 상태 검사로 갱신(38~43fps headless).
+- **픽셀 벚꽃 무한 흩날림**: 8×9 notched sakura 스프라이트(data URI mask +
+  `image-rendering:pixelated`, 핑크 바디 + 딥핑크 1px rim), 24개. 낙하/좌우
+  sway+회전/나비 scaleX 플립의 3중 transform-only 애니메이션, 페탈별 랜덤
+  duration/delay/amplitude. 인트로 후에도 계속 흩날리고, crt-off/reduced-motion
+  에서도 의도된 룩.
+- **모바일 결과 키보드 스크롤**: 844×390에서 결과 카드가 한 화면에 들어오게
+  compact CSS. j/k·PgUp/PgDn·Ctrl-d/u·g/G·Home/End 스크롤 + 포커스 이동 시
+  scrollIntoView. 강제 오버플로 테스트로 PageDown→NEXT 복귀 증명.
+- **레벨 선택 타자 연출**: 공용 `Typewriter`(app.ts, 단일 텍스트노드+`.type-caret`,
+  화면 이동 시 취소, 첫 키로 완성, reduced-motion 즉시). 지도 선택 층 story,
+  챕터 브리프 stagger, 결과 GOLF 한 줄 타이핑 + type/select/back/move 사운드.
+- **UI**: fade+slide 화면 전환, 포커스 링 강화, 챕터 브리프 전부 표시(스크롤).
+- 번들: **396,504 B raw / 130,597 B gzip**(ceiling 420k/140k). 검증: tests 54/54,
+  lint 51/51, tsc·doc-check·invariants·build·budget·pwa·title·presentation·korean
+  그린, level-oracle 51개 스테이지 전부 일치, STATUS current.
