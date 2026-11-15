@@ -143,18 +143,20 @@ docs/               README.md (문서 지도), LEVEL_FORMAT.md (authoring), CURR
 
 ## Design laws
 
-- **Title kanji (規律) — v9 SHIPPED (2026-11-15).** The rejected automated
-  partitions v1–v8 are retired. v9 draws the glyph as **20 complete closed
-  brush-stroke outlines** (`src/ui/title-stroke-paths.ts`, data = paths +
-  stroke medians + sweep radii) in real Japanese stroke order (規 11 + 律 9).
-  Stroke order/medians are derived from KanjiVG (CC BY-SA 3.0, reference; see
-  `docs/KANJI_ATTRIBUTION.md`) and fitted onto the Yuji Boku Light ink; each
-  stroke is painted whole (overlaps included) in order, and the 20 paths'
-  union reproduces the glyph (raster diff vs glyph <0.1%, AA edges only —
-  verified 2026-11-15, `docs/TITLE_KANJI.md` §8). Never draw the final glyph
-  over the animated one (no crossfade/pop) and never re-introduce the v1–v8
-  Voronoi/tube/fragment masks. Read [`docs/TITLE_KANJI.md`](docs/TITLE_KANJI.md)
-  before touching the title.
+- **Title kanji (規律) — v10 SHIPPED (2026-11-15).** The rejected automated
+  partitions v1–v8 are retired. v9 fixed the **data**: **20 complete closed
+  brush-stroke outlines** (`src/ui/title-stroke-paths.ts`, paths + stroke
+  medians + sweep radii) in real Japanese stroke order (規 11 + 律 9), derived
+  from KanjiVG centerlines (CC BY-SA 3.0, reference; see
+  `docs/KANJI_ATTRIBUTION.md`) fitted onto the Yuji Boku Light ink; each stroke
+  is painted whole (overlaps included) in order, and the 20 paths' union
+  reproduces the glyph (raster diff vs glyph <0.1%, AA edges only). v10 fixes
+  the **runtime only** (`src/ui/kanji.ts`): a crisp brush-tip mask sweep with a
+  55%→100% pressure ramp (no feather/blur/glow/trail) and Hanzi Writer–derived
+  pacing (0.22–0.55s per stroke, ≈7.55s total). Never draw the final glyph over
+  the animated one (no crossfade/pop) and never re-introduce v1–v8
+  Voronoi/tube/fragment masks. Read
+  [`docs/TITLE_KANJI.md`](docs/TITLE_KANJI.md) before touching the title.
 - **Title kanji (規律) has a single source of truth:** `public/kanji/ou-guilv-tight.svg`
   (구양순체 계열 Yuji Boku **Light cut**, viewBox 600×300, fill `#f2d8c9`;
   generated directly from the subset by `tools/gen-title-svg.py`). **Kanji

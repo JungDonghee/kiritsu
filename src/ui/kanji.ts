@@ -1,4 +1,4 @@
-// ── 타이틀 規律 획쓰기 v9 — 20획 완전 붓 획 아웃라인 ─────────────────────
+// ── 타이틀 規律 획쓰기 v10 — 20획 완전 붓 획 + 한지 스타일 스윕 ───────────
 // 글자형은 Yuji Boku Light(OFL 1.1) 단일 소스(public/kanji/ou-guilv-tight.svg).
 // 획 순서/중심선은 KanjiVG(CC BY-SA 3.0, Ulrich Apel, https://kanjivg.tagaini.net)
 // 를 참고해 Yuji Boku 잉크에 정합시킨 뒤, 각 획을 **겹침/가려진 부분까지 포함한
@@ -63,10 +63,16 @@ const clamp01 = (t: number): number => Math.min(1, Math.max(0, t));
 /**
  * 획 데이터 계획: 획순/길이/곡률에서 시작·지속시간과 붓 속도 프로파일을 만든다.
  * 도형 자체는 title-stroke-paths.ts 의 완전한 획 외곽선을 그대로 쓴다.
+ *
+ * v10 타이밍은 Hanzi Writer의 공개 애니메이션 규칙을 참고했다:
+ * 획 길이에 비례한 시간((len+600)/3 ms, 1024 정규화)에 타이틀용 배율을 곱해
+ * 획당 0.22–0.55s, 획 사이 0.08s, 規/律 사이 0.18s로 맞춘다(총 ≈8.3s).
  */
 function planStrokes(): Plan {
   const geoms: StrokeGeom[] = [];
-  const START = 0.62, GAP = 0.035, CHAR_PAUSE = 0.14;
+  const START = 0.55, GAP = 0.08, CHAR_PAUSE = 0.18;
+  const SPEED_DIV = 3000;
+  const NORM = 1024 / 600;
   let t = START;
   for (let i = 0; i < KIRITSU_TITLE_MEDIANS.length; i++) {
     const dense = curl(KIRITSU_TITLE_MEDIANS[i]!, 8);
@@ -89,7 +95,7 @@ function planStrokes(): Plan {
     const wcum: number[] = [wts[0]!];
     for (let k = 1; k < wts.length; k++) wcum.push(wcum[k - 1]! + wts[k]!);
     const wtotal = wcum[wcum.length - 1]! || 1;
-    const dur = Math.min(0.34, Math.max(0.12, 0.10 + len / 1050));
+    const dur = Math.min(0.55, Math.max(0.22, (len * NORM + 600) / SPEED_DIV));
     geoms.push({ pts: dense, cum, len, wcum, wtotal, start: t, dur });
     t += dur + GAP;
     if (i === KIRITSU_TITLE_MEDIANS.length - 2) t += CHAR_PAUSE;
@@ -144,22 +150,11 @@ export async function mountKtTitleWrite(root: HTMLElement, sfx?: Sfx): Promise<v
     layer.width = W; layer.height = H;
     const lctx = layer.getContext('2d');
     if (!lctx) return;
-    const tip = document.createElement('canvas');
-    tip.width = 64; tip.height = 64;
-    const ttx = tip.getContext('2d');
-    if (ttx) {
-      const tg = ttx.createRadialGradient(32, 32, 0, 32, 32, 32);
-      tg.addColorStop(0, 'rgba(255,255,255,.95)');
-      tg.addColorStop(0.35, 'rgba(255,224,214,.65)');
-      tg.addColorStop(0.7, 'rgba(255,120,150,.18)');
-      tg.addColorStop(1, 'rgba(255,120,150,0)');
-      ttx.fillStyle = tg; ttx.beginPath(); ttx.arc(32, 32, 32, 0, Math.PI * 2); ttx.fill();
-    }
     if (head) {
-      head.style.width = '16px';
-      head.style.height = '16px';
-      head.style.margin = '-8px 0 0 -8px';
-      head.style.mixBlendMode = 'screen';
+      head.style.width = '12px';
+      head.style.height = '12px';
+      head.style.margin = '-6px 0 0 -6px';
+      head.style.mixBlendMode = 'normal';
     }
     screen.style.setProperty('--kt-end', `${(end + 0.25).toFixed(2)}s`);
     el.dataset.state = 'writing';
@@ -177,7 +172,7 @@ export async function mountKtTitleWrite(root: HTMLElement, sfx?: Sfx): Promise<v
       head.style.left = `${(p.x / VB_W) * 100}%`;
       head.style.top = `${(p.y / VB_H) * 100}%`;
       head.style.transform = `rotate(${angle}deg) scale(${Math.max(0.45, Math.min(1.5, hw / 12))})`;
-      head.style.opacity = on ? '0.9' : '0';
+      head.style.opacity = on ? '0.55' : '0';
     };
 
     const completed = new Uint8Array(n);
@@ -195,63 +190,35 @@ export async function mountKtTitleWrite(root: HTMLElement, sfx?: Sfx): Promise<v
       if (active < 0) return;
 
       const g = geoms[active]!;
-      const pt = pointAt(g, arc);
-      const ahead = pointAt(g, Math.min(g.len, arc + 2));
-      const behind = pointAt(g, Math.max(0, arc - 2));
-      let dx = ahead.x - behind.x, dy = ahead.y - behind.y;
-      const dl = Math.hypot(dx, dy) || 1;
-      dx /= dl; dy /= dl;
 
-      // 진행 중 획: 호 클립 + 앞쪽 페더링(젖은 붓 끝).
+      // 진행 중 획: 붓촉이 지나가는 만큼만 마스크를 열고, 획 외곽선으로 클립한다.
+      // v10: 페더/블러/글로우 없이 한지에 먹이 스며드는 선명한 경계만 남긴다.
       lctx.setTransform(1, 0, 0, 1, 0, 0);
       lctx.clearRect(0, 0, W, H);
       lctx.setTransform(OUT_SCALE, 0, 0, OUT_SCALE, 0, 0);
       lctx.fillStyle = INK;
       lctx.save();
       lctx.beginPath();
-      const feather = 12;
-      const sweepTo = Math.min(g.len, arc + feather);
       const step = 2.5;
-      for (let s = 0; s <= sweepTo + step; s += step) {
-        const ss = Math.min(s, sweepTo);
+      const baseR = KIRITSU_TITLE_STROKE_RADII[active]! + 2;
+      for (let s = 0; s <= arc + step; s += step) {
+        const ss = Math.min(s, arc);
         const q = pointAt(g, ss);
-        const rr = KIRITSU_TITLE_STROKE_RADII[active]! + 2;
+        // 붓 압력 램프: 진행 중인 획의 맨 앞쪽은 얇게, 지나간 뒤쪽은 두껍게.
+        // (v10c) 앞 18unit 구간에서 55%→100%로 벌어져 '확' 나타나는 느낌을 줄인다.
+        const taper = 0.55 + 0.45 * Math.min(1, Math.max(0, arc - ss) / 18);
+        const rr = baseR * taper;
         lctx.moveTo(q.x + rr, q.y);
         lctx.arc(q.x, q.y, rr, 0, Math.PI * 2);
-        if (ss >= sweepTo) break;
+        if (ss >= arc) break;
       }
       lctx.clip();
       lctx.fill(paths[active]!);
       lctx.restore();
 
-      lctx.globalCompositeOperation = 'destination-in';
-      const grad = lctx.createLinearGradient(
-        pt.x - dx * feather, pt.y - dy * feather,
-        pt.x + dx * feather, pt.y + dy * feather,
-      );
-      grad.addColorStop(0, 'rgba(0,0,0,1)');
-      grad.addColorStop(0.52, 'rgba(0,0,0,1)');
-      grad.addColorStop(1, 'rgba(0,0,0,0)');
-      lctx.fillStyle = grad;
-      lctx.fillRect(-40, -40, VB_W + 80, VB_H + 80);
-      lctx.globalCompositeOperation = 'source-over';
-
       gl.save();
       gl.setTransform(1, 0, 0, 1, 0, 0);
-      // 젖은 잉크 번짐: 진행 중 획의 가장자리를 살짝 번지게 한 뒤 선명한 획을 올린다.
-      gl.globalAlpha = 0.4;
-      gl.filter = 'blur(2.2px)';
       gl.drawImage(layer, 0, 0);
-      gl.filter = 'none';
-      gl.globalAlpha = 1;
-      gl.drawImage(layer, 0, 0);
-      // 붓끝의 젖은 잔광(캔버스) — CSS 헤드와 별개로 항상 보이게.
-      const rad = (KIRITSU_TITLE_STROKE_RADII[active]! * 1.35 + 4) * OUT_SCALE;
-      gl.globalCompositeOperation = 'lighter';
-      gl.globalAlpha = 0.55;
-      gl.drawImage(tip, pt.x * OUT_SCALE - rad, pt.y * OUT_SCALE - rad, rad * 2, rad * 2);
-      gl.globalAlpha = 1;
-      gl.globalCompositeOperation = 'source-over';
       gl.restore();
       gl.setTransform(OUT_SCALE, 0, 0, OUT_SCALE, 0, 0);
     };
@@ -273,7 +240,6 @@ export async function mountKtTitleWrite(root: HTMLElement, sfx?: Sfx): Promise<v
     let chime = false;
     let sounded = -1;
     const startAt = performance.now();
-    const trail: Pt[] = [];
 
     const frame = (now: number): void => {
       if (!document.contains(el)) return;
@@ -304,29 +270,9 @@ export async function mountKtTitleWrite(root: HTMLElement, sfx?: Sfx): Promise<v
         const angle = (Math.atan2(ahead.y - behind.y, ahead.x - behind.x) * 180) / Math.PI;
         const hw = KIRITSU_TITLE_STROKE_RADII[active]!;
         setHead(pt, hw, true, angle);
-        trail.push(pt);
-        if (trail.length > 7) trail.shift();
         if (sounded !== active) { sounded = active; sfx?.play('brush', ((active % 5) * 0.03) - 0.06); }
       } else {
         setHead({ x: 0, y: 0 }, 1, false);
-        trail.length = 0;
-      }
-
-      if (trail.length > 1) {
-        gl.lineCap = 'round';
-        gl.lineJoin = 'round';
-        gl.strokeStyle = 'rgba(255,243,223,.12)';
-        gl.lineWidth = 7;
-        gl.beginPath();
-        for (let j = 0; j < trail.length; j++) {
-          const q = trail[j]!;
-          if (j === 0) gl.moveTo(q.x, q.y);
-          else gl.lineTo(q.x, q.y);
-        }
-        gl.stroke();
-        gl.strokeStyle = 'rgba(255,243,223,.45)';
-        gl.lineWidth = 1.7;
-        gl.stroke();
       }
 
       if (doneCount >= n) {

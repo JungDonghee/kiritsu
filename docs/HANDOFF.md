@@ -7,15 +7,17 @@
 > `npm run kickoff`.
 > **Last rewritten:** 2026-11-15, after the naming correction, CI/IME fixes and the novel is confirmed (work/ 13편 ~73,000자).
 
-## 0k — 타이틀 한자 인트로 v9 (2026-11-15, 배포 완료)
+## 0k — 타이틀 한자 인트로 v10 (2026-11-15, 배포 완료)
 
-- **상태: v9 완료·라이브 배포.** 20획 **완전 붓 획 아웃라인**을
-  `src/ui/title-stroke-paths.ts`에 고정(획순 規 11 + 律 9, KanjiVG 중심선을
-  Yuji Boku Light 잉크에 정합). 각 획은 겹침/가려진 부분까지 포함하며, 획순대로
-  칠하면 글자와 일치(union 래스터 diff <0.1%). 런타임 `src/ui/kanji.ts`는
-  진행 중 획만 호 클립으로 붓끝을 페더링하고 마지막에 글자를 덧그리지 않는다.
+- **상태: v10 완료·라이브 배포.** v9의 20획 **완전 붓 획 아웃라인** 데이터
+  (`src/ui/title-stroke-paths.ts`, 획순 規 11 + 律 9, KanjiVG 중심선을
+  Yuji Boku Light 잉크에 정합)는 그대로 두고, 런타임 `src/ui/kanji.ts`만
+  교체했다: **선명한 붓촉 마스크 스윕**(페더/블러/글로우/궤적 제거),
+  진행 중 획 앞쪽 55%→100% 압력 램프, Hanzi Writer식 길이 비례 타이밍
+  (획당 0.22~0.55s, 총 ≈7.55s, `--kt-end` 7.80s). 마지막에 글자를 덧그리지
+  않는다(팝 없음).
 - 검증: `tools/title-check.mjs`(20획·`data-state=done`·콘솔 0·FPS 40),
-  `npm run verify`, union/색상 오버레이 — `docs/TITLE_KANJI.md` §8.
+  `npm run verify`, union/색상 오버레이 — `docs/TITLE_KANJI.md` §9.
 - 금지: v1~v8 자동 마스크/Voronoi/튜브/조각 분할 재도입, `gen-title-strokes.py`
   재실행 배포, HW/Arphic 데이터를 형상 소스로 사용(PRC 획순·APL 라이선스),
   글자형 교체. 폰트는 Yuji Boku Light cut 고정.
