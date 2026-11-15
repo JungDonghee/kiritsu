@@ -287,5 +287,6 @@ GitHub repository renamed `vimlore` → `kiritsu`; VIMLORE is now the **game's**
   기존 플레이어 세이브 호환을 위해 의도적으로 유지.
 - 게이트: tests 50/50, lint:levels 51/51, tsc clean, doc-check/invariants clean,
   build 409,018 B raw / 133,924 B gzip (한계 420k/140k), pwa:check·title:check·
-  presentation:check·korean:check OK, STATUS current, level-oracle 51/51.
+  presentation:check·korean:check OK, STATUS current, level-oracle 51개 스테이지
+  전부 일치.
   real-Vim oracle·matrix는 푸시 후 CI가 재확인.
