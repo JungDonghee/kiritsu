@@ -30,6 +30,8 @@ const commHtml = (c) => {
 };
 
 const css = `
+
+
 @font-face{font-family:'NanumGothic';src:url('fonts/NanumGothic-Regular.ttf') format('truetype');font-weight:400}
 @font-face{font-family:'NanumGothic';src:url('fonts/NanumGothic-Bold.ttf') format('truetype');font-weight:700}
 @font-face{font-family:'NotoCJK';src:url('fonts/NotoSansCJKkr-Regular.otf') format('opentype');font-weight:400}
