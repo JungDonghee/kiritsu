@@ -1362,6 +1362,10 @@ h2,
   .kt-boot, .kt-petals, .kt-code, .kt-foot { display: none; }
 }
 
+.crt-off .kt-stroke { animation-name: kst-in-plain; }
+@keyframes kst-in-plain { from { opacity: 0; } to { opacity: 1; } }
+.crt-off .kt-laser-head { box-shadow: none; background: #fff; }
+
 @media (prefers-reduced-motion: reduce) {
   .sakura-field i { animation: none; opacity: 0.18; }
   .title-meaning, .title-clock, .title-acronym, .title-tag, .title-sub, .title-credit,
@@ -1954,31 +1958,27 @@ body.crt-off .board::after { display: none; }
 .kt-ink-wrap { position: relative; width: 100%; aspect-ratio: 600 / 300; }
 .kt-ink {
   display: block; width: 100%; height: 100%;
-  clip-path: inset(0 100% 0 0);
-  animation: kt-write 1.7s steps(64, end) .85s forwards;
 }
-@keyframes kt-write { to { clip-path: inset(0 0 0 0); } }
-.kt-laser {
-  position: absolute; top: -3%; bottom: -3%; left: 0; width: 2px;
-  background: linear-gradient(180deg, transparent, #ffd6df 18%, #ff4d6d 50%, #ffd6df 82%, transparent);
-  box-shadow: 0 0 12px #ff4d6d, 0 0 30px rgb(255 77 109 / .55);
-  opacity: 0; animation: kt-beam 1.7s steps(64, end) .85s forwards;
+.kt-ink svg { display: block; width: 100%; height: 100%; }
+/* 붓글씨 획쓰기: 획(서브패스) 단위로 잉크가 번지며 나타난다 (레이저 헤드가 획을 따라감) */
+.kt-stroke {
+  opacity: 0;
+  animation: kst-in .26s ease both;
+}
+@keyframes kst-in {
+  from { opacity: 0; filter: blur(2px) brightness(2.4); }
+  60%  { opacity: .85; filter: blur(.6px) brightness(1.5); }
+  to   { opacity: 1; filter: none; }
 }
 .kt-laser-head {
-  position: absolute; top: 50%; left: 0; width: 8px; height: 8px; margin: -4px 0 0 -3px;
-  background: #fff0f2; transform: rotate(45deg);
-  box-shadow: 0 0 10px #ff4d6d, 0 0 26px #ff4d6d;
-  opacity: 0; animation: kt-beam 1.7s steps(64, end) .85s forwards;
-}
-@keyframes kt-beam {
-  0% { left: 0; opacity: 0; }
-  8% { opacity: 1; }
-  92% { opacity: 1; }
-  100% { left: 100%; opacity: 0; }
+  position: absolute; top: 0; left: 0; width: 9px; height: 9px; margin: -4.5px 0 0 -4.5px;
+  background: #fff4f6; transform: rotate(45deg);
+  box-shadow: 0 0 10px #ff4d6d, 0 0 28px #ff4d6d, 0 0 44px rgb(255 77 109 / .45);
+  opacity: 0; pointer-events: none;
 }
 .kt-flash {
   position: absolute; inset: 0; background: #ffe8ee; opacity: 0; pointer-events: none;
-  animation: kt-flash 2.65s ease-out both;
+  animation: kt-flash 3.55s ease-out both;
 }
 @keyframes kt-flash {
   0%, 68% { opacity: 0; }
@@ -1989,16 +1989,16 @@ body.crt-off .board::after { display: none; }
 .kt-caption {
   margin-top: 18px; font-size: 9px; letter-spacing: .32em; color: #c9a299;
   text-transform: uppercase;
-  opacity: 0; animation: kt-rise .5s ease 2.55s both;
+  opacity: 0; animation: kt-rise .5s ease 3.65s both;
 }
 .kt-tag {
   margin-top: 26px; font-size: 16px; letter-spacing: .11em; color: #c7f5d5;
-  opacity: 0; animation: kt-rise .5s ease 2.7s both;
+  opacity: 0; animation: kt-rise .5s ease 3.8s both;
 }
 .kt-press {
   margin-top: 46px; font-size: 10px; letter-spacing: .44em; color: #b7f7ca;
   text-transform: uppercase; opacity: 0;
-  animation: kt-rise .45s ease 2.9s both, kt-blink 1.2s 3.4s steps(2, end) infinite;
+  animation: kt-rise .45s ease 3.95s both, kt-blink 1.2s 4.5s steps(2, end) infinite;
 }
 .kt-press::after { content: "▌"; margin-left: 4px; color: #ff5a72; }
 @keyframes kt-blink { 50% { opacity: .1; } }
@@ -2033,8 +2033,8 @@ body.crt-off .board::after { display: none; }
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .kt-ink { clip-path: none; animation: none; }
-  .kt-laser, .kt-laser-head { display: none; }
+  .kt-stroke { opacity: 1; animation: none; }
+  .kt-laser-head { display: none; }
   .kt-caption, .kt-tag, .kt-press { opacity: 1; animation: none; }
   .kt-petal { animation: none; opacity: .18; }
   .kt-sweep { display: none; }

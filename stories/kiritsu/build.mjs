@@ -34,8 +34,8 @@ const css = `
 
 @font-face{font-family:'NanumGothic';src:url('fonts/NanumGothic-Regular.ttf') format('truetype');font-weight:400}
 @font-face{font-family:'NanumGothic';src:url('fonts/NanumGothic-Bold.ttf') format('truetype');font-weight:700}
-@font-face{font-family:'NotoCJK';src:url('fonts/NotoSansCJKkr-Regular.otf') format('opentype');font-weight:400}
-@font-face{font-family:'NotoCJK';src:url('fonts/NotoSansCJKkr-Bold.otf') format('opentype');font-weight:700}
+@font-face{font-family:'NotoCJK';src:url('fonts/NotoSubset-Regular.otf') format('opentype');font-weight:400}
+@font-face{font-family:'NotoCJK';src:url('fonts/NotoSubset-Bold.otf') format('opentype');font-weight:700}
 @page{size:A4;margin:0}
 html,body{margin:0;padding:0}
 body{font-family:'NanumGothic','NotoCJK',sans-serif;color:#101c24;background:#fff;-webkit-print-color-adjust:exact;print-color-adjust:exact}

@@ -7,6 +7,7 @@ import { skillModel, activityGrid, streak, bumpActivity } from '../core/game/ski
 import { h, mount, isTouch, focusGroup, focusStep, focusActivate, focusIndex, type FocusGroup } from './dom.ts';
 import { needsRemap, physicalKey } from '../core/vim/keys.ts';
 import { Sfx } from './sfx.ts';
+import { kiritsuStrokeSvg, runKtLaserWrite } from './kanji.ts';
 import { PlayScreen } from './play.ts';
 
 const SAVE_KEY = 'vimlore.save.v2';
@@ -225,8 +226,7 @@ export class App {
           h(
             'div',
             { class: 'kt-ink-wrap', role: 'img', 'aria-label': '規律 — order, discipline' },
-            h('img', { class: 'kt-ink', src: './kanji/ou-guilv-tight.svg', alt: '', draggable: false }),
-            h('div', { class: 'kt-laser', 'aria-hidden': 'true' }),
+            h('div', { class: 'kt-ink', html: kiritsuStrokeSvg(), 'aria-hidden': 'true' }),
             h('div', { class: 'kt-laser-head', 'aria-hidden': 'true' }),
             h('div', { class: 'kt-flash', 'aria-hidden': 'true' }),
           ),
@@ -242,6 +242,7 @@ export class App {
         isTouch() ? h('div', { class: 'kt-touch' }, this.t('a physical keyboard is required', '물리 키보드가 필요하다')) : null,
       ),
     );
+    runKtLaserWrite(this.root);
   }
 
   goMap(): void {
