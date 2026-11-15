@@ -7,6 +7,18 @@
 > `npm run kickoff`.
 > **Last rewritten:** 2026-11-15, after the naming correction, CI/IME fixes and the novel is confirmed (work/ 13편 ~73,000자).
 
+## 0k — 타이틀 한자 인트로 (2026-11-15)
+
+- 타이틀의 規律 표시를 **붓글씨 획 단위 레이저 쓰기**로 교체함: `src/ui/kanji.ts`의
+  `kiritsuStrokes()`(Yuji Boku 아웃라인을 Z 경계로 분할, 글자당 4획·총 8획) →
+  `kiritsuStrokeSvg()`(획별 clipPath 잉크 레이어) → `runKtLaserWrite()`(레이저
+  헤드가 현재 획의 아웃라인을 따라감 — rAF는 인트로 동안만, 종료 후 정지).
+- 제약: 디자인 잠금 유지(글자·그라디언트·레이아웃 불변), `crt-off`에서 글로우
+  없이 페이드만, `prefers-reduced-motion`에서 즉시 표시. KANJI_STAND_SVG(起立)는
+  사용처가 없어 미적용.
+- 타이밍 기준: 시작 0.85s, 획당 0.26s+0.07s 간격(8획 ≈ 3.4s 종료), 캡션은
+  `src/style.css`의 kt-rise/kt-flash 지연값으로 정렬.
+
 ## 0j. Naming, CI fix, IME input, novel mandate (2026-11-15)
 
 **Naming (user-locked).** The world is **KIRITSU**; the game is also
