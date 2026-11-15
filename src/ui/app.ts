@@ -92,6 +92,7 @@ export class App {
     window.addEventListener('blur', () => this.play?.stopRepeatNow());
     document.addEventListener('visibilitychange', () => { if (document.hidden) this.play?.stopRepeatNow(); });
     this.applyCrt();
+    this.applyLang();
   }
 
   // ------------------------------------------------------------------- utils
@@ -152,6 +153,10 @@ export class App {
 
   private hue(h: number): void {
     document.documentElement.style.setProperty('--hue', String(h));
+  }
+
+  applyLang(): void {
+    document.body.classList.toggle('lang-ko', this.progress.lang === 'ko');
   }
 
   applyCrt(): void {
@@ -776,7 +781,7 @@ export class App {
         'div',
         { class: 'actions' },
         h('button', { class: 'btn', onclick: () => { this.progress.sound = !this.sfx.enabled; this.sfx.setEnabled(this.progress.sound); this.save(); this.goAbout(); } }, this.sfx.enabled ? this.t('sound: on', '소리: 켜짐') : this.t('sound: off', '소리: 꺼짐')),
-        h('button', { class: 'btn', onclick: () => { this.progress.lang = this.progress.lang === 'ko' ? 'en' : 'ko'; this.save(); this.goAbout(); } }, this.lang === 'ko' ? 'language: 한국어' : 'language: english'),
+        h('button', { class: 'btn', onclick: () => { this.progress.lang = this.progress.lang === 'ko' ? 'en' : 'ko'; this.applyLang(); this.save(); this.goAbout(); } }, this.lang === 'ko' ? 'language: 한국어' : 'language: english'),
         h('button', { class: 'btn', onclick: () => { this.progress.crt = !this.progress.crt; this.save(); this.applyCrt(); this.goAbout(); } }, this.progress.crt ? this.t('crt fx: on', 'CRT 효과: 켜짐') : this.t('crt fx: off', 'CRT 효과: 꺼짐')),
         h('button', {
           class: 'btn',
@@ -976,6 +981,9 @@ export class App {
   // -------------------------------------------------------------------- keys
 
   private onKey(e: KeyboardEvent): void {
+    // PWA(홈 화면 설치)에서 Esc가 앱을 종료/뒤로가기 시키지 않게 전역 차단.
+    // Esc는 이 게임에서 결코 '나가기'가 아니다(AGENTS: Esc는 Vim의 Esc).
+    if (e.key === 'Escape') e.preventDefault();
     if (e.metaKey || e.altKey) return;
     // A Korean IME rewrites letter keys (h→ㅗ, j→ㅓ, …). Vim keys are physical
     // positions, so recover them from KeyboardEvent.code. The game must be

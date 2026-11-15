@@ -52,28 +52,54 @@ export const KIRITSU_TITLE_STROKES: number[][][] = [
 
 // 획쓰기 SVG 문자열. 원본 글자를 잉크로 채우되, 획 스켈레톤을 따라 클립 밴드가
 // 지나가며 잉크가 드러난다(레이저가 스켈레톤을 긋고 잉크가 뒤따른다).
+// path d의 좌표를 viewBox 공간으로 사전 변환한다 (런타임 transform 제거 —
+// v2 실수: 스켈레톤·클립이 글자 transform 내부에 중첩 적용돼 어긋남).
+export function transformDToViewBox(d: string, tr: string): string {
+  const m = /translate\(([-\d.]+),([-\d.]+)\) scale\(([-\d.]+)\)/.exec(tr);
+  if (!m) return d;
+  const tx = parseFloat(m[1]), ty = parseFloat(m[2]), k = parseFloat(m[3]);
+  let i = 0;
+  return d.replace(/-?\d+(?:\.\d+)?(?:e[+-]?\d+)?/gi, (num) => {
+    const v = parseFloat(num);
+    const r = i++ % 2 === 0 ? v * k + tx : v * k + ty;
+    return String(Math.round(r * 10) / 10);
+  });
+}
+
+// 폴리라인 스켈레톤을 Catmull-Rom 스무딩으로 곡선화 (기계적 직선 → 붓맛)
+function smoothStroke(pts: number[][]): string {
+  if (pts.length < 2) return '';
+  let d = `M${pts[0][0]},${pts[0][1]}`;
+  for (let i = 0; i < pts.length - 1; i++) {
+    const p0 = pts[Math.max(0, i - 1)], p1 = pts[i], p2 = pts[i + 1], p3 = pts[Math.min(pts.length - 1, i + 2)];
+    const c1x = p1[0] + (p2[0] - p0[0]) / 6, c1y = p1[1] + (p2[1] - p0[1]) / 6;
+    const c2x = p2[0] - (p3[0] - p1[0]) / 6, c2y = p2[1] - (p3[1] - p1[1]) / 6;
+    d += `C${c1x.toFixed(1)},${c1y.toFixed(1)} ${c2x.toFixed(1)},${c2y.toFixed(1)} ${p2[0]},${p2[1]}`;
+  }
+  return d;
+}
+
 export function kiritsuTitleSvg(chars: KtTitleChar[], fill: string): string {
   const N = KIRITSU_TITLE_STROKES.length;
   const START = 0.9, DUR = 0.3, GAP = 0.045;      // 20획 ≈ 6.9s 인트로
+  // 모든 좌표는 viewBox(600×300) 하나로 통일: 잉크 d를 사전 변환하고,
+  // 글자 transform 그룹을 쓰지 않는다(중첩 transform 금지).
+  const fullV = chars.map((c) => transformDToViewBox(c.full, c.transform));
   const strokes = KIRITSU_TITLE_STROKES.map((pts, i) => {
-    const d = `M${pts.map((p) => `${p[0]},${p[1]}`).join('L')}`;
+    const d = smoothStroke(pts);
     const delay = (START + i * (DUR + GAP)).toFixed(3);
     return { d, delay, char: strokeChar(i) };
   });
-  // 잉크 레이어는 글자당 1개: 클립은 밴드(합집합)이며, 각 밴드가 자신의
-  // dashoffset을 애니메이션해 점진적으로 드러난다(프레임당 DOM 부하 없음).
-  const bands = strokes
-    .map((s, i) => `<path class="kts-band b${i}" style="animation-delay:${s.delay}s" d="${s.d}" pathLength="1"/>`)
-    .join('');
-  const defs = `<clipPath id="kts-c0">${strokes.filter((s) => s.char === 0).map((s, i) => `<path class="kts-band b${i}" style="animation-delay:${s.delay}s" d="${s.d}" pathLength="1"/>`).join('')}</clipPath>` +
+  const defs =
+    `<clipPath id="kts-c0">${strokes.filter((s) => s.char === 0).map((s, i) => `<path class="kts-band b${i}" style="animation-delay:${s.delay}s" d="${s.d}" pathLength="1"/>`).join('')}</clipPath>` +
     `<clipPath id="kts-c1">${strokes.filter((s) => s.char === 1).map((s, i) => `<path class="kts-band b${11 + i}" style="animation-delay:${s.delay}s" d="${s.d}" pathLength="1"/>`).join('')}</clipPath>`;
-  const body = chars
-    .map((c, ci) =>
-      `<g transform="${c.transform}"><g clip-path="url(#kts-c${ci})"><path fill="${fill}" fill-rule="nonzero" d="${c.full}"/></g><g class="kts-laser-layer">${strokes.filter((s) => s.char === ci).map((s, i) => `<path class="kts-core" style="animation-delay:${s.delay}s" d="${s.d}" pathLength="1"/>`).join('')}</g></g>`)
+  const body = fullV
+    .map((d, ci) =>
+      `<g clip-path="url(#kts-c${ci})"><path fill="${fill}" fill-rule="nonzero" d="${d}"/></g><g class="kts-laser-layer">${strokes.filter((s) => s.char === ci).map((s) => `<path class="kts-core" style="animation-delay:${s.delay}s" d="${s.d}" pathLength="1"/>`).join('')}</g>`)
     .join('');
-  const ghosts = chars.map((c) => `<g class="kts-ghost" transform="${c.transform}"><path fill="${fill}" fill-rule="nonzero" d="${c.full}"/></g>`).join('');
-  const settle = chars.map((c) => `<g class="kts-settle" transform="${c.transform}"><path fill="${fill}" fill-rule="nonzero" d="${c.full}"/></g>`).join('');
-  return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 300" aria-hidden="true" preserveAspectRatio="xMidYMid meet"><defs>${defs}</defs>${ghosts}${body}${settle}</svg>`;
+  // 유령 레이어는 두지 않는다(사용자 지적: 쓰기 전에 완성형이 보이면 안 됨).
+  const settle = fullV.map((d) => `<g class="kts-settle"><path fill="${fill}" fill-rule="nonzero" d="${d}"/></g>`).join('');
+  return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 300" aria-hidden="true" preserveAspectRatio="xMidYMid meet"><defs>${defs}</defs>${body}${settle}</svg>`;
 }
 
 // 획 i가 어느 글자(0=規, 1=律)에 속하는가

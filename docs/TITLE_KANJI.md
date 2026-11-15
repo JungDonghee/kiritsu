@@ -32,6 +32,7 @@ v2에서 제거됨(히스토리에 보존). 타이틀 글자는 **오직 ou-guil
      가장자리를 채워 **최종 글자형을 100% 보장**한다.
 - 획 스켈레톤: `src/ui/kanji.ts`의 `KIRITSU_TITLE_STROKES` — 規 11획(夫4+見7),
   律 9획(彳3+聿6), viewBox 600×300 좌표, 붓 획순(위→아래, 왼→오른).
+  `smoothStroke()`(Catmull-Rom)로 곡선화 — 직선 폴리라인 금지.
 - 인트로 타이밍: 시작 .9s, 획당 .3s+.045s 간격(20획 ≈ 7.1s 종료), 캡션·플래시
   지연값은 `src/style.css`의 kt-rise/kt-flash에서 정렬(7.3~7.85s).
 - 단일 파일 빌드: `tools/inline.mjs`가 `./kanji/ou-guilv-tight.svg` 문자열을
@@ -48,7 +49,9 @@ v2에서 제거됨(히스토리에 보존). 타이틀 글자는 **오직 ou-guil
    콘솔 에러 0·FPS≥18).
 5. `npm run budget` 그린 (단일 파일 420KB/140KB — 인라인 중복 주의).
 6. `npm run verify` 그린.
-7. 이 문서·HANDOFF §0k에 변경 기록.
+7. **Esc**: 타이틀에서 무시, 지도에서 타이틀 복귀. 전역에서 Esc는
+   `preventDefault`(PWA에서 앱 종료 방지 — 사용자 지적). 건드리지 말 것.
+8. 이 문서·HANDOFF §0k에 변경 기록.
 
 커버리지 측정 (스켈레톤 수정 시):
 ```bash
