@@ -1040,6 +1040,9 @@ export class App {
     }
     if (this.screen === 'title') {
       e.preventDefault();
+      // Esc는 진입 키가 아니다 — 지도에서 Esc로 돌아온 직후 같은 키가 다시
+      // 튕겨 나가는(타이틀→지도 왕복) 문제 방지. Esc는 아무것도 하지 않는다.
+      if (e.key === 'Escape') return;
       this.goMap();
       return;
     }
