@@ -1362,14 +1362,7 @@ h2,
   .kt-boot, .kt-petals, .kt-code, .kt-foot { display: none; }
 }
 
-.crt-off .kt-ghost {
-  opacity: .13;
-  filter: blur(.4px);
-  animation: kst-ghost-out .5s ease 3.5s both;
-}
-@keyframes kst-ghost-out { to { opacity: 0; } }
-.crt-off .kt-ghost { filter: none; }
-.kt-stroke { animation-name: kst-in-plain; }
+.crt-off .kt-stroke { animation-name: kst-in-plain; }
 @keyframes kst-in-plain { from { opacity: 0; } to { opacity: 1; } }
 .crt-off .kt-laser-head { box-shadow: none; background: #fff; }
 
@@ -1968,6 +1961,13 @@ body.crt-off .board::after { display: none; }
 }
 .kt-ink svg { display: block; width: 100%; height: 100%; }
 /* 붓글씨 획쓰기: 획(서브패스) 단위로 잉크가 번지며 나타난다 (레이저 헤드가 획을 따라감) */
+.kt-ghost {
+  opacity: .13;
+  filter: blur(.4px);
+  animation: kst-ghost-out .5s ease 3.5s both;
+}
+@keyframes kst-ghost-out { to { opacity: 0; } }
+.crt-off .kt-ghost { filter: none; }
 .kt-stroke {
   opacity: 0;
   animation: kst-in .26s ease both;
