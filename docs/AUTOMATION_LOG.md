@@ -412,3 +412,14 @@ GitHub repository renamed `vimlore` → `kiritsu`; VIMLORE is now the **game's**
   사용 가능 확인.
 - 번들: title-stroke-paths 63.7KB 생성, build budget ceiling(420k/140k) 이내.
 
+## 2026-11-15 (7) — 타이틀 획 자동화 종료 · 수작업 트레이싱 인수인계
+
+- v8(자동 Voronoi 소유 + 전체 붓 튜브)을 라이브에 배포했으나 사용자가
+  "여전히 부정확하고 발전 없음"으로 판정. **자동 분할 접근 종료.**
+- 다음 AI 작업: 規 11획 + 律 9획을 **완전한 붓 획 SVG path로 수작업 트레이싱**.
+  단일 지시서 `docs/STROKE_HANDOVER.md` (절차·검증·리서치·실패 기록 포함).
+- 리서치 요약: HW/Arphic per-stroke outline은 다른 폰트·PRC 획순·APL
+  라이선스라 Yuji Boku 형상에 부적합. KanjiVG는 중심선(CC BY-SA)만 제공.
+  contourpy/numpy/pathops는 `.pdfdeps`에서 사용 가능.
+- 현재 라이브/코드 상태는 v8 그대로 유지. 폰트는 Yuji Boku Light cut 고정.
+

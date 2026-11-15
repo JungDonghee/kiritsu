@@ -134,8 +134,14 @@ docs/               LEVEL_FORMAT.md (authoring), CURRICULUM.md (the 10 floors)
 
 ## Design laws
 
+- **Title kanji (規律) — OPEN TASK FIRST:** the user rejected the automated
+  v1–v8 stroke segmentation as not HW-quality. The accepted next step is
+  **manual full-stroke tracing of the 20 strokes** (each a closed SVG path,
+  overlaps included, union = Yuji Boku Light glyph). Read
+  [`docs/STROKE_HANDOVER.md`](docs/STROKE_HANDOVER.md) before touching the title.
+  Do not ship another automated partition.
 - **Title kanji (規律) has a single source of truth:** `public/kanji/ou-guilv-tight.svg`
-  (구양순체 계열 Yuji Boku **Light cut**, viewBox 600×300, fill `#f2d8c9`; generated directly from the subset by `tools/gen-title-svg.py`). **Kanji font is LOCKED** to this Yuji Boku Light cut for every view. v8 draws the real
+  (구양순체 계열 Yuji Boku **Light cut**, viewBox 600×300, fill `#f2d8c9`; generated directly from the subset by `tools/gen-title-svg.py`). **Kanji font is LOCKED** to this Yuji Boku Light cut for every view. v8 (deployed, but user-rejected quality) draws the real
   glyph as **20 full brush-stroke vector paths** (Voronoi-owned ink ∪ variable
   centreline tube; `tools/gen-title-strokes.py` → `src/ui/title-stroke-paths.ts`)
   in **real Japanese stroke order**:
