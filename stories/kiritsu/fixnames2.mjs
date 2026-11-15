@@ -39,7 +39,7 @@ let state;
 const reset = (ch) => {
   state = {
     ritsu: ch >= 9 ? '立' : '律',      // 9장 복제 활성·명명
-    tsuki: ch >= 7 ? '憑' : '月',      // 7장 4,115 원본 삭제, 복제 활성
+    tsuki: ch >= 9 ? '憑' : '月',      // 9장 4,115 원본 처형, 카피본 기동
     rei: ch >= 11 ? '霊' : '零',       // 11장 유령
     kou: ch >= 10 ? '功' : '抗',       // 10장 면역 반전
     kiritsu: ch >= 12 ? '起立' : '規律', // 12장 첫 줄 덮어쓰기
@@ -60,7 +60,7 @@ for (const f of files) {
     out.push(replaced);
     if (chapter === 10 && line.includes('코우[功]')) state.kou = '功';
     if (chapter === 8 && line.includes('리츠[立]')) state.ritsu = '立';
-    if (chapter === 7 && line.includes('츠키[憑]')) state.tsuki = '憑';
+    if (chapter === 9 && line.includes('츠키[憑]')) state.tsuki = '憑';
     if (chapter === 11 && line.includes('레이[霊]')) state.rei = '霊';
     if (chapter === 12 && line.includes('키리츠[起立]')) state.kiritsu = '起立';
   }
