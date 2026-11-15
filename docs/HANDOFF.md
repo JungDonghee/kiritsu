@@ -18,6 +18,12 @@
   사용처가 없어 미적용.
 - 타이밍 기준: 시작 0.85s, 획당 0.26s+0.07s 간격(8획 ≈ 3.4s 종료), 캡션은
   `src/style.css`의 kt-rise/kt-flash 지연값으로 정렬.
+- **성능 증거**: 레이저 궤적은 인트로 전에 64-샘플로 미리 계산(프레임당
+  getPointAtLength·할당 0), 잉크 애니메이션은 opacity 전용(blur/brightness
+  래스터 제거). 헤드리스 소프트웨어 렌더링에서 인트로 ~23fps(기존 타이틀
+  이펙트 스택이 환경 상한 — 실기 GPU 합성 대상), 지속 게임플레이는
+  browser:qa 57fps 증거. `tools/title-check.mjs`가 8획·유령·헤드·reduced-motion·
+  콘솔 에러와 FPS≥18(재해 감지)을 verify 체인에서 검사한다.
 
 ## 0j. Naming, CI fix, IME input, novel mandate (2026-11-15)
 

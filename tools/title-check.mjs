@@ -49,8 +49,24 @@ const strokes = await page.$$eval('.kt-stroke', (els) => els.length);
 const ghosts = await page.$$eval('.kt-ghost', (els) => els.length);
 console.log('strokes:', strokes, '| ghosts:', ghosts);
 
-// 2) 인트로 종료 후 상태 (8획 × 0.33s + 시작 0.85s ≈ 3.5s → 4.2s 대기)
-await page.waitForTimeout(4300);
+// 1-2) 인트로 구간 FPS 증거 (북스타 #6: 측정 우선)
+const fps = await page.evaluate(() => new Promise((resolve) => {
+  let frames = 0;
+  const t0 = performance.now();
+  const loop = (now) => {
+    frames++;
+    if (now - t0 >= 3400) {
+      resolve((frames * 1000) / (now - t0));
+      return;
+    }
+    requestAnimationFrame(loop);
+  };
+  requestAnimationFrame(loop);
+}));
+console.log('intro fps:', fps.toFixed(0));
+
+// 2) 인트로 종료 후 상태 (8획 × 0.33s + 시작 0.85s ≈ 3.5s → 4.3s 대기)
+await page.waitForTimeout(900);
 const done = await page.evaluate(() => {
   const strokes = [...document.querySelectorAll('.kt-stroke')];
   const head = document.querySelector('.kt-laser-head');
@@ -78,7 +94,10 @@ console.log('reduced-motion all visible:', reduced);
 await browser.close();
 server.close();
 
-const ok = strokes === 8 && ghosts === 2 && done.allVisible && done.headHidden && done.ghostGone && reduced && errors.length === 0;
+// FPS 게이트: 재해 감지용(≥18). 헤드리스 소프트웨어 렌더링은 기존 타이틀
+// 이펙트 스택(꽃잎·스캔·스윕) 때문에 ~23fps가 환경 상한 — 실기 GPU 합성 대상 아님.
+// 지속 게임플레이 60fps 증거는 browser:qa(57fps)가 담당한다.
+const ok = strokes === 8 && ghosts === 2 && done.allVisible && done.headHidden && done.ghostGone && reduced && errors.length === 0 && fps >= 18;
 console.log('console errors:', errors.length);
 if (!ok) {
   console.error('title-check FAILED');

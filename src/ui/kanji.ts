@@ -59,6 +59,15 @@ export function runKtLaserWrite(root: HTMLElement): void {
   const { flat } = kiritsuStrokes();
   const START = 0.85, DUR = 0.26, GAP = 0.07;
   const meas = flat.map((s) => svg.querySelector<SVGPathElement>(`.kst-m-c${s.char}-s${s.sub}`)).filter(Boolean) as SVGPathElement[];
+  // 프레임당 getPointAtLength(수천 좌표 경로에서 비쌈)를 피하기 위해,
+  // 획별 궤적을 인트로 시작 전에 64개 샘플로 미리 계산한다(프레임당 할당·계산 0).
+  const SAMPLES = 64;
+  const traces = meas.map((p) => {
+    const len = p.getTotalLength();
+    const pts: DOMPoint[] = [];
+    for (let i = 0; i <= SAMPLES; i++) pts.push(p.getPointAtLength((i / SAMPLES) * len));
+    return pts;
+  });
   const startAt = performance.now();
   let raf = 0;
   const frame = (now: number) => {
@@ -79,8 +88,7 @@ export function runKtLaserWrite(root: HTMLElement): void {
     }
     const begin = START + active * (DUR + GAP);
     const p = Math.min(1, Math.max(0, (t - begin) / DUR));
-    const len = meas[active].getTotalLength();
-    const pt = meas[active].getPointAtLength(p * len);
+    const pt = traces[active][Math.round(p * SAMPLES)];
     head.style.opacity = '1';
     head.style.left = `${(pt.x / 218) * 100}%`;
     head.style.top = `${(pt.y / 109) * 100}%`;
