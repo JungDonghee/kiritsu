@@ -19,7 +19,7 @@
 - **공개/배포 담당**: `../README.md`, `REPO_PRESENTATION.md`, `COMPLETION.md`, `COMPARISON.md`, `PWA.md`.
 - **소설 담당**: `STORY_BIBLE.md` → [`../stories/kiritsu/HANDOVER.md`](../stories/kiritsu/HANDOVER.md)(캐논) → `../stories/kiritsu/NOVEL_STATUS.md`.
 
-## 2. 정본(canonical) 문서 — 21개
+## 2. 정본(canonical) 문서 — 22개
 
 | 문서 | 소유하는 것 | 갱신 규칙 |
 |---|---|---|
@@ -89,7 +89,7 @@
 ```
 docs/
 ├─ README.md            ← 이 지도
-├─ (정본 21개)          ← 위 §2
+├─ (정본 22개)          ← 위 §2
 ├─ generated/           ← 도구 생성(§3)
 ├─ archive/             ← 과거 기록(§4)
 ├─ browser/             ← 스크린샷 증거 (docs/browser/**)
