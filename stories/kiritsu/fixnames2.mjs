@@ -9,6 +9,8 @@ const shin = /(?<![\uAC00-\uD7A3])(신)(?!\[)(?=\[|들|은|는|이|가|을|를|�
 
 // `node fixnames2.mjs --check [파일...]` — 집필 중인 초고를 고치지 않고 검사만 한다.
 // 인자가 없으면 work/ 아래의 모든 .md 파일을 검사한다. 위반이 있으면 exit 1.
+// 검사: ① 이름[한자] 표기 ② 은어 표기(카타카나/일본어 문자 금지, 폐기된
+// '읽는 손/쓰는 손' 용어 금지 — 확정 은어: 모숀/인사토/얀크/어둠/기동/미등록 파일).
 if (process.argv[2] === '--check') {
   const targets = process.argv.slice(3);
   const list = targets.length
@@ -17,16 +19,20 @@ if (process.argv[2] === '--check') {
         .filter((f) => f.endsWith('.md') && !f.includes('-플랜') && !f.includes('-review'))
         .map((f) => path.join(dir, 'work', f));
   let bad = 0;
+  const kana = /[\u3040-\u30ff\u31f0-\u31ff]/;
+  const deadTerms = /(읽는 손|쓰는 손)/;
   for (const p of list) {
     const rel = p.startsWith(dir) ? p.slice(dir.length + 1) : p;
     const s = fs.readFileSync(p, 'utf8');
     const a = s.match(other) || [];
     const b = s.match(shin) || [];
-    if (a.length || b.length) {
+    const k = s.match(kana) || [];
+    const d = s.match(deadTerms) || [];
+    if (a.length || b.length || k.length || d.length) {
       bad++;
-      console.log(rel, '| other:', a.length, [...new Set(a)], '| shin:', b.length, [...new Set(b)]);
+      console.log(rel, '| other:', a.length, [...new Set(a)], '| shin:', b.length, [...new Set(b)], '| kana:', k.length, [...new Set(k)], '| dead-terms:', d.length, [...new Set(d)]);
       for (const line of s.split('\n')) {
-        if (other.test(line) || shin.test(line)) console.log('  >', line.trim().slice(0, 120));
+        if (other.test(line) || shin.test(line) || kana.test(line) || deadTerms.test(line)) console.log('  >', line.trim().slice(0, 120));
       }
     } else {
       console.log(rel, '| clean');
