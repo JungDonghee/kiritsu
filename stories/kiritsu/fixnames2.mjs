@@ -14,7 +14,7 @@ if (process.argv[2] === '--check') {
   const list = targets.length
     ? targets
     : fs.readdirSync(path.join(dir, 'work'))
-        .filter((f) => f.endsWith('.md') && !f.includes('-플랜'))
+        .filter((f) => f.endsWith('.md') && !f.includes('-플랜') && !f.includes('-review'))
         .map((f) => path.join(dir, 'work', f));
   let bad = 0;
   for (const p of list) {
