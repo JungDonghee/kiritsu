@@ -57,7 +57,7 @@ interface State {
   undo?: { lines: string[]; cursor: [number, number] };
 }
 
-const dir = mkdtempSync(join(tmpdir(), 'vimlore-count-'));
+const dir = mkdtempSync(join(tmpdir(), 'kiritsu-count-'));
 const outFile = join(dir, 'out.json');
 const scriptFile = join(dir, 'run.vim');
 const esc = (p: string) => p.replace(/\\/g, '/');

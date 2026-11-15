@@ -177,7 +177,7 @@ const cases: Case[] = Array.from({ length: N }, (_, i) => makeCase(i));
 const SENTINEL = '<Esc>i!<Esc>';
 for (const c of cases) c.keys += SENTINEL;
 
-const dir = mkdtempSync(join(tmpdir(), 'vimlore-fuzz-'));
+const dir = mkdtempSync(join(tmpdir(), 'kiritsu-fuzz-'));
 const outFile = join(dir, 'out.json');
 const scriptFile = join(dir, 'run.vim');
 const esc = (p: string): string => p.replace(/\\/g, '/');
@@ -284,7 +284,7 @@ if (failures.length) {
       console.log(`FAIL ${f.c.name} | ${JSON.stringify(f.c.text)} | ${f.c.cursor} | ${f.c.keys}`);
     }
   }
-  const repro = join(tmpdir(), `vimlore-fuzz-failures-${SEED}.txt`);
+  const repro = join(tmpdir(), `kiritsu-fuzz-failures-${SEED}.txt`);
   writeFileSync(repro, failures.map((f) => `${f.c.name} | content=${JSON.stringify(f.exp.lines) !== JSON.stringify(f.got.lines) ? 1 : 0} | ${JSON.stringify(f.c.text)} | ${JSON.stringify(f.c.cursor)} | ${f.c.keys} | cat=${f.c.cat}`).join('\n') + '\n');
   console.log(`\n${failures.length} failures; repro list: ${repro}`);
   process.exit(1);

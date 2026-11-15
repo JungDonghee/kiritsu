@@ -85,7 +85,7 @@
 | surface | **86 of 88 commands with engine evidence**, 9 engine-only features, 0 orphan cases (`npm run surface -- --strict`, CI gate) |
 | matrix | 21,712 grammar cases: **21,712 matched, 0 divergences** (CI gate; `docs/MATRIX_REPORT.md`) |
 | unit tests | **28 pass**; `tsc --noEmit` clean; `doc-check` OK |
-| build | JS 242,140 B · single `dist/vimlore.html` 276,101 B · gzip 85,991 B · budget gate 277k/87k (raised this pass) |
+| build | JS 242,140 B · single `dist/kiritsu.html` 276,101 B · gzip 85,991 B · budget gate 277k/87k (raised this pass) |
 | fuzz | 12 seeds at n=1000: **0 divergences** |
 | live | <https://jungdonghee.github.io/kiritsu/> · Pages `workflow` · `main` deployed · CI + Pages green |
 | deploy auth | fine-grained PAT, repo `admin/push`, API cannot manage Pages; workflow does |
@@ -336,7 +336,7 @@ cursor-only fuzz backlog are green.
 ## 10. Command reference (unchanged)
 
 ```bash
-cd /home/jung/ai_station/sandbox/vimlore
+cd /home/jung/ai_station/sandbox/kiritsu
 npm run doctor
 npm test
 npm run lint:levels

@@ -1,7 +1,7 @@
 # ENGINE PROGRAM — closed-world completeness
 
 > **Status: Phase A live (2026-11-11).** This document defines what "the
-> engine is perfect" means for VIMLORE, how the engine is layered, and the
+> engine is perfect" means for KIRITSU, how the engine is layered, and the
 > gates that make the claim checkable. It supersedes "add more oracle cases
 > until it feels done" as the engine roadmap.
 >

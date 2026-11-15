@@ -47,7 +47,7 @@ story canon must not change.
   isolate one motion family and add a focused differential fixture instead of
   changing the shared undo path globally.
 - Public/release work already green before this round: self-contained
-  `dist/vimlore.html`, measured 420k/140k gate, final hero/social/OG, GitHub
+  `dist/kiritsu.html`, measured 420k/140k gate, final hero/social/OG, GitHub
   About/topics, CI and Pages.
 
 ## Round 2 — 21:00–21:15 KST
@@ -269,3 +269,23 @@ failures. Automation stops at 23:58 KST.
 ## Repo rename
 
 GitHub repository renamed `vimlore` → `kiritsu`; VIMLORE is now the **game's** subtitle (정정: 세계 이름은 KIRITSU, VIMLORE는 게임 부제 — 사용자 최종 확정). Live moved to <https://jungdonghee.github.io/kiritsu/>. README hero, desktop title, first chamber, PWA/portrait screenshots, OG/social cards, package name, and the downloadable `kiritsu.html` were refreshed. Legacy `vimlore.html` download remains as an alias.
+
+## 2026-11-15 — naming cleanup: vimlore → kiritsu (로컬 경로·문서·빌드 별칭)
+
+- 로컬 체크아웃 `/home/jung/ai_station/sandbox/vimlore` → `.../kiritsu`; Playwright
+  캐시 `.vimlore-browsers` → `.kiritsu-browsers` (QA 스크립트·문서·절차 동기화).
+  git identity는 `KIRITSU <dev@kiritsu.local>`로 변경 (과거 커밋 이력은 유지).
+- **레거시 빌드 별칭 제거**: `dist/vimlore.html`과 `dist/download/vimlore.html`을
+  더 이상 생성하지 않는다. 단일 파일 정본은 `dist/kiritsu.html`이고
+  `tools/pwa-check.mjs`도 이를 검사한다. 기존 `/vimlore.html` 링크는 배포 후 404.
+- 사용자 노출 문구에서 "VIMLORE = 세계" 오표기 교정: index meta description,
+  `manifest.webmanifest`, README Play 버튼(aria-label), style 헤더. **VIMLORE는
+  게임 부제로만 유지**하며 AGENTS.md에 단일 규칙(single source)을 추가했다.
+- c10s3 스테이지 텍스트의 옛 URL `vimlore.example/weave` → `kiritsu.example/weave`
+  (동일 바이트 길이 — `J`/`gJ` 조인 솔루션 무변경, level-oracle green).
+- 내부 식별자(`vimlore.save.v2`, `vimlore.sound`, 게임 내 히스토리 문서)는
+  기존 플레이어 세이브 호환을 위해 의도적으로 유지.
+- 게이트: tests 50/50, lint:levels 51/51, tsc clean, doc-check/invariants clean,
+  build 409,018 B raw / 133,924 B gzip (한계 420k/140k), pwa:check·title:check·
+  presentation:check·korean:check OK, STATUS current, level-oracle 51/51.
+  real-Vim oracle·matrix는 푸시 후 CI가 재확인.

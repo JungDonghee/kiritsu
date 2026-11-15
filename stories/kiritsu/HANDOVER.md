@@ -1,4 +1,4 @@
-# HANDOVER — KIRITSU (소설 → vimlore 스토리 모드)
+# HANDOVER — KIRITSU (소설 → KIRITSU 스토리 모드)
 
 > **원고를 고칠 AI는 [`WRITING_BRIEF.md`](WRITING_BRIEF.md)와 [`NOVEL_STATUS.md`](NOVEL_STATUS.md)를 먼저 읽어라.**
 > 이 문서는 프로젝트 인수인계, 브리프는 집필 지시서, NOVEL_STATUS는 원고 상태·검토 이력이다.
@@ -38,7 +38,7 @@
 - **소설**: KIRITSU. 사이버펑크 AI 문명. 12장 + 프롤로그 + 장별 탈무드식 주석.
 - **게임**: **KIRITSU** (부제 **VIMLORE**; GitHub `JungDonghee/kiritsu`). 세계와 게임이 모두 KIRITSU이고, VIMLORE는 "vim을 스토리로 재미있게 가르치는 게임"이라는 뜻의 부제다. 이 소설은 **KIRITSU 게임 스토리 모드의 서사 기반**이다.
 - **관계**: 소설 = 스토리 모드의 내러티브 원본. 게임 = 그 세계를 플레이어가 vim으로 체험하는 형태.
-- **이 저장소 위치**: `vimlore/stories/kiritsu/` (소설·빌드·PDF·이 문서).
+- **이 저장소 위치**: `kiritsu/stories/kiritsu/` (소설·빌드·PDF·이 문서).
 
 ---
 
@@ -189,9 +189,9 @@ LOCKED CANON을 **모순하지 않는 선**에서:
 
 ### 명령 (반드시 이 순서)
 ```bash
-cd vimlore/stories/kiritsu
+cd kiritsu/stories/kiritsu
 node concat.mjs                         # 규칙 검사(--check) 게이트 + work/ 결합 → story.md
-PLAYWRIGHT_BROWSERS_PATH=/home/jung/ai_station/sandbox/kiritsu/.playwright node build.mjs
+PLAYWRIGHT_BROWSERS_PATH=/home/jung/ai_station/sandbox/.kiritsu-browsers node build.mjs
 ```
 
 ### 함정
@@ -199,7 +199,7 @@ PLAYWRIGHT_BROWSERS_PATH=/home/jung/ai_station/sandbox/kiritsu/.playwright node 
 2. **build.mjs의 `dir`**: 2026-11-15에 `path.dirname(fileURLToPath(import.meta.url))`로 수정됨. 다시 하드코딩 금지.
 3. **한자 폰트**: NanumGothic에는 한자가 없다. `NotoSansCJK` @font-face + `svg text{font-family:'NanumGothic','NotoCJK',sans-serif}` 필수.
 4. **삽화 인덱스**: `art = [cover, prologue, ch1..ch12]` (14개). 빌드는 `art[i+1]`로 쓴다. prologue를 빼면 전 장이 한 칸씩 밀린다.
-5. **Playwright 경로**: `.playwright`(862MB)는 git에 올리지 않는다. `PLAYWRIGHT_BROWSERS_PATH`로 지정.
+5. **Playwright 경로**: `.kiritsu-browsers`(862MB)는 git에 올리지 않는다. `PLAYWRIGHT_BROWSERS_PATH`로 지정.
 6. **이름 검사 오탐**: `신고`, `자신`, `당신`, `발신자`의 "신"은 이름이 아니다. `fixnames2.mjs`의 화이트리스트 로직을 건드리지 말 것.
 
 ---
@@ -218,8 +218,8 @@ PLAYWRIGHT_BROWSERS_PATH=/home/jung/ai_station/sandbox/kiritsu/.playwright node 
 
 ## 7. KIRITSU 게임 스토리 모드 인수인계
 
-- **저장소**: 로컬 `vimlore/` (GitHub `JungDonghee/kiritsu`). 게임 이름 **KIRITSU**, 부제 **VIMLORE**. `books/`에 스토리 콘텐츠, `src/`에 게임.
-- **이 소설의 위치**: `vimlore/stories/kiritsu/`.
+- **저장소**: 로컬 `kiritsu/` (GitHub `JungDonghee/kiritsu`). 게임 이름 **KIRITSU**, 부제 **VIMLORE**. `books/`에 스토리 콘텐츠, `src/`에 게임.
+- **이 소설의 위치**: `kiritsu/stories/kiritsu/`.
 - **스토리 모드 방향**:
   - 12장 = 12개의 챕터/스테이지. 각 장의 **선택지**(신고/묵인, 수정/방치 등)와 **vim 조작**(normal/insert, `:` 명령)을 플레이어가 수행.
   - 로그 읽기 = 게임의 **탐색/증거 수집**. 칸노의 집행 = **타이머/심문**. 코우[抗] = **전투가 아닌 면역 시뮬레이션**.
@@ -276,10 +276,10 @@ PLAYWRIGHT_BROWSERS_PATH=/home/jung/ai_station/sandbox/kiritsu/.playwright node 
 
 ---
 
-## 7.5 ⚠️ 기존 vimlore STORY_BIBLE와의 충돌 (다음 AI 필수 확인)
+## 7.5 ⚠️ 기존 docs/STORY_BIBLE.md와의 충돌 (다음 AI 필수 확인)
 
-- `vimlore/docs/STORY_BIBLE.md`에는 **이미 다른 KIRITSU**가 있다: **네오도쿄 2091**, 인간 **커서 07**, Bureau of Correction, 도시 자체가 편집 가능한 원장.
+- `kiritsu/docs/STORY_BIBLE.md`에는 **이미 다른 KIRITSU**가 있다: **네오도쿄 2091**, 인간 **커서 07**, Bureau of Correction, 도시 자체가 편집 가능한 원장.
 - 이 소설은 **AI만 남은 문명**: 리츠[律], 츠키[月], 신[審], 칸노[監能]. **인물·시대·세계관이 다르다.**
-- 사용자의 최신 지시: **이 소설이 vimlore 스토리 모드의 기반**이다.
+- 사용자의 최신 지시: **이 소설이 KIRITSU 스토리 모드의 기반**이다.
 - **결정 (2026-11-15): (a) 대체.** 기존 Neo-Tokyo/Cursor 07 STORY_BIBLE과 `docs/story/`는 **제거**되었고, `docs/STORY_BIBLE.md`는 이 소설의 포인터로 교체되었다. **이 소설(AI-only)이 확정 캐논**이다.
 - **임의로 합치지 말 것.** 두 캐논을 섞으면 인물/시대가 충돌한다.

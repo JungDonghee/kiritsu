@@ -2,7 +2,7 @@
 
 > **다음 AI는 먼저 [`HANDOVER.md`](HANDOVER.md)를 읽어라.** LOCKED CANON과 FREE 영역이 분리되어 있다.
 > 원고 상태·검토 이력: [`NOVEL_STATUS.md`](NOVEL_STATUS.md). 게임 이식 매핑: [`STORY_TO_GAME.md`](STORY_TO_GAME.md).
-> ⚠️ `vimlore/docs/STORY_BIBLE.md`의 기존 KIRITSU(네오도쿄 2091, 커서 07)와 **다른 캐논**이다. HANDOVER §3.7 참조.
+> ⚠️ `kiritsu/docs/STORY_BIBLE.md`의 기존 KIRITSU(네오도쿄 2091, 커서 07)와 **다른 캐논**이다. HANDOVER §3.7 참조.
 
 ## What this is
 

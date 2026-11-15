@@ -1,5 +1,5 @@
-/* VIMLORE service worker: installable, offline shell, no third-party requests. */
-const VERSION = 'kiritsu-v13';
+/* KIRITSU service worker: installable, offline shell, no third-party requests. */
+const VERSION = 'kiritsu-v14';
 const SHELL = [
   './',
   './index.html',

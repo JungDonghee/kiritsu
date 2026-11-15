@@ -37,7 +37,7 @@ let cases: MCase[] = makeCases();
 if (FILTER) cases = cases.filter((c) => c.cat.includes(FILTER) || c.keys.includes(FILTER));
 if (Number.isFinite(LIMIT) && LIMIT > 0) cases = cases.slice(0, LIMIT);
 
-const dir = mkdtempSync(join(tmpdir(), 'vimlore-state-'));
+const dir = mkdtempSync(join(tmpdir(), 'kiritsu-state-'));
 const outFile = join(dir, 'out.json');
 const scriptFile = join(dir, 'run.vim');
 const esc = (p: string) => p.replace(/\\/g, '/');

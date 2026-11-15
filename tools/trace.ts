@@ -63,7 +63,7 @@ const prefixes = [''];
 for (let i = 0; i < toks.length; i++) prefixes.push(prefixes[i] + toks[i]);
 
 const esc = (p: string) => p.replace(/\\/g, '/');
-const dir = mkdtempSync(join(tmpdir(), 'vimlore-trace-'));
+const dir = mkdtempSync(join(tmpdir(), 'kiritsu-trace-'));
 const outFile = join(dir, 'out.json');
 const scriptFile = join(dir, 'run.vim');
 

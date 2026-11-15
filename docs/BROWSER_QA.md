@@ -7,11 +7,11 @@ the shipped bundle still has zero runtime dependencies.
 
 ```bash
 npm install                 # installs the playwright dev dependency
-npm run browser:setup       # downloads Chromium to ../.vimlore-browsers
+npm run browser:setup       # downloads Chromium to ../.kiritsu-browsers
 ```
 
 The persistent browser cache is outside the repo at
-`/home/jung/ai_station/sandbox/.vimlore-browsers` (~862 MB). It survives a
+`/home/jung/ai_station/sandbox/.kiritsu-browsers` (~862 MB). It survives a
 reboot; `browser:setup` is only needed on a fresh machine. If the cache is
 missing, `browser:qa` prints the launch error and the setup command.
 

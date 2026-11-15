@@ -147,7 +147,7 @@ requests fullscreen + landscape lock, otherwise rotate the phone. See
 
 ## Play
 
-Open `dist/kiritsu.html` (the single self-contained build; the legacy `dist/vimlore.html` alias is kept) or serve the repo:
+Open `dist/kiritsu.html` (the single self-contained build) or serve the repo:
 
 ```bash
 npm install

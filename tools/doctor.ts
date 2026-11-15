@@ -8,10 +8,10 @@ import { spawnSync } from 'node:child_process';
 const line = (b: boolean, label: string, hint: string): void => console.log(`${b ? 'PASS' : 'MISS'}  ${label}${b ? '' : `  →  ${hint}`}`);
 const count = (dir: string, ext: string): number => (existsSync(dir) ? readdirSync(dir).filter((f) => f.endsWith(ext)).length : 0);
 
-console.log('\nVIMLORE — environment check\n');
+console.log('\nKIRITSU — environment check\n');
 line(Number(process.versions.node.split('.')[0]) >= 20, `node ${process.versions.node}`, 'install Node 20+');
 line(existsSync('node_modules/vite'), 'dependencies installed', 'npm ci');
-line(existsSync('src/core/vim/engine.ts'), 'repo root looks right', 'cd into the vimlore checkout');
+line(existsSync('src/core/vim/engine.ts'), 'repo root looks right', 'cd into the kiritsu checkout');
 line(existsSync('dist/kiritsu.html'), 'build exists', 'npm run build');
 line(count('books-text', '.txt') >= 10, `reference books extracted (${count('books-text', '.txt')}/10)`, 'put the PDFs/EPUBs in ./books/, then: PYTHONPATH=./pysite python3 tools/extract_books.py (needs pypdf)');
 line(existsSync('/home/jung/ai_station/sandbox/.secrets/github_token'), 'deploy token present', 'ask the human; it lives outside the repo');

@@ -32,7 +32,7 @@ function vimKeys(keys: string): string {
     .replace(/<C-([a-z])>/g, '\\<C-$1>');
 }
 
-const dir = mkdtempSync(join(tmpdir(), 'vimlore-oracle-'));
+const dir = mkdtempSync(join(tmpdir(), 'kiritsu-oracle-'));
 const outFile = join(dir, 'out.json');
 const scriptFile = join(dir, 'run.vim');
 const esc = (p: string) => p.replace(/\\/g, '/');

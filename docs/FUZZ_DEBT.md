@@ -5,7 +5,7 @@ found three real Vim divergences that the current stage/state gates do not
 exercise. They are recorded, not waived. CI's fuzz smoke is 500 cases/seed 7;
 do not claim a globally perfect engine while this is non-empty.
 
-Repro list (local): `/tmp/vimlore-fuzz-failures-42.txt`
+Repro list (local): `/tmp/kiritsu-fuzz-failures-42.txt`
 
 | id | text | cursor | keys | Vim | engine |
 |---|---|---|---|---|---|

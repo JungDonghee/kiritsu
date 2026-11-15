@@ -1,7 +1,7 @@
 # ONE-MESSAGE KICKOFF — paste this into another AI
 
 > This is the shortest self-contained message that starts an autonomous
-> VIMLORE session. It assumes the AI has filesystem + shell access to the host
+> KIRITSU session. It assumes the AI has filesystem + shell access to the host
 > checkout. It does **not** contain the GitHub token; the token stays outside
 > the repo.
 >
@@ -13,7 +13,7 @@
 ```text
 You are taking over KIRITSU — the world and the game (subtitle VIMLORE: vim
 taught as lore) — a Vim-teaching terminal at
-/home/jung/ai_station/sandbox/vimlore (GitHub JungDonghee/kiritsu, live
+/home/jung/ai_station/sandbox/kiritsu (GitHub JungDonghee/kiritsu, live
 https://jungdonghee.github.io/kiritsu/).
 
 Work autonomously until you have a safe, verified stopping point. Do not ask me

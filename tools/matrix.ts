@@ -38,7 +38,7 @@ if (Number.isFinite(LIMIT) && LIMIT > 0) cases = cases.slice(0, LIMIT);
 const SENTINEL = '<Esc>i!<Esc>';
 for (const c of cases) c.keys += SENTINEL;
 
-const dir = mkdtempSync(join(tmpdir(), 'vimlore-matrix-'));
+const dir = mkdtempSync(join(tmpdir(), 'kiritsu-matrix-'));
 const outFile = join(dir, 'out.json');
 const scriptFile = join(dir, 'run.vim');
 const esc = (p: string) => p.replace(/\\/g, '/');

@@ -13,7 +13,7 @@ import { fileURLToPath } from 'node:url';
 
 const root = resolve(fileURLToPath(new URL('..', import.meta.url)));
 const dist = join(root, 'dist');
-const browserRoot = resolve(root, '..', '.vimlore-browsers');
+const browserRoot = resolve(root, '..', '.kiritsu-browsers');
 process.env.PLAYWRIGHT_BROWSERS_PATH ||= browserRoot;
 
 if (!existsSync(dist)) {

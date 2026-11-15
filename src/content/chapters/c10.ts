@@ -114,7 +114,7 @@ The Page Is Whole`,
       whisper: { en: 'A URL is one word wearing a disguise. J would give it away.', ko: 'URL은 변장한 한 단어다. J는 그 변장을 벗겨 버린다.' },
       startChar: '',
       text: `@Post to the loom at https://
-vimlore.example/weave
+kiritsu.example/weave
 
 and ask for the word: extra
 ordinary
@@ -123,7 +123,7 @@ It answers every
 letter.`,
       goal: {
         type: 'exact',
-        text: `Post to the loom at https://vimlore.example/weave
+        text: `Post to the loom at https://kiritsu.example/weave
 
 and ask for the word: extraordinary
 

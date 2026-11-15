@@ -14,7 +14,7 @@ import { fileURLToPath } from 'node:url';
 
 const root = resolve(fileURLToPath(new URL('..', import.meta.url)));
 const dist = join(root, 'dist');
-process.env.PLAYWRIGHT_BROWSERS_PATH ||= resolve(root, '..', '.vimlore-browsers');
+process.env.PLAYWRIGHT_BROWSERS_PATH ||= resolve(root, '..', '.kiritsu-browsers');
 const { chromium } = await import('playwright');
 const mime = { '.html': 'text/html', '.js': 'text/javascript', '.css': 'text/css', '.png': 'image/png', '.svg': 'image/svg+xml', '.webmanifest': 'application/manifest+json' };
 const server = createServer((req, res) => {

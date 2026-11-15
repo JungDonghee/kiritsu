@@ -53,7 +53,7 @@ fallback, so a previously loaded game reopens offline. Bump `VERSION` in
 The icon mark is intentionally a **V built from small shell/Vim commands**,
 not a generic glyph. The PNGs are generated from the vector master by
 `npm run pwa:icons` (dev-only; needs Playwright). The single-file
-`dist/vimlore.html` strips the PWA tags and remains a self-contained game;
+`dist/kiritsu.html` strips the PWA tags and remains a self-contained game;
 installation is for the hosted site.
 
 ## Verify

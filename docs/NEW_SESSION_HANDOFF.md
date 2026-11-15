@@ -18,10 +18,10 @@
 
 ## Locked state
 
-- Repository: `/home/jung/ai_station/sandbox/vimlore` (GitHub `JungDonghee/kiritsu`)
+- Repository: `/home/jung/ai_station/sandbox/kiritsu` (GitHub `JungDonghee/kiritsu`)
 - Live: https://jungdonghee.github.io/kiritsu/
 - Design is **locked**: kanji-first `規律`, `CALL kiritsu` code strip, no Russian
-  lettering, no sakura branch, laser reveal, centered VIMLORE layout.
+  lettering, no sakura branch, laser reveal, centered KIRITSU layout.
 - Do not redesign the title. Do not touch campaign first-clear solutions, par,
   gates, or level solutions.
 - Engine baseline: state-matrix/document debt는 `docs/STATUS.md` 기준.

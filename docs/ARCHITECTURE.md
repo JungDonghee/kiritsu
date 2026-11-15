@@ -1,7 +1,7 @@
 # ARCHITECTURE
 
 KIRITSU (subtitle VIMLORE) is a single static web page with **zero runtime dependencies**. It ships
-as one self-contained `dist/vimlore.html` and runs entirely in the browser:
+as one self-contained `dist/kiritsu.html` and runs entirely in the browser:
 there is no server, no account, no database, and no third-party request. The
 only thing that looks like a backend is `tools/oracle-diff.ts`, a development
 harness that runs against a real `vim -u NONE` binary to keep the in-game engine
@@ -127,13 +127,13 @@ particles (see AGENTS.md, "Renderer notes").
 | `surface-audit.ts` | map the Grimoire/chapters/oracle/tests/TRIALS to engine evidence; strict CI gate |
 | `matrix.ts` | systematic grammar matrix (motion/object × operator × mode × count) diffed with real Vim via `feedkeys` |
 | `gen-docs.ts` | regenerate `docs/LEVELS.md` |
-| `inline.mjs` | fold the Vite build into the single `dist/vimlore.html` |
+| `inline.mjs` | fold the Vite build into the single `dist/kiritsu.html` |
 | `extract_books.py` | pull text from the source books into `books-text/` (not committed) |
 
 ## Build & deploy
 
 ```
-npm run build        # vite build + tools/inline.mjs → dist/ + dist/vimlore.html
+npm run build        # vite build + tools/inline.mjs → dist/ + dist/kiritsu.html
 npm test             # engine + goals + trials (headless, no browser)
 npm run lint:levels  # all 51 stages green
 npm run doc-check    # doc numbers/links match the code
@@ -142,7 +142,7 @@ npm run doc-check    # doc numbers/links match the code
 CI (`.github/workflows/ci.yml`) runs `tsc`, tests, `lint:levels`, `doc-check`
 and the build, then asserts no absolute asset paths. Pages
 (`.github/workflows/pages.yml`) builds `dist/` and deploys it to GitHub Pages.
-The single-file `dist/vimlore.html` is also committed-adjacent build output
+The single-file `dist/kiritsu.html` is also committed-adjacent build output
 (see `.gitignore`: `dist/` is ignored, Pages builds it fresh).
 
 ## Invariants

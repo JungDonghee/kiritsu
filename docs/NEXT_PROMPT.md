@@ -28,7 +28,7 @@
 
 You are the next orchestration AI for **KIRITSU** — the world and the game
 (subtitle **VIMLORE**: vim taught as lore) — a Vim-teaching terminal at
-`/home/jung/ai_station/sandbox/vimlore` (GitHub `JungDonghee/kiritsu`, live at
+`/home/jung/ai_station/sandbox/kiritsu` (GitHub `JungDonghee/kiritsu`, live at
 <https://jungdonghee.github.io/kiritsu/>).
 
 Your job is **not** to preserve this session. Your job is to **beat its
@@ -76,7 +76,7 @@ The human's standing directive, in priority order:
 **The gate wins over this table.** Run:
 
 ```bash
-cd /home/jung/ai_station/sandbox/vimlore
+cd /home/jung/ai_station/sandbox/kiritsu
 git status && git log --oneline -5
 npm run doctor
 npm test

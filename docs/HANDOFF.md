@@ -73,7 +73,7 @@ status:check` is a CI gate.
 
 | item | value |
 |---|---|
-| repo | `/home/jung/ai_station/sandbox/vimlore` · GitHub `JungDonghee/kiritsu` · `main` |
+| repo | `/home/jung/ai_station/sandbox/kiritsu` · GitHub `JungDonghee/kiritsu` · `main` |
 | live | <https://jungdonghee.github.io/kiritsu/> (Pages `workflow`) |
 | content | 10 floors · 51 stages · 88 grimoire commands · 12 TRIALS skills |
 | current metrics | **[`STATUS.md`](STATUS.md)** (oracle, matrix, count matrix, state, build raw) |
@@ -241,7 +241,7 @@ See [`BOOKS_PIPELINE.md`](BOOKS_PIPELINE.md),
 ## 0c. Browser QA (2026-11-12)
 
 Playwright + Chromium 131 are installed as **dev-only** tooling. The persistent
-cache is `/home/jung/ai_station/sandbox/.vimlore-browsers` (outside the repo);
+cache is `/home/jung/ai_station/sandbox/.kiritsu-browsers` (outside the repo);
 `npm run browser:setup` re-downloads it on a fresh machine. `npm run browser:qa`
 serves `dist/`, drives title → map → stage → ghost, writes screenshots to
 `docs/browser/`, and fails below 50 rAF or 50 canvas draw FPS. Runtime bundle
@@ -577,7 +577,7 @@ The tool stays local until the generated set reaches 0; the report is
 ## 6. Gates and commands
 
 ```bash
-cd /home/jung/ai_station/sandbox/vimlore
+cd /home/jung/ai_station/sandbox/kiritsu
 npm run doctor
 npm test
 npm run lint:levels
@@ -601,7 +601,7 @@ phone under CPU throttling.
 ## 7. Deploy
 
 ```bash
-cd /home/jung/ai_station/sandbox/vimlore
+cd /home/jung/ai_station/sandbox/kiritsu
 git add -A && git commit -m "…"
 TOKEN=$(cat /home/jung/ai_station/sandbox/.secrets/github_token)
 git push --dry-run "https://x-access-token:$TOKEN@github.com/JungDonghee/kiritsu.git" main:main

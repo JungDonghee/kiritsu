@@ -8,7 +8,7 @@
 ## 0. 한 줄 요약
 
 KIRITSU = 소설 + vim 교육 게임(부제 VIMLORE). 저장소
-`/home/jung/ai_station/sandbox/vimlore` (GitHub `JungDonghee/kiritsu`, main,
+`/home/jung/ai_station/sandbox/kiritsu` (GitHub `JungDonghee/kiritsu`, main,
 라이브 https://jungdonghee.github.io/kiritsu/). **소설은 사용자가 읽는 중 —
 원고를 건드리지 않는다. 게임은 전부 그린 — 함부로 손대지 않는다.**
 
@@ -27,7 +27,7 @@ KIRITSU = 소설 + vim 교육 게임(부제 VIMLORE). 저장소
 
 1. **그린 확인 라운드** (가장 흔한 작업):
    ```bash
-   cd /home/jung/ai_station/sandbox/vimlore
+   cd /home/jung/ai_station/sandbox/kiritsu
    git status --short            # 변경 없어야 정상
    npm run status:check          # "current"여야 함
    npm run verify 2>&1 | tail -5 # 전부 통과여야 함
@@ -42,7 +42,7 @@ KIRITSU = 소설 + vim 교육 게임(부제 VIMLORE). 저장소
    `npm run verify` → `npm run status:write` → 커밋·푸시(§6) → 배포 확인(§7).
    **타이틀 한자 작업 전에 `docs/TITLE_KANJI.md`를 반드시 읽는다.**
 3. **PDF 최신화**: 소설 work/나 문서가 바뀐 커밋이 있으면
-   `cd stories/kiritsu && node concat.mjs && PLAYWRIGHT_BROWSERS_PATH=/home/jung/ai_station/sandbox/.vimlore-browsers node build.mjs`
+   `cd stories/kiritsu && node concat.mjs && PLAYWRIGHT_BROWSERS_PATH=/home/jung/ai_station/sandbox/.kiritsu-browsers node build.mjs`
    (빌드가 optimize-pdf.py까지 자동 실행). art/에 새 이미지가 도착해도 동일.
 4. **문서 낡은 곳 갱신**: NOVEL_STATUS.md·HANDOFF.md의 날짜/수치가 실제와
    다르면 숫자만 고친다(생성 파일 STATUS.md는 절대 수기 편집 금지 —
@@ -89,7 +89,7 @@ v4 pro의 기존 태스크는 인계 시점에 일시정지해 둠(재개하지 
 ## 6. 커밋·푸시 절차 (토큰 절대 출력 금지)
 
 ```bash
-cd /home/jung/ai_station/sandbox/vimlore
+cd /home/jung/ai_station/sandbox/kiritsu
 git add -A && git commit -m "<짧은 설명>"
 TOKEN=$(cat /home/jung/ai_station/sandbox/.secrets/github_token)
 git push "https://x-access-token:$TOKEN@github.com/JungDonghee/kiritsu.git" main:main

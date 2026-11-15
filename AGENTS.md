@@ -20,6 +20,16 @@ course.
 
 This file is the map for any AI (or human) continuing the project.
 
+## Naming (single source)
+
+- The local checkout is **`/home/jung/ai_station/sandbox/kiritsu`**; the GitHub
+  repository is **`JungDonghee/kiritsu`**. `vimlore` is **retired as a path or
+  repository name** — never recreate it; new docs, scripts, and commands must
+  not use it (historical records are exempt).
+- **VIMLORE** survives only as the game's subtitle (vim told as lore). It must
+  not be used as the world, the repo, the folder, or a hostname.
+- The canonical build artifact is `dist/kiritsu.html` (no `vimlore.html` alias).
+
 ## The one invariant
 
 **The engine must behave like real Vim.** Every command a level uses is
@@ -65,7 +75,7 @@ avatar are web-UI-only; assets live at `docs/social-preview.png` and
 ```bash
 npm install            # dev: vite/typescript + Playwright (zero runtime deps)
 npm run dev            # http://localhost:5173
-npm run build          # dist/ + single-file dist/vimlore.html
+npm run build          # dist/ + single-file dist/kiritsu.html
 npm run lint:levels    # validate EVERY stage (par, solution, gating, win)
 npm run lint:levels -- 4   # just chapter 4
 npm test               # unit tests (engine + goals + progress)

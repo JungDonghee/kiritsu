@@ -1,5 +1,5 @@
 /**
- * Surface audit — the machine-readable proof of what VIMLORE teaches.
+ * Surface audit — the machine-readable proof of what KIRITSU teaches.
  *
  *   node --experimental-strip-types tools/surface-audit.ts [--write] [--strict]
  *
@@ -171,7 +171,7 @@ const list = (xs: string[], max = 30) => (xs.length ? xs.slice(0, max).join(', '
 function report(): string {
   const lines: string[] = [];
   lines.push('');
-  lines.push('VIMLORE — engine surface audit');
+  lines.push('KIRITSU — engine surface audit');
   lines.push('===============================');
   lines.push('');
   lines.push(`commands            ${COMMANDS.length}`);

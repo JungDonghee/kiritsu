@@ -26,7 +26,7 @@ const CHECK_UNDO = process.argv.includes('--undo') || WRITE;
 interface Out { stage: string; lines: string[]; cursor: [number, number]; reg: string; regtype: string; undo: { lines: string[]; cursor: [number, number]; reg: string; regtype: string } }
 const STAGE_FILTER = (process.argv.find((a) => a.startsWith('--stage='))?.split('=')[1] ?? '');
 const stages = CHAPTERS.flatMap((ch) => ch.stages.map((st) => ({ ch, st }))).filter((x) => x.st.solution && (!STAGE_FILTER || x.st.id === STAGE_FILTER));
-const dir = mkdtempSync(join(tmpdir(), 'vimlore-level-'));
+const dir = mkdtempSync(join(tmpdir(), 'kiritsu-level-'));
 const outFile = join(dir, 'out.json');
 const scriptFile = join(dir, 'run.vim');
 const esc = (p: string) => p.replace(/\\/g, '/');

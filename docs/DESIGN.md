@@ -20,7 +20,7 @@ it did not belong to the CRT vector language.
 - **Code-native name**: `CALL kiritsu` in the bottom assembly strip. The code
   is part of the design, not decoration in a corner.
 - **Numbers**: `2006.06.23`, `판결 4,112`, `MOV EAX, 0x0623`.
-- **Layout**: original VIMLORE vertical axis — bootlog, kanji, caption,
+- **Layout**: original KIRITSU vertical axis — bootlog, kanji, caption,
   tagline, press; metadata rails at top and bottom.
 
 ## Colours
@@ -43,7 +43,7 @@ it did not belong to the CRT vector language.
 ## Asset pipeline
 
 - Ouyang scans → component clean → Potrace → balanced cell SVG.
-- Title SVG is inlined into `dist/vimlore.html`; the hosted build loads it as a
+- Title SVG is inlined into `dist/kiritsu.html`; the hosted build loads it as a
   normal public asset.
 - PWA icons remain the red seal `規律`; favicon is the K seal.
 
