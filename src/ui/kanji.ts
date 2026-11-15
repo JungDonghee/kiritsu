@@ -45,7 +45,8 @@ export function kiritsuStrokeSvg(): string {
       `<path class="kst-m kst-m-c${ci}-s${si}" d="${sub}" fill="none" stroke="none" opacity="0"/>`).join('');
     return `<g transform="${c.transform}">${layers}${meas}</g>`;
   }).join('');
-  return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 218 109" aria-hidden="true" preserveAspectRatio="xMidYMid meet"><defs><linearGradient id="kirit-inK" x1="0" y1="0" x2="0.2" y2="1"><stop offset="0" stop-color="#ffe3ea"/><stop offset="0.45" stop-color="#ff9db2"/><stop offset="1" stop-color="#b41439"/></linearGradient>${defs}</defs>${groups}</svg>`;
+  const ghosts = chars.map((c) => `<g class="kt-ghost" transform="${c.transform}"><path fill="url(#kirit-inK)" d="${c.full}"/></g>`).join('');
+  return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 218 109" aria-hidden="true" preserveAspectRatio="xMidYMid meet"><defs><linearGradient id="kirit-inK" x1="0" y1="0" x2="0.2" y2="1"><stop offset="0" stop-color="#ffe3ea"/><stop offset="0.45" stop-color="#ff9db2"/><stop offset="1" stop-color="#b41439"/></linearGradient>${defs}</defs>${ghosts}${groups}</svg>`;
 }
 
 // 타이틀 인트로 동안 레이저 헤드를 현재 획의 아웃라인을 따라 움직인다.

@@ -1362,7 +1362,14 @@ h2,
   .kt-boot, .kt-petals, .kt-code, .kt-foot { display: none; }
 }
 
-.crt-off .kt-stroke { animation-name: kst-in-plain; }
+.crt-off .kt-ghost {
+  opacity: .13;
+  filter: blur(.4px);
+  animation: kst-ghost-out .5s ease 3.5s both;
+}
+@keyframes kst-ghost-out { to { opacity: 0; } }
+.crt-off .kt-ghost { filter: none; }
+.kt-stroke { animation-name: kst-in-plain; }
 @keyframes kst-in-plain { from { opacity: 0; } to { opacity: 1; } }
 .crt-off .kt-laser-head { box-shadow: none; background: #fff; }
 
