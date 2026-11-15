@@ -88,6 +88,19 @@ export function physicalKey(key: string, code: string | undefined, shiftKey = fa
   return shiftKey && /^[a-z]$/.test(c) ? c.toUpperCase() : c;
 }
 
+/**
+ * Mobile-safe Esc aliases. Android converts a hardware Escape key into the
+ * system BACK before the page sees it, so an installed PWA can close while the
+ * player only meant "cancel insert / close prompt". These aliases are handled
+ * at the UI boundary (App.onKey rewrites them to Escape) so every screen gets
+ * exactly Esc semantics and the OS never sees an exit gesture:
+ *   - `F8`  — a single, rarely-used key that no browser reserves;
+ *   - `Ctrl+[` — Vim's own standard alias for Esc.
+ */
+export function isCancelAlias(key: string, ctrlKey = false): boolean {
+  return key === 'F8' || (ctrlKey && key === '[');
+}
+
 export function normalizeKey(key: string): string {
   switch (key) {
     case 'Escape':

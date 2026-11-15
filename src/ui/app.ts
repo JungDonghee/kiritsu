@@ -5,7 +5,7 @@ import { generateTrial, dailySeed, skillLabel, TRIAL_SKILLS, type Trial } from '
 import { weakestSkills, recordStat, encodeSave, decodeSave, sanitizeProgress, weaknessScore } from '../core/game/stats.ts';
 import { skillModel, activityGrid, streak, bumpActivity } from '../core/game/skills.ts';
 import { h, mount, isTouch, focusGroup, focusStep, focusActivate, focusIndex, focusSpatial, type FocusGroup } from './dom.ts';
-import { needsRemap, physicalKey } from '../core/vim/keys.ts';
+import { needsRemap, physicalKey, isCancelAlias } from '../core/vim/keys.ts';
 import { Sfx } from './sfx.ts';
 import { mountKtTitleWrite } from './kanji.ts';
 import { PlayScreen } from './play.ts';
@@ -1152,6 +1152,7 @@ export class App {
       ['INSERT', this.t('i a A o O type · Esc comes back', 'i a A o O 입력 · Esc로 복귀')],
       ['EDIT', this.t('d c y + motion/object — dw, ci", di(', 'd c y + 모션/오브젝트 — dw, ci", di(')],
       ['UNDO', this.t('u undo · Ctrl-r redo', 'u 실행취소 · Ctrl-r 재실행')],
+      ['CANCEL', this.t('Esc cancels · F8 or Ctrl+[ are mobile-safe aliases', 'Esc 취소 · F8/Ctrl+[는 모바일 안전 별칭')],
       ['BRIEFING', this.t('LEARN / GOAL / CLEAR / PAR — read it before you type', 'LEARN / GOAL / CLEAR / PAR — 시작 전에 읽기')],
       ['STUCK', this.t('Tab hint · F2 retry · F3 ghost · F1 help', 'Tab 힌트 · F2 재시도 · F3 고스트 · F1 도움말')],
     ];
@@ -1163,8 +1164,8 @@ export class App {
       h('div', { class: 'help-rows' }, ...rows.map(([k, v]) => h('div', { class: 'help-row' }, h('code', {}, k), h('span', {}, v)))),
       h('div', { class: 'rule' }),
       h('div', { class: 'brief ko' }, this.t(
-        'This whole site is keyboard-only: j/k move, Enter chooses, Esc goes back. In a chamber you are in NORMAL mode — h j k l move, i types, Esc returns. The briefing always states what you learn and what clears the room.',
-        '이 사이트 전체는 키보드만으로 동작한다: j/k 이동, Enter 선택, Esc 뒤로. 챔버에서는 NORMAL 모드다 — h j k l 이동, i 입력, Esc 복귀. 브리핑에는 배울 것과 클리어 조건이 항상 적혀 있다.',
+        'This whole site is keyboard-only: j/k move, Enter chooses, Esc goes back. In a chamber you are in NORMAL mode — h j k l move, i types, Esc returns. The briefing always states what you learn and what clears the room. On a phone, press F8 (or Ctrl+[) instead of Esc: Android turns a hardware Esc into the system back gesture, which can close the installed app.',
+        '이 사이트 전체는 키보드만으로 동작한다: j/k 이동, Enter 선택, Esc 뒤로. 챔버에서는 NORMAL 모드다 — h j k l 이동, i 입력, Esc 복귀. 브리핑에는 배울 것과 클리어 조건이 항상 적혀 있다. 휴대폰에서는 Esc 대신 F8(또는 Ctrl+[)을 눌러라: Android가 하드웨어 Esc를 시스템 뒤로가기로 바꿔 설치된 앱이 닫힐 수 있다.',
       )),
       h('div', { class: 'actions' }, h('button', { class: 'btn primary', onclick: () => this.closeHelp() }, this.t('CLOSE', '닫기'), h('kbd', {}, 'esc'))),
     );
@@ -1229,6 +1230,25 @@ export class App {
   private onKey(e: KeyboardEvent): void {
     // PWA(홈 화면 설치)에서 Esc가 앱을 종료/뒤로가기 시키지 않게 전역 차단.
     // Esc는 이 게임에서 결코 '나가기'가 아니다(AGENTS: Esc는 Vim의 Esc).
+    // 모바일 안전 별칭(F8, Ctrl+[)은 여기서 Esc로 정규화해 **모든 화면**이
+    // 같은 의미론을 갖게 한다. Android가 하드웨어 Esc를 시스템 BACK으로
+    // 바꿔버려 PWA가 종료되는 문제를 플레이어가 피할 수 있는 키다.
+    if (isCancelAlias(e.key, e.ctrlKey)) {
+      const orig = e;
+      e.preventDefault?.();
+      e = {
+        key: 'Escape',
+        code: orig.code,
+        ctrlKey: false,
+        metaKey: false,
+        altKey: false,
+        shiftKey: false,
+        repeat: orig.repeat,
+        isComposing: orig.isComposing,
+        target: orig.target,
+        preventDefault: () => orig.preventDefault(),
+      } as unknown as KeyboardEvent;
+    }
     if (e.key === 'Escape') {
       e.preventDefault();
       this.lockEscape();

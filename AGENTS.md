@@ -143,24 +143,25 @@ docs/               README.md (문서 지도), LEVEL_FORMAT.md (authoring), CURR
 
 ## Design laws
 
-- **Title kanji (規律) — OPEN TASK FIRST:** the user rejected the automated
-  v1–v8 stroke segmentation as not HW-quality. The accepted next step is
-  **manual full-stroke tracing of the 20 strokes** (each a closed SVG path,
-  overlaps included, union = Yuji Boku Light glyph). Read
-  [`docs/TITLE_KANJI.md`](docs/TITLE_KANJI.md) before touching the title.
-  Do not ship another automated partition.
+- **Title kanji (規律) — v9 SHIPPED (2026-11-15).** The rejected automated
+  partitions v1–v8 are retired. v9 draws the glyph as **20 complete closed
+  brush-stroke outlines** (`src/ui/title-stroke-paths.ts`, data = paths +
+  stroke medians + sweep radii) in real Japanese stroke order (規 11 + 律 9).
+  Stroke order/medians are derived from KanjiVG (CC BY-SA 3.0, reference; see
+  `docs/KANJI_ATTRIBUTION.md`) and fitted onto the Yuji Boku Light ink; each
+  stroke is painted whole (overlaps included) in order, and the 20 paths'
+  union reproduces the glyph (raster diff vs glyph <0.1%, AA edges only —
+  verified 2026-11-15, `docs/TITLE_KANJI.md` §8). Never draw the final glyph
+  over the animated one (no crossfade/pop) and never re-introduce the v1–v8
+  Voronoi/tube/fragment masks. Read [`docs/TITLE_KANJI.md`](docs/TITLE_KANJI.md)
+  before touching the title.
 - **Title kanji (規律) has a single source of truth:** `public/kanji/ou-guilv-tight.svg`
-  (구양순체 계열 Yuji Boku **Light cut**, viewBox 600×300, fill `#f2d8c9`; generated directly from the subset by `tools/gen-title-svg.py`). **Kanji font is LOCKED** to this Yuji Boku Light cut for every view. v8 (deployed, but user-rejected quality) draws the real
-  glyph as **20 full brush-stroke vector paths** (Voronoi-owned ink ∪ variable
-  centreline tube; `tools/gen-title-strokes.py` → `src/ui/title-stroke-paths.ts`)
-  in **real Japanese stroke order**:
-  rasterize the glyph, EDT + nearest-stroke assignment → per-point brush
-  half-widths, then draw each full stroke clipped by a circular sweep along its
-  arc; later strokes overlap earlier ones as in real writing. Their union equals
-  the glyph exactly. The stroke order/centrelines are derived
-  from KanjiVG (CC BY-SA 3.0, reference only; see `docs/KANJI_ATTRIBUTION.md`)
-  and snapped to the Yuji Boku ink. Never draw the final glyph over the animated one (no crossfade/pop). Read [`docs/TITLE_KANJI.md`](docs/TITLE_KANJI.md) before touching the
-  title — it codifies the v1–v4 mistakes so other AIs do not repeat them.
+  (구양순체 계열 Yuji Boku **Light cut**, viewBox 600×300, fill `#f2d8c9`;
+  generated directly from the subset by `tools/gen-title-svg.py`). **Kanji
+  font is LOCKED** to this Yuji Boku Light cut for every view. If the stroke
+  data or the glyph asset changes, re-run the union/coverage verification and
+  `node tools/title-check.mjs`; the title-check gate requires 20 strokes,
+  `data-state=done`, no console errors and FPS ≥ 18.
 
 1. One insight per stage. The puzzle must make the command *necessary*.
 2. `par` is the lesson: 3 stars = the elegant solution.
@@ -370,6 +371,11 @@ Three rules keep it correct:
   operator-pending and otherwise does nothing. Leaving mid-play goes through
   the F10/× LEAVE prompt (CANCEL is focused by default; LEAVE confirms); Esc
   closes that prompt without leaving.
+- **Mobile-safe Esc aliases: `F8` and `Ctrl+[` are rewritten to Esc at the App
+  input boundary** (`isCancelAlias` in `src/core/vim/keys.ts`). Android turns a
+  hardware Esc into the system BACK before the page sees it, which can close an
+  installed PWA mid-chamber; the aliases never reach the OS. Keep them working
+  on every screen (prompts, help, menus, play) and keep Esc itself unchanged.
 - **Ghost playback starts from the stage's initial text, never the edited
   buffer, and restores the live session verbatim afterwards.** F3 builds a
   fresh demo Session (no key count, hazards, pickups or `won`), plays the

@@ -3,7 +3,7 @@
 > **대상 독자**: 이 프로젝트를 이어받을 저비용 모델(v4.1 flash). 이 문서 하나로
 > 유지보수 라운드를 돌 수 있어야 한다. **판단이 필요한 일은 하지 말고 사용자에게
 > 묻거나 멈춘다.** 무리한 판단이 이 프로젝트의 캐논·게이트를 깨는 것보다 낫다.
-> 마지막 갱신: 2026-11-15 (v4 pro 인계). **최우선 열린 작업: 타이틀 한자 획 수작업 트레이싱 — [`docs/TITLE_KANJI.md`](docs/TITLE_KANJI.md) 필독.**
+> 마지막 갱신: 2026-11-15 (v4 pro 인계). **타이틀 規律 획 애니메이션 v9 배포 완료** — [`docs/TITLE_KANJI.md`](docs/TITLE_KANJI.md) §8 참조(사용자 육안 확인 대기).
 > 문서 지도·읽기 순서·문서 규칙은 [`docs/README.md`](docs/README.md)가 소유한다.
 
 ## 0. 한 줄 요약
@@ -13,21 +13,19 @@ KIRITSU = 소설 + vim 교육 게임(부제 VIMLORE). 저장소
 라이브 https://jungdonghee.github.io/kiritsu/). **소설은 사용자가 읽는 중 —
 원고를 건드리지 않는다. 게임은 전부 그린 — 함부로 손대지 않는다.**
 
-## 0-b. 최우선 다음 작업 — 타이틀 20획 수작업 트레이싱
+## 0-b. 타이틀 20획 — v9 완료 (2026-11-15)
 
-사용자는 자동 분할(v1~v8)을 모두 거부했다. **자동 알고리즘을 더 만지지 말고**
-`docs/TITLE_KANJI.md`의 절차대로 規 11획 + 律 9획을 **완전한 붓 획 SVG
-path**로 직접 그려 넣는다. 핵심:
+사용자가 거부했던 자동 분할(v1~v8)을 폐기하고, **20획 완전 붓 획 아웃라인**을
+`src/ui/title-stroke-paths.ts`에 고정했다. 각 획은 겹침/가려진 부분까지 포함한
+닫힌 외곽선이고, 획순(規 11 + 律 9)대로 칠하면 글자와 일치한다(union 래스터
+diff <0.1%). 런타임은 `src/ui/kanji.ts`가 획순대로 채우고 진행 중 획만 호
+클립으로 붓끝을 페더링한다. **마지막에 글자를 덧그리지 않는다(팝 없음).**
 
-1. 각 획은 닫힌 full-stroke path (겹침·가려진 부분 연장 포함)
-2. KanjiVG 일본어 획순 (規 11, 律 9)
-3. 20 path union == Yuji Boku Light glyph (면적/래스터 검증)
-4. 색상 오버레이로 각 획이 자기 붓 모양 전체인지 확인
-5. `node tools/title-check.mjs` + `npm run verify` + `status:write` + 커밋/푸시/배포
-
-금지: v8 생성기 재실행으로 자동 path를 다시 배포하는 것. HW/Arphic 데이터를
-형상 소스로 쓰는 것(PRC 획순·Arphic Public License). 폰트는 Yuji Boku
-Light cut 고정.
+- 검증: `node tools/title-check.mjs`(20획·done·콘솔0·FPS≥18), `npm run verify`,
+  union 색상 오버레이 — `docs/TITLE_KANJI.md` §8.
+- 금지: v8 생성기(`tools/gen-title-strokes.py`) 재실행으로 자동 path 재배포,
+  HW/Arphic 데이터를 형상 소스로 쓰기(PRC 획순·APL), 글자형 교체.
+  폰트는 Yuji Boku Light cut 고정.
 
 ## 1. 현재 상태 (2026-11-15)
 
@@ -36,7 +34,7 @@ Light cut 고정.
 | 소설 | `stories/kiritsu/work/` 13편 확정(~73,000자, 검토 27건 반영, 규칙 0건). **사용자 한국어판 독서·피드백 대기** |
 | 소설 PDF | `stories/kiritsu/KIRITSU.pdf` (인쇄용, 72페이지) |
 | 게임 | 모든 게이트 그린(테스트·오라클 373/373·번들·PWA·타이틀 검사), 라이브 배포 정상 |
-| 타이틀 인트로 | **열린 작업.** v8 자동 재구성이 라이브에 있으나 사용자가 품질 거부 → **수작업 full-stroke 트레이싱 20획**으로 교체 예정. [`docs/TITLE_KANJI.md`](docs/TITLE_KANJI.md) 필독. 폰트는 Yuji Boku Light cut 고정 |
+| 타이틀 인트로 | **v9 배포 완료(2026-11-15).** 20획 완전 붓 획 아웃라인, union==글자(<0.1% diff), 팝 없음, title-check green. 사용자 육안 확인 대기. [`docs/TITLE_KANJI.md`](docs/TITLE_KANJI.md) §8 |
 | 보류(사용자 지시) | 영어판·리츠 1인칭(피드백 후), 게임 스토리 슬라이스(원고 확정 후), LIVE 모드(승인 전), 이미지(다른 AI 생성) |
 | 자동화 | v4 pro의 매시간 라운드는 **인계 시점에 일시정지됨** — flash 세션에서 새로 만들 것(아래 §5) |
 

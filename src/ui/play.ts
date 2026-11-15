@@ -907,8 +907,8 @@ export class PlayScreen {
             { class: 'firsttime' },
             h('b', {}, this.t('NEW TO VIM?', 'VIM이 처음인가요?')),
             this.t(
-              'You are in NORMAL mode. h j k l move, i types, Esc comes back. Enter starts.',
-              '지금은 NORMAL 모드다. h j k l로 움직이고, i로 입력하고, Esc로 돌아온다. Enter로 시작한다.',
+              'You are in NORMAL mode. h j k l move, i types, Esc comes back (F8 also cancels on phones). Enter starts.',
+              '지금은 NORMAL 모드다. h j k l로 움직이고, i로 입력하고, Esc로 돌아온다 (휴대폰에서는 F8도 취소). Enter로 시작한다.',
             ),
           )
         : null,
@@ -1256,7 +1256,7 @@ export class PlayScreen {
       h(
         'div',
         { class: 'actions' },
-        h('button', { class: 'btn primary', onclick: () => this.closeExit() }, lang === 'ko' ? '취소' : 'CANCEL', h('kbd', {}, 'Esc')),
+        h('button', { class: 'btn primary', onclick: () => this.closeExit() }, lang === 'ko' ? '취소' : 'CANCEL', h('kbd', {}, 'Esc / F8')),
         h('button', { class: 'btn', onclick: () => { this.closeExit(); this.host.onExit(); } }, lang === 'ko' ? '나가기' : 'LEAVE'),
       ),
     );

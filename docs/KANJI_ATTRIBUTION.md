@@ -67,3 +67,13 @@ All rendered hanja now use it, in a **light cut** of the same font:
 non-Yuji hanja asset remains in the game bundle.
 
 If the mark is replaced, remove these paths and this attribution.
+
+## KanjiVG stroke order and medians (v9 title animation)
+
+The title intro's **stroke order** (規 11 strokes, 律 9) and the **centreline
+medians** used to author the 20 full brush-stroke outlines are derived from
+**KanjiVG** (Copyright Ulrich Apel, CC BY-SA 3.0, <https://kanjivg.tagaini.net>).
+Only the centrelines/stroke order are used as reference and fitted onto the
+Yuji Boku Light ink; no KanjiVG outline or Arphic/Hanzi Writer shape data is
+shipped in the animation. Data: `src/ui/title-stroke-paths.ts`;
+spec/verification: `docs/TITLE_KANJI.md` §8.

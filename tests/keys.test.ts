@@ -1,6 +1,6 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { fromKeyboardEvent, needsRemap, physicalKey, CODE_TO_KEY } from '../src/core/vim/keys.ts';
+import { fromKeyboardEvent, needsRemap, physicalKey, CODE_TO_KEY, isCancelAlias } from '../src/core/vim/keys.ts';
 
 // ---------------------------------------------------------------------------
 // Physical-key input: Vim keys are positions, not characters. A Korean IME
@@ -65,4 +65,19 @@ test('CODE_TO_KEY covers the full qwerty letter/digit/punct surface', () => {
   for (const [code, ch] of Object.entries({ Minus: '-', Equal: '=', BracketLeft: '[', BracketRight: ']', Backslash: '\\', Semicolon: ';', Quote: "'", Backquote: '`', Comma: ',', Period: '.', Slash: '/', Space: ' ' })) {
     assert.equal(CODE_TO_KEY[code], ch);
   }
+});
+
+
+test('mobile-safe cancel aliases normalize to Escape at the UI boundary', () => {
+  // F8 is a single, browser-unreserved key for phones where hardware Esc is
+  // converted to the Android BACK gesture (which closes an installed PWA).
+  assert.ok(isCancelAlias('F8'));
+  // Ctrl+[ is Vim's own Esc alias; plain [ stays a normal key.
+  assert.ok(isCancelAlias('[', true));
+  assert.ok(!isCancelAlias('[', false));
+  // Esc itself is not an "alias" and unrelated keys must not cancel.
+  assert.ok(!isCancelAlias('Escape'));
+  assert.ok(!isCancelAlias('F9'));
+  // The engine never receives the alias tokens; App.onKey rewrites them first.
+  assert.equal(fromKeyboardEvent({ key: 'F8', code: 'F8', ctrlKey: false, metaKey: false, altKey: false }), null);
 });

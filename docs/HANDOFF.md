@@ -7,21 +7,19 @@
 > `npm run kickoff`.
 > **Last rewritten:** 2026-11-15, after the naming correction, CI/IME fixes and the novel is confirmed (work/ 13편 ~73,000자).
 
-## 0k — 타이틀 한자 인트로 (2026-11-15, v8 배포 / 수작업 트레이싱 대기)
+## 0k — 타이틀 한자 인트로 v9 (2026-11-15, 배포 완료)
 
-- **상태: 열린 작업.** v8(자동 Voronoi 소유 + 전체 붓 튜브)이 라이브에 있으나
-  사용자가 품질을 거부했다("여전히 부정확, 발전 없음"). 다음 단계는
-  **규 11획 + 율 9획을 직접 full-stroke SVG path로 트레이싱**하는 것.
-  단일 지시서: [`STROKE_HANDOVER.md`](TITLE_KANJI.md).
-- 확정 제약: 한자 폰트는 **Yuji Boku Light cut**(8 unit 침식, OFL)으로 전 뷰
-  고정. 타이틀 글자형 단일 소스 `public/kanji/ou-guilv-tight.svg`
-  (`tools/gen-title-svg.py` 생성). 획 순서 KanjiVG(規 11/律 9).
-- 금지: 자동 마스크/Voronoi/tube/리본 분할을 더 다듬어 배포하는 것. HW/Arphic
-  데이터를 형상 소스로 쓰는 것(PRC 획순·APL 라이선스).
-- 현재 v8 참고: `src/ui/kanji.ts` + `src/ui/title-stroke-paths.ts`(자동 생성),
-  타이틀 검사 `tools/title-check.mjs`, 문서 `docs/TITLE_KANJI.md`.
-- v8까지의 실수 기록: v1 다른 글자형/페이드 → v2 CSS clipPath 애니메이션 미동작
-  → v3 리본 커버리지 80% → v4~v8 마스크/보이는 잉크 파티션. 되풀이 금지.
+- **상태: v9 완료·라이브 배포.** 20획 **완전 붓 획 아웃라인**을
+  `src/ui/title-stroke-paths.ts`에 고정(획순 規 11 + 律 9, KanjiVG 중심선을
+  Yuji Boku Light 잉크에 정합). 각 획은 겹침/가려진 부분까지 포함하며, 획순대로
+  칠하면 글자와 일치(union 래스터 diff <0.1%). 런타임 `src/ui/kanji.ts`는
+  진행 중 획만 호 클립으로 붓끝을 페더링하고 마지막에 글자를 덧그리지 않는다.
+- 검증: `tools/title-check.mjs`(20획·`data-state=done`·콘솔 0·FPS 40),
+  `npm run verify`, union/색상 오버레이 — `docs/TITLE_KANJI.md` §8.
+- 금지: v1~v8 자동 마스크/Voronoi/튜브/조각 분할 재도입, `gen-title-strokes.py`
+  재실행 배포, HW/Arphic 데이터를 형상 소스로 사용(PRC 획순·APL 라이선스),
+  글자형 교체. 폰트는 Yuji Boku Light cut 고정.
+- 남은 것: 사용자 육안 확인(품질 판정) 후 피드백 반영.
 
 ## 0j. Naming, CI fix, IME input, novel mandate (2026-11-15)
 

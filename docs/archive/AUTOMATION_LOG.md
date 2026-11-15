@@ -423,3 +423,16 @@ GitHub repository renamed `vimlore` → `kiritsu`; VIMLORE is now the **game's**
   contourpy/numpy/pathops는 `.pdfdeps`에서 사용 가능.
 - 현재 라이브/코드 상태는 v8 그대로 유지. 폰트는 Yuji Boku Light cut 고정.
 
+## 2026-11-15 (8) — 타이틀 v9: 20획 완전 붓 획 아웃라인 배포
+
+- v8까지의 자동 분할을 버리고, KanjiVG(CC BY-SA) 획순/중심선을 Yuji Boku
+  Light 잉크에 정합한 뒤 **겹침·가려진 부분까지 포함한 닫힌 붓 획 20개**를
+  `src/ui/title-stroke-paths.ts`에 고정. 글자 clip + 잔여 잉크 패치로
+  **20획 union == 글자**(래스터 diff missing 0.085% / extra 0.005%).
+- 런타임 `src/ui/kanji.ts` 단순화: EDT/보로노이/튜브 분석 제거, 정적 경로 + 획순
+  호 클립/페더링만 유지. 마지막 글자 덧그리기 없음(팝 없음).
+- 검증: `title-check` 20획·done·콘솔0·FPS 40·reduced-motion 즉시, `npm run verify`
+  green, 단일 파일 raw 412,149→389,809 B(경로 64→49KB, 분석 코드 제거).
+  PWA 캐시 `kiritsu-v22`.
+- 문서: `docs/TITLE_KANJI.md` §8, AGENTS design laws, FLASH_HANDOVER/HANDOFF 갱신.
+  KanjiVG attribution은 `docs/KANJI_ATTRIBUTION.md`에 명시.
