@@ -57,8 +57,8 @@ function curl(pts: number[][], perSeg = 8): Pt[] {
   return out;
 }
 
-// 사람 붓글씨처럼: 초반은 천천히, 뒤로 갈수록 가속한다.
-const easeAccel = (t: number): number => 0.12 * t + 0.88 * Math.pow(t, 2.4);
+// 획 내부는 자연스러운 가감속(사람이 한 획을 긋는 느낌).
+const easeInOut = (t: number): number => (t < 0.5 ? 2 * t * t : 1 - Math.pow(-2 * t + 2, 2) / 2);
 const clamp01 = (t: number): number => Math.min(1, Math.max(0, t));
 
 /**
@@ -71,37 +71,50 @@ const clamp01 = (t: number): number => Math.min(1, Math.max(0, t));
  */
 function planStrokes(): Plan {
   const geoms: StrokeGeom[] = [];
-  const START = 0.5, GAP = 0.06, CHAR_PAUSE = 0.14;
-  const SPEED_DIV = 3600;
+  const START = 0.5, CHAR_PAUSE = 0.16;
+  const SPEED_DIV = 4200;
   const NORM = 1024 / 600;
+  // 두 글자 각각: 첫 획은 신중하게, 뒤로 갈수록 "감을 잡은" 듯 빨라진다.
+  // 획 사이 간격도 함께 줄어들어 다음 획으로 넘어가는 속도가 가속된다.
+  const characters = [
+    Array.from({ length: 11 }, (_, k) => k),
+    Array.from({ length: 9 }, (_, k) => k + 11),
+  ];
   let t = START;
-  for (let i = 0; i < KIRITSU_TITLE_MEDIANS.length; i++) {
-    const dense = curl(KIRITSU_TITLE_MEDIANS[i]!, 8);
-    const cum: number[] = [0];
-    for (let k = 1; k < dense.length; k++) cum.push(cum[k - 1]! + Math.hypot(dense[k]!.x - dense[k - 1]!.x, dense[k]!.y - dense[k - 1]!.y));
-    const len = cum[cum.length - 1]! || 1;
-    // 곡률/모서리와 획 끝에서 느려지는 속도 프로파일(붓 질감).
-    const wts = dense.map((_, k) => {
-      let wgt = 1;
-      if (k > 0 && k < dense.length - 1) {
-        const a = dense[k - 1]!, b = dense[k]!, c = dense[k + 1]!;
-        const v1x = b.x - a.x, v1y = b.y - a.y, v2x = c.x - b.x, v2y = c.y - b.y;
-        const ang = Math.abs(Math.atan2(v1x * v2y - v1y * v2x, v1x * v2x + v1y * v2y));
-        wgt = 1 + 2.8 * (ang / Math.PI);
-      }
-      return wgt;
-    });
-    wts[0] = wts[0]! * 1.4;
-    wts[wts.length - 1] = wts[wts.length - 1]! * 1.0;
-    const wcum: number[] = [wts[0]!];
-    for (let k = 1; k < wts.length; k++) wcum.push(wcum[k - 1]! + wts[k]!);
-    const wtotal = wcum[wcum.length - 1]! || 1;
-    const dur = Math.min(0.48, Math.max(0.18, (len * NORM + 600) / SPEED_DIV));
-    geoms.push({ pts: dense, cum, len, wcum, wtotal, start: t, dur });
-    t += dur + GAP;
-    if (i === KIRITSU_TITLE_MEDIANS.length - 2) t += CHAR_PAUSE;
+  for (const idxs of characters) {
+    const m = idxs.length;
+    for (let k = 0; k < m; k++) {
+      const i = idxs[k]!;
+      const dense = curl(KIRITSU_TITLE_MEDIANS[i]!, 8);
+      const cum: number[] = [0];
+      for (let q = 1; q < dense.length; q++) cum.push(cum[q - 1]! + Math.hypot(dense[q]!.x - dense[q - 1]!.x, dense[q]!.y - dense[q - 1]!.y));
+      const len = cum[cum.length - 1]! || 1;
+      // 곡률/모서리에서 느려지는 속도 프로파일(붓 질감).
+      const wts = dense.map((_, q) => {
+        let wgt = 1;
+        if (q > 0 && q < dense.length - 1) {
+          const a = dense[q - 1]!, b = dense[q]!, c = dense[q + 1]!;
+          const v1x = b.x - a.x, v1y = b.y - a.y, v2x = c.x - b.x, v2y = c.y - b.y;
+          const ang = Math.abs(Math.atan2(v1x * v2y - v1y * v2x, v1x * v2x + v1y * v2y));
+          wgt = 1 + 2.8 * (ang / Math.PI);
+        }
+        return wgt;
+      });
+      wts[0] = wts[0]! * 1.4;
+      wts[wts.length - 1] = wts[wts.length - 1]! * 1.0;
+      const wcum: number[] = [wts[0]!];
+      for (let q = 1; q < wts.length; q++) wcum.push(wcum[q - 1]! + wts[q]!);
+      const wtotal = wcum[wcum.length - 1]! || 1;
+      const base = (len * NORM + 600) / SPEED_DIV;
+      const pace = 1.2 - 0.62 * (k / Math.max(1, m - 1)); // 1.20 → 0.58
+      const dur = Math.min(0.64, Math.max(0.13, base * pace));
+      geoms.push({ pts: dense, cum, len, wcum, wtotal, start: t, dur });
+      t += dur;
+      if (k < m - 1) t += 0.1 - 0.07 * (k / Math.max(1, m - 1)); // 0.10 → 0.03
+    }
+    t += CHAR_PAUSE;
   }
-  return { geoms, end: t };
+  return { geoms, end: t - CHAR_PAUSE };
 }
 
 function pointAt(g: StrokeGeom, s: number): Pt {
@@ -126,6 +139,9 @@ export async function mountKtTitleWrite(root: HTMLElement, sfx?: Sfx): Promise<v
     }
     const { plan, paths } = titleCache;
     const { geoms, end } = plan;
+    // precision clip: the final CRT sweep must follow the glyph ink, not a box
+    const glyphClip = new Path2D();
+    for (const p of paths) glyphClip.addPath(p);
     const n = geoms.length;
     if (paths.length !== n) return;
 
@@ -159,7 +175,7 @@ export async function mountKtTitleWrite(root: HTMLElement, sfx?: Sfx): Promise<v
         + '</g></svg>';
       head.style.opacity = '0';
     }
-    screen.style.setProperty('--kt-end', `${(end + 0.25).toFixed(2)}s`);
+    screen.style.setProperty('--kt-end', `${(end + 0.95).toFixed(2)}s`);
     el.dataset.state = 'writing';
 
     const arcForProgress = (g: StrokeGeom, p: number): number => {
@@ -291,6 +307,35 @@ export async function mountKtTitleWrite(root: HTMLElement, sfx?: Sfx): Promise<v
       gl.setTransform(OUT_SCALE, 0, 0, OUT_SCALE, 0, 0);
     };
 
+    // Final effect: a short CRT scanline + beam sweep clipped to the glyph ink.
+    const drawCrtSweep = (elapsed: number): void => {
+      const p = clamp01(elapsed / 0.65);
+      gl.save();
+      gl.setTransform(OUT_SCALE, 0, 0, OUT_SCALE, 0, 0);
+      gl.clip(glyphClip);
+      gl.globalCompositeOperation = 'lighter';
+      const env = p < 0.12 ? p / 0.12 : p > 0.9 ? (1 - p) / 0.1 : 1;
+      const shimmer = 0.65 + 0.35 * Math.abs(Math.sin(elapsed * 47) * Math.cos(elapsed * 23));
+      // phosphor tint exactly on the glyph ink
+      gl.fillStyle = `rgba(36,255,150,${(0.26 * env).toFixed(3)})`;
+      gl.fill(glyphClip);
+      // CRT scanlines on the glyph
+      for (let y = 0; y < VB_H; y += 3) {
+        gl.fillStyle = `rgba(90,255,170,${(0.09 * env * shimmer).toFixed(3)})`;
+        gl.fillRect(0, y, VB_W, 1);
+      }
+      const by = -24 + p * (VB_H + 48);
+      const grad = gl.createLinearGradient(0, by - 24, 0, by + 24);
+      grad.addColorStop(0, 'rgba(150,255,210,0)');
+      grad.addColorStop(0.45, `rgba(170,255,215,${(0.85 * env).toFixed(3)})`);
+      grad.addColorStop(1, 'rgba(150,255,210,0)');
+      gl.fillStyle = grad;
+      gl.fillRect(0, by - 24, VB_W, 48);
+      gl.fillStyle = `rgba(230,255,245,${(0.85 * env).toFixed(3)})`;
+      gl.fillRect(0, by, VB_W, 1.4);
+      gl.restore();
+    };
+
     const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
     if (reduce) {
       gl.setTransform(1, 0, 0, 1, 0, 0);
@@ -305,6 +350,7 @@ export async function mountKtTitleWrite(root: HTMLElement, sfx?: Sfx): Promise<v
     }
 
     let allDoneAt = -1;
+    let crtStart = -1;
     let chime = false;
     let sounded = -1;
     const startAt = performance.now();
@@ -323,7 +369,7 @@ export async function mountKtTitleWrite(root: HTMLElement, sfx?: Sfx): Promise<v
         } else {
           active = i;
           const p = clamp01((t - g.start) / g.dur);
-          arc = arcForProgress(g, easeAccel(p));
+          arc = arcForProgress(g, easeInOut(p));
           break;
         }
       }
@@ -348,12 +394,21 @@ export async function mountKtTitleWrite(root: HTMLElement, sfx?: Sfx): Promise<v
           allDoneAt = t;
           if (!chime) { chime = true; sfx?.play('chime'); }
         }
-        if (t - allDoneAt >= 0.18) {
-          paint(-1, 0);
+        if (crtStart < 0 && t - allDoneAt >= 0.18) {
+          crtStart = t;
           setHead({ x: 0, y: 0 }, 1, false);
-          el.dataset.state = 'done';
-          screen.classList.add('kt-idle');
-          return;
+        }
+        if (crtStart >= 0) {
+          const ce = t - crtStart;
+          paint(-1, 0);
+          if (ce < 0.65) {
+            drawCrtSweep(ce);
+          } else {
+            paint(-1, 0);
+            el.dataset.state = 'done';
+            screen.classList.add('kt-idle');
+            return;
+          }
         }
       }
       requestAnimationFrame(frame);

@@ -158,9 +158,11 @@ docs/               README.md (문서 지도), LEVEL_FORMAT.md (authoring), CURR
   by the half-plane behind the cursor so ink never appears ahead of the brush.
   Only a **small circular wet dab at the contact point** (radius = local
   half-width; destination-out radial, max 62% removed) is lighter; passed ink is
-  immediately final-colour. Writing is ~20% faster (0.18–0.48s/stroke, ≈6.2s;
-  `--kt-end` 6.44s). The post-write radial bloom is replaced by a **CRT scanline
-  + beam sweep**. Stroke progress accelerates
+  immediately final-colour. Each character accelerates: the first stroke is
+  careful (pace 1.20) and later strokes speed up (pace 0.58) with shrinking
+  gaps — one character ≈5.2s total, `--kt-end` 6.16s. The post-write effect is
+  a **CRT scanline + beam sweep clipped to the glyph ink** (no rectangular
+  bloom). Stroke easing is natural easeInOut
   (`0.12t+0.88t^2.4`, slow start → fast finish) with the old end-slowdown
   removed; total ≈7.55s. Never draw the final glyph over the animated one,
   never re-introduce v1–v8 masks, and never edit the generated data by hand —
