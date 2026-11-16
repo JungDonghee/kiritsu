@@ -22,7 +22,8 @@ real Vim, from the first keystroke to advanced editor features, as story and
 play — vim, told as lore.
 
 No install, no account, no tracking, no third-party requests — one small page.
-A keyboard is required; on a phone, turn it sideways.
+A keyboard is required; on a touch screen, turn it sideways and use the built-in
+floating Vim keypad (toggle ⌨ bottom-right).
 
 > **If you are an AI agent opening this repository:**
 > run `npm run doctor`, then read [`AGENTS.md`](AGENTS.md) before changing anything.
@@ -101,8 +102,9 @@ integrated story → full Practical Vim engine. The ordered plan is
   frame, cursorline/numbers on a cheap FX pass, and a CRT switch for weak
   devices. Current measured: mobile **60.5 FPS**, desktop headless
   **55.4–57.6 FPS**; [`BROWSER_QA.md`](docs/QA.md). 144fps is not claimed.
-- **It plays on a phone in landscape** with a Bluetooth keyboard — fully
-  keyboard-only; touch/mouse is optional.
+- **It plays on a phone in landscape** with a Bluetooth keyboard **or the
+  floating on-screen Vim keypad** — same real keys, no QWERTY detour.
+  A quiet ⟳ chip in the corner hard-refreshes installed PWAs.
 - **It trains for mastery, not just completion.** Par/3-star, best keys, F3
   ghost, GOLF retry over par, TRIALS weakness/daily, and a documented
   introduce → drill → transfer → spaced-review loop:
@@ -121,9 +123,10 @@ integrated story → full Practical Vim engine. The ordered plan is
 
 ## Design
 
-The title is **kanji-first**: `規律` is drawn on a CRT vector grid from cleaned
-Ouyang Xun brush scans, revealed behind a moving laser beam. There is no red
-seal box around the name. `kiritsu` is a **code identifier** in the boot strip
+The title is **kanji-first**: `規律` is drawn by a small CRT-vector brush cursor
+that writes each stroke on a dark grid (cleaned Ouyang Xun brush scans), and a
+phosphor sweep finishes the glyph in place. There is no red seal box around the
+name. `kiritsu` is a **code identifier** in the boot strip
 (`CALL kiritsu`), not a corner label. Falling petals and scanlines carry the
 "wasted years / cherry blossoms" mood; the pavilion branch was removed because
 its organic curves fought the vector display. Rationale and measurements are in
@@ -143,7 +146,9 @@ Use the install icon in the address bar, the browser menu, or the in-game
 the red seal icon and — on Android — the manifest's **landscape** lock. In a
 normal portrait browser tab a full-screen rotate gate blocks play; its button
 requests fullscreen + landscape lock, otherwise rotate the phone. See
-[`PWA.md`](docs/PWA.md) for the exact platform limits and offline cache.
+[`PWA.md`](docs/PWA.md) for the exact platform limits and offline cache. The
+bottom-right ⟳ chip unregisters the service worker, clears caches and reloads
+with a fresh URL — use it after an update if the installed app looks stale.
 
 ## Play
 

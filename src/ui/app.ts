@@ -418,7 +418,7 @@ export class App {
           h('div', {}, '0x0628  E8 00 00 00 00        CALL ', h('b', {}, 'kiritsu')),
         ),
         h('div', { class: 'kt-foot' }, '06:23 / 06:32  ·  BUILD 2006.06.23'),
-        isTouch() ? h('div', { class: 'kt-touch' }, this.t('a physical keyboard is required', '물리 키보드가 필요하다')) : null,
+        isTouch() ? h('div', { class: 'kt-touch' }, this.t('on-screen vim keys below', '아래 화면 키보드로 입력')) : null,
       ),
     );
     void mountKtTitleWrite(this.root, this.sfx);

@@ -193,7 +193,11 @@ docs/               README.md (문서 지도), LEVEL_FORMAT.md (authoring), CURR
 
 ## Performance budget
 
-The game targets a cheap phone with a Bluetooth keyboard.
+The game targets a cheap phone. In landscape it shows a floating on-screen Vim
+keypad (`src/ui/mobile-controls.ts`); a Bluetooth keyboard is optional. The
+keypad dispatches synthetic KeyboardEvents and must stay out of desktop DOM;
+its ⟳ chip hard-refreshes installed PWAs by unregistering the SW and clearing
+caches. Do not replace the special Vim layout with a QWERTY keyboard.
 
 - Zero runtime dependencies. Stretch goal: 200 kB raw / 70 kB gzip. **Hard
   ceiling enforced by `npm run budget`: 420,000 B raw / 140,000 B gzip**. Current

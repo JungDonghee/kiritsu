@@ -32,6 +32,12 @@ orientation without fullscreen (web platform restriction). In portrait:
 iOS Safari ignores manifest orientation; the gate is the honest fallback. The
 game layout is designed for a short, wide viewport.
 
+## Refresh an installed app
+
+The bottom-right ⟳ chip unregisters the service worker, deletes all caches and
+reloads with a fresh `?r=` URL. Use it when the installed app still shows an old
+build; the next load registers the current worker normally.
+
 ## Offline
 
 `public/sw.js` caches the shell, icons and the hashed JS/CSS discovered in

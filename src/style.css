@@ -2311,3 +2311,66 @@ body.crt-off .help-card { background: linear-gradient(175deg, #07160d, #040d07 7
    이 게임에서 한자가 보이는 마지막 비(非)Yuji 표면이라 서브셋을 인라인한다. */
 @font-face{font-family:'KIRI_KANJI';src:url(data:font/ttf;base64,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) format('truetype');font-display:swap}
 .kj{font-family:'KIRI_KANJI',var(--mono);font-size:1.04em;line-height:1;vertical-align:-0.02em;letter-spacing:0}
+
+/* ── mobile: quiet hard-refresh + floating Vim keys ─────────────────────── */
+.mob-dock {
+  position: fixed; right: calc(10px + env(safe-area-inset-right));
+  bottom: calc(10px + env(safe-area-inset-bottom));
+  z-index: 96; display: flex; gap: 6px; align-items: center;
+}
+.mob-icon {
+  width: 30px; height: 30px; padding: 0; border-radius: 8px;
+  border: 1px solid rgb(140 255 190 / .22);
+  background: rgb(7 9 14 / .72); color: #9fe8b8;
+  font: 13px/1 ui-monospace, SFMono-Regular, Menlo, monospace;
+  opacity: .42; cursor: pointer; touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+  backdrop-filter: blur(3px);
+}
+.mob-icon:active, .mob-icon.on { opacity: 1; border-color: rgb(140 255 190 / .55); }
+.mob-vk {
+  position: fixed; left: 50%; bottom: 0; transform: translateX(-50%);
+  width: min(760px, 100%); z-index: 95; display: none;
+  padding: 5px 6px calc(7px + env(safe-area-inset-bottom));
+  background: rgb(5 8 11 / .94);
+  border-top: 1px solid rgb(140 255 190 / .26);
+  box-shadow: 0 -10px 34px rgb(0 0 0 / .5);
+  backdrop-filter: blur(5px);
+  user-select: none; -webkit-user-select: none; touch-action: manipulation;
+}
+.mob-vk.open { display: block; }
+.mob-vk-head { display: flex; align-items: baseline; gap: 8px; padding: 0 2px 3px; }
+.mob-vk-title { color: #b8f7cd; font: 8px/1 ui-monospace, monospace; letter-spacing: .26em; }
+.mob-vk-note { color: #4e7d60; font: 8px/1 ui-monospace, monospace; letter-spacing: .08em; flex: 1; }
+.mob-vk-close {
+  background: none; border: 0; color: #8dc9a3; font: 15px/1 ui-monospace, monospace;
+  padding: 0 3px; cursor: pointer; touch-action: manipulation;
+}
+.mob-vk-row { display: flex; gap: 4px; justify-content: center; margin-top: 4px; }
+.mob-vk-key {
+  flex: 1 1 0; min-width: 0; height: 32px; padding: 0 1px;
+  border: 1px solid rgb(140 255 190 / .22); border-radius: 5px;
+  background: #0a0f13; color: #b8f7cd;
+  font: 11px/1 ui-monospace, SFMono-Regular, Menlo, monospace;
+  white-space: nowrap; overflow: hidden; cursor: pointer;
+  touch-action: manipulation; -webkit-tap-highlight-color: transparent;
+}
+.mob-vk-key.mode { color: #ffb3c1; border-color: rgb(255 130 160 / .3); }
+.mob-vk-key.wide { flex-shrink: 0; }
+.mob-vk-key:active, .mob-vk-key.down { background: #143823; color: #fff; border-color: rgb(160 255 200 / .7); }
+.mob-vk-key.on { background: #1c4a2e; color: #fff; border-color: #9dffc9; }
+.mob-ready .kt-touch { display: none; }
+@media (orientation: landscape) and (max-height: 560px) {
+  .mob-vk { padding: 2px 4px calc(3px + env(safe-area-inset-bottom)); }
+  .mob-vk-head { padding-bottom: 1px; }
+  .mob-vk-title, .mob-vk-note { font-size: 7px; letter-spacing: .18em; }
+  .mob-vk-close { font-size: 13px; }
+  .mob-vk-row { gap: 2px; margin-top: 2px; }
+  .mob-vk-key { height: 24px; font-size: 9.5px; border-radius: 4px; }
+  .mob-icon { width: 26px; height: 26px; font-size: 12px; opacity: .38; }
+}
+.mob-icon svg { display: block; width: 14px; height: 14px; margin: auto; }
+@media (orientation: landscape) and (max-height: 560px) {
+  .mob-icon svg { width: 13px; height: 13px; }
+}
+.mob-ready #pwa-install { right: auto; left: max(14px, env(safe-area-inset-left)); }
