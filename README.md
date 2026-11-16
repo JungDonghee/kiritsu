@@ -23,7 +23,8 @@ play — vim, told as lore.
 
 No install, no account, no tracking, no third-party requests — one small page.
 A keyboard is required; on a touch screen, turn it sideways and use the built-in
-floating Vim keypad (toggle ⌨ bottom-right).
+floating Vim keypad (toggle ⌨ bottom-right). In INSERT/REPLACE mode the same
+panel becomes a compact QWERTY for free text, and Esc switches back to Vim keys.
 
 > **If you are an AI agent opening this repository:**
 > run `npm run doctor`, then read [`AGENTS.md`](AGENTS.md) before changing anything.
@@ -103,8 +104,10 @@ integrated story → full Practical Vim engine. The ordered plan is
   devices. Current measured: mobile **60.5 FPS**, desktop headless
   **55.4–57.6 FPS**; [`BROWSER_QA.md`](docs/QA.md). 144fps is not claimed.
 - **It plays on a phone in landscape** with a Bluetooth keyboard **or the
-  floating on-screen Vim keypad** — same real keys, no QWERTY detour.
-  A quiet ⟳ chip in the corner hard-refreshes installed PWAs.
+  floating on-screen keypad** — a Vim-shaped normal/visual layer that turns into
+  a compact QWERTY in INSERT/REPLACE and returns on Esc. Shift is a toggle, so
+  there are no duplicated uppercase keys. A quiet ⟳ chip in the corner
+  hard-refreshes installed PWAs.
 - **It trains for mastery, not just completion.** Par/3-star, best keys, F3
   ghost, GOLF retry over par, TRIALS weakness/daily, and a documented
   introduce → drill → transfer → spaced-review loop:

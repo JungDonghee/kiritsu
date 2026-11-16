@@ -357,6 +357,11 @@ export class PlayScreen {
     this.modeEl.textContent = label;
     this.modeEl.className = `mode ${kind}`;
     this.posEl.textContent = `${vim.cursor.line + 1},${vim.cursor.col + 1}`;
+    // Mobile controls listen for this to raise the system keyboard only while
+    // Vim is really in insert/replace mode on a live (non-ghost) play screen.
+    window.dispatchEvent(new CustomEvent('kiritsu:mode', {
+      detail: { mode: m, insert: kind === 'insert', ghosting: this.ghosting, state: this.state },
+    }));
   }
 
   // ------------------------------------------------------------- key repeat
@@ -1459,6 +1464,9 @@ export class PlayScreen {
   }
 
   destroy(): void {
+    window.dispatchEvent(new CustomEvent('kiritsu:mode', {
+      detail: { mode: 'normal', insert: false, ghosting: false, state: 'destroyed' },
+    }));
     this.stopRepeat();
     this.destroyed = true;
     this.ghostRun++;
