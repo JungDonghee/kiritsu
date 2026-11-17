@@ -104,10 +104,11 @@ integrated story → full Practical Vim engine. The ordered plan is
   devices. Current measured: mobile **60.5 FPS**, desktop headless
   **55.4–57.6 FPS**; [`BROWSER_QA.md`](docs/QA.md). 144fps is not claimed.
 - **It plays on a phone in landscape** with a Bluetooth keyboard **or the
-  floating on-screen keypad** — by default Vim keys are a **minimal split pad**: one command row (MOVE + EDIT)
-  plus a thin SYS/CNT/SYM rail; tap/swipe the MOVE·EDIT / NAV·INS tabs to swap
-  roles. The grid chip cycles **side-rail → edge-cluster → compact-bar** layouts. The game
-  viewport is shortened while keys are open, so the terminal is not covered.
+  floating on-screen keypad** — by default **all Vim keys live in a full-height side rail on the right**
+  (SYS/CNT/SYM plus MOVE/EDIT/NAV/INS clusters); the game viewport narrows but
+  keeps its full height, and the rail never covers the terminal. The grid chip
+  cycles **edge-cluster → compact-bar → minimal split-pad** alternatives. INSERT/
+  REPLACE raises a compact QWERTY bar and Esc returns to the side rail.
   INSERT/REPLACE turns it into a QWERTY; Esc returns. Shift is a toggle, so there
   are no duplicated uppercase keys. A quiet ⟳ chip hard-refreshes installed PWAs.
   The research and layout rationale are in

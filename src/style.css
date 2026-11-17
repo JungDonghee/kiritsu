@@ -2623,3 +2623,60 @@ body.mob-kb-open.mob-kb-side #app {
 .mob-vk.side .mob-vk-row.strip { transform: none; }
 .mob-vk.side .mob-vk-layer.vim-layer .mob-vk-row:not(.strip) { margin-top: 2px; }
 .mob-vk.side { backdrop-filter: none; -webkit-backdrop-filter: none; background: rgb(5 8 11 / .97); }
+
+/* ── side default: ALL Vim zones live in the right rail, no bottom bar ────── */
+.mob-vk.side {
+  top: 4px; bottom: 4px; left: auto; right: 0;
+  width: min(230px, 34vw);
+  transform: none;
+  max-height: none;
+  display: flex; flex-direction: column; gap: 4px;
+  padding: 4px 5px calc(5px + env(safe-area-inset-bottom));
+  border: 1px solid rgb(140 255 190 / .22); border-right: 0;
+  border-radius: 4px 0 0 4px;
+  background: rgb(5 8 11 / .97);
+  backdrop-filter: none; -webkit-backdrop-filter: none;
+}
+.mob-vk.side .mob-vk-head { order: 0; flex: 0 0 auto; padding: 0 1px 1px; }
+.mob-vk.side .mob-vk-title { display: block; font-size: 6px; letter-spacing: .1em; }
+.mob-vk.side .mob-vk-note,
+.mob-vk.side .mob-page-tabs { display: none !important; }
+.mob-vk.side .mob-vk-layer.vim-layer {
+  display: flex; flex-direction: column; flex: 1 1 auto;
+  gap: 4px; min-height: 0; justify-content: space-between;
+}
+.mob-vk.side .mob-vk-row { display: flex; flex-direction: column; gap: 3px; margin: 0; flex: 0 0 auto; }
+.mob-vk.side .mob-vk-row.strip {
+  position: static; left: auto; right: auto; bottom: auto; width: auto;
+  padding: 0; margin: 0; background: none; border: 0; z-index: auto;
+  display: flex; flex-direction: column; gap: 3px;
+}
+.mob-vk.side .mob-vk-row.strip .mob-vk-zone {
+  display: grid; grid-template-columns: repeat(5, 1fr); gap: 2px;
+  width: 100%; padding-top: 6px; position: relative;
+}
+.mob-vk.side .mob-vk-row:not(.strip) .mob-vk-zone {
+  display: grid; grid-template-columns: repeat(4, 1fr); gap: 2px;
+  width: 100%; padding-top: 6px; position: relative;
+}
+.mob-vk.side .mob-vk-row:nth-child(2),
+.mob-vk.side .mob-vk-layer.vim-layer .mob-vk-row:nth-child(2),
+.mob-vk.side .mob-vk-layer.vim-layer .mob-vk-row:nth-child(3),
+.mob-vk.side.page-nav .mob-vk-layer.vim-layer .mob-vk-row:nth-child(2),
+.mob-vk.side.page-nav .mob-vk-layer.vim-layer .mob-vk-row:nth-child(3) {
+  display: flex; flex-direction: column; gap: 3px;
+}
+.mob-vk.side .mob-vk-zone-label {
+  position: absolute; top: 0; left: 2px;
+  writing-mode: horizontal-tb; font-size: 5px; letter-spacing: .1em;
+}
+.mob-vk.side .mob-vk-row.strip .mob-vk-key { height: 17px; font-size: 7.5px; }
+.mob-vk.side .mob-vk-row:not(.strip) .mob-vk-key { height: 23px; font-size: 10px; }
+.mob-vk.side .mob-dock:not(.floating) .mob-icon { width: 18px; height: 18px; }
+body.mob-kb-open.mob-kb-side #app { right: var(--mob-kb-right, 0px); bottom: 0px; }
+@media (orientation: landscape) and (max-height: 400px) {
+  .mob-vk.side { width: min(215px, 34vw); }
+  .mob-vk.side .mob-vk-row.strip .mob-vk-key { height: 15px; font-size: 7px; }
+  .mob-vk.side .mob-vk-row:not(.strip) .mob-vk-key { height: 20px; font-size: 9px; }
+  .mob-vk.side .mob-vk-zone { padding-top: 5px; }
+}

@@ -76,18 +76,20 @@ avoids scanning a flat alphabet. Reference: `:help operator` in Vim.
 
 ## 3. Creative directions considered
 
-These are the ideas that survived the research pass. The first one is the
-current default; the rest stay as documented alternatives or future work.
+These are the ideas that survived the research pass. The **side rail** is the
+current default; the minimal split pad is the compact alternative, and the
+remaining ideas stay as documented future work.
 
-1. **Minimal split pad with pages (default).** One command row split into
+1. **Minimal split pad with pages (compact alternative).** One command row split into
    MOVE (left thumb) and EDIT (right thumb), a thin SYS/CNT/SYM rail, and
    MOVE·EDIT ↔ NAV·INS pages swapped by tabs or a header swipe. This is the
    smallest layout that still lets a two-key command (`d w`) be typed without a
    page change. Height: **68.5px** at 900×430.
-2. **Side rail.** A vertical Vim panel on the right edge, with MOVE/EDIT (or
-   NAV/INS) as a 4×2 + 4×2 grid and the SYS/CNT/SYM rail along the bottom. The
-   game viewport reserves 224px right + 25px bottom; the full height is kept and
-   the right-hand text margin is the trade. One grid-chip away.
+2. **Side rail (current default).** A full-height vertical Vim panel on the right
+   edge: SYS/CNT/SYM at the top, then MOVE/EDIT/NAV/INS as 4×2 grids. Nothing is
+   on the bottom, the game viewport keeps full height and narrows by the rail
+   width; this is the layout that best matches Vim's horizontal text. The game
+   stays immersive because the rail is outside the play area, not across it.
 3. **Edge clusters.** SYS top, CNT/SYM bottom, MOVE/EDIT by the thumbs, NAV/INS
    above them. Uses screen edges instead of vertical height, keeps the centre
    more open, and is one grid-chip away. It overlays the play-area corners.
@@ -107,62 +109,71 @@ current default; the rest stay as documented alternatives or future work.
    landing coordinates on a real device and re-optimise zone positions using
    KALQ-style optimisation with KIRITSU's own command frequencies.
 
-## 4. Current layout (default = minimal split pad)
+## 4. Current layout (default = side rail)
 
 ```
-┌ SYS ───────────────────────────────────────────────────────────┐
-│ Esc : / F1 Ctrl Shift Bksp Enter Space                         │
-├ CNT 1..9 ──────────────────────────────── SYM . , - = ` ───────┤
-└───────────────────────────────────────────────────────────────┘
-[ MOVE·EDIT ]  [ NAV·INS ]   ← page tabs; header swipe switches too
-┌ MOVE ────────────────────────┬ EDIT ──────────────────────────┐
-│ h j k l w b e 0              │ d c y x p u r s                │
-└──────────────────────────────┴────────────────────────────────┘
+                                    ┌ SYS ──────────────┐
+                                    │ Esc : / F1        │
+                                    │ Ctrl Shift Bksp   │
+                                    │ Enter Space       │
+                                    ├ CNT 1 2 3 4 5 ────┤
+                                    │ 6 7 8 9           │
+                                    ├ SYM . , - = ` ────┤
+                                    ├ MOVE ─────────────┤
+                                    │ h j k l           │
+                                    │ w b e 0           │
+                                    ├ EDIT ─────────────┤
+                                    │ d c y x           │
+                                    │ p u r s           │
+                                    ├ NAV ──────────────┤
+                                    │ $ ^ g f           │
+                                    │ t ; , %           │
+                                    ├ INS ──────────────┤
+                                    │ i a o v           │
+                                    │ q z m n           │
+                                    └───────────────────┘
 ```
 
-- **Page 1 (MOVE·EDIT)** is the default: movement with the left thumb,
-  operators with the right thumb. `d w`, `c i w`, `y y` need no page change.
-- **Page 2 (NAV·INS)** swaps the same row to line/find motions (`$ ^ g f t ; ,
-  %`) and insert/visual keys (`i a o v q z m n`). All 26 letters are reachable
-  across the two pages; uppercase and symbols are Shift labels.
-- A **thin SYS/CNT/SYM rail** is always present: system keys, counts, and
-  low-frequency symbols. `0` lives in MOVE; counts in CNT; `:` `/` in SYS;
-  punctuation in SYM.
-- Zone micro-labels and colour accents preserve spatial learning; the panel
-  header shows the page tabs, and a swipe on the header (not on the keys) flips
-  pages without accidental keypresses.
-- **Viewport reservation:** while keys are open the module never covers the
-  terminal. Minimal/bar shrink `#app` bottom (`--mob-kb-h`); side rail reserves
-  right+bottom (`--mob-kb-right`/`--mob-kb-bottom`); edge reserves top+bottom
-  (`--mob-kb-top`/`--mob-kb-bottom`). Closing the keyboard removes the reserve.
-  The dock lives in the panel header while open, so its refresh/layout chips are
-  also outside the game viewport.
-- **INSERT/REPLACE** uses a compact QWERTY bar (same panel) and Esc returns.
+- **All zones are on the right edge simultaneously**; no bottom keyboard bar and
+  no page switching in the default layout. This keeps the full **430px height**
+  for the game and puts the rail outside the terminal, so the player's attention
+  stays in the buffer.
+- The game viewport is narrowed from the right (`--mob-kb-right`, ~234px), never
+  covered; the title, map and play screens reflow into the remaining width.
+- SYS/CNT/SYM are at the top of the rail; the four command clusters use 4×2
+  grids for one-thumb/edge reach. Every key is visible at once; Shift labels
+  reveal uppercase/symbols and the count digits stay available.
+- The panel header carries the keyboard/layout/refresh/close chips; it is inside
+  the rail, not over the game.
+- **INSERT/REPLACE** temporarily raises the compact QWERTY bar at the bottom
+  (full typing needs a wider surface); Esc returns to the all-side Vim rail.
+
+### Alternatives (grid dock chip cycles)
 
 ### Alternatives (grid dock chip cycles)
 
 | layout | shape | height / footprint | notes |
 |---|---|---|---|
-| **minimal** | one row + thin rail | **73px** | default; page tabs/swipe; reserve bottom 75px |
-| **side** | right vertical 4×2 zones + bottom rail | 220×144px | reserve 224px right + 25px bottom; full height |
-| **edge** | SYS top, CNT/SYM bottom, side clusters | top≈31 / bottom≈27 / clusters≈57×220 | reserve top+bottom; corners overlay |
-| **bar** | 3 rows + rail | 94px Vim / 123px QWERTY | full zones at once |
+| **side** | full-height right rack (SYS/CNT/SYM + four 4×2 command clusters) | ~230px wide, top to bottom | **default**; reserve right only; full game height |
+| **minimal** | one row + thin rail | **73px** | alternate; page tabs/swipe; reserve bottom 75px |
+| **edge** | SYS top, CNT/SYM bottom, side clusters | top≈31 / bottom≈27 / clusters≈57×220 | alternate; reserve top+bottom; corners overlay |
+| **bar** | 3 rows + rail | 94px Vim / 123px QWERTY | alternate; all zones at once |
 
-The choice and page are stored in `kiritsu.mobileLayout` /
+The choice and page are stored in `kiritsu.mobileLayout.v2` /
 `kiritsu.mobilePage` so a phone keeps its preference.
 
 ## 5. Measurements (headless 900×430 landscape)
 
 | thing | value |
 |---|---|
+| side rail | **~230 px wide, full 430px height**; game viewport ~666×430 |
 | minimal split pad | **73 px** (~17% of 430) |
-| side rail | 220×144 px; game viewport 676×405 |
 | compact bar (Vim) | **94 px** (~22%) |
 | compact bar (QWERTY) | **123 px** (~29%) |
 | previous one-strip keyboard | 124 px (4 rows); ~250 px when both layers were visible |
 | edge layout | SYS ≈31 px top, CNT/SYM ≈27 px bottom, clusters 57×220 px |
 | target sizes | command-row keys 24×~50; strip 17–18 px tall; dock 26–30 px; spacing exception under WCAG 2.5.8 |
-| viewport | `#app` bottom reserve for minimal/bar; right+bottom for side; top+bottom for edge; insert uses QWERTY bar |
+| viewport | `#app` right reserve for side; bottom for minimal/bar; top+bottom for edge; insert uses QWERTY bar |
 
 ## 6. Implementation map
 

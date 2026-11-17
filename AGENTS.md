@@ -196,11 +196,12 @@ docs/               README.md (문서 지도), LEVEL_FORMAT.md (authoring), CURR
 The game targets a cheap phone. In landscape it shows a floating on-screen
 keypad (`src/ui/mobile-controls.ts`); a Bluetooth keyboard is optional. The
 normal/visual layer is Vim-shaped (no duplicate uppercase keys — Shift is a
-toggle) and defaults to a minimal split pad: one MOVE/EDIT command row + thin SYS/CNT/SYM
-rail, with MOVE·EDIT / NAV·INS pages swapped by tab or swipe; the grid dock chip
-cycles side rail, edge clusters and a compact 3-row bar. While keys are open the module
-reserves space by shrinking `#app` (bottom for bar/minimal, top+bottom for edge)
-so the terminal is not covered.
+toggle) and defaults to a full-height **side rail** on the right: SYS/CNT/SYM plus
+MOVE/EDIT/NAV/INS all visible, the game viewport narrows but keeps full height,
+and the rail never covers the terminal. The grid dock chip cycles edge clusters,
+compact bar and minimal split pad (page tabs/swipe only in the minimal layout).
+While keys are open the module reserves space by shrinking `#app` (right for side,
+bottom for bar/minimal, top+bottom for edge).
 INSERT/REPLACE switches to a compact QWERTY; Esc switches back. `PlayScreen.
 updateStatus` emits a `kiritsu:mode` CustomEvent that the mobile module listens
 to. The keypad dispatches synthetic KeyboardEvents and must stay out of desktop

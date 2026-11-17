@@ -366,8 +366,8 @@ export function mountMobileControls(): void {
   let open = false;
   let layout: 'minimal' | 'side' | 'edge' | 'bar' = (() => {
     try {
-      const saved = localStorage.getItem('kiritsu.mobileLayout');
-      return saved === 'side' || saved === 'edge' || saved === 'bar' ? saved : 'minimal';
+      const saved = localStorage.getItem('kiritsu.mobileLayout.v2');
+      return saved === 'minimal' || saved === 'edge' || saved === 'bar' ? saved : 'side';
     } catch { return 'minimal'; }
   })();
   const isEdge = (): boolean => layout === 'edge' && layer === 'vim' && open;
@@ -412,9 +412,7 @@ export function mountMobileControls(): void {
       rootEl.style.setProperty('--mob-kb-bottom', `${bottomInset}px`);
       document.body.classList.add('mob-kb-open', 'mob-kb-edge');
     } else if (isSide()) {
-      const strip = panel.querySelector<HTMLElement>('.vim-layer .mob-vk-row.strip');
       rootEl.style.setProperty('--mob-kb-right', `${Math.ceil(panel.getBoundingClientRect().width) + 4}px`);
-      rootEl.style.setProperty('--mob-kb-bottom', `${Math.ceil(strip?.getBoundingClientRect().height ?? 0) + 2}px`);
       document.body.classList.add('mob-kb-open', 'mob-kb-side');
     } else {
       rootEl.style.setProperty('--mob-kb-h', `${Math.ceil(panel.offsetHeight) + 2}px`);
@@ -427,7 +425,7 @@ export function mountMobileControls(): void {
     panel.classList.toggle('minimal', isMinimal());
     panel.classList.toggle('side', isSide());
     layoutBtn.classList.toggle('on', layout !== 'minimal');
-    layoutBtn.title = layout === 'minimal' ? 'side rail' : layout === 'side' ? 'edge clusters' : layout === 'edge' ? 'docked bar' : 'minimal split pad';
+    layoutBtn.title = layout === 'side' ? 'edge clusters' : layout === 'edge' ? 'docked bar' : layout === 'bar' ? 'minimal split pad' : 'side rail';
     const floating = !open || edge;
     if (floating) {
       if (dock.parentElement !== document.body) document.body.append(dock);
@@ -449,8 +447,8 @@ export function mountMobileControls(): void {
   };
   keyToggle.addEventListener('click', () => setOpen(!open));
   layoutBtn.addEventListener('click', () => {
-    layout = layout === 'minimal' ? 'side' : layout === 'side' ? 'edge' : layout === 'edge' ? 'bar' : 'minimal';
-    try { localStorage.setItem('kiritsu.mobileLayout', layout); } catch { /* ignore */ }
+    layout = layout === 'side' ? 'edge' : layout === 'edge' ? 'bar' : layout === 'bar' ? 'minimal' : 'side';
+    try { localStorage.setItem('kiritsu.mobileLayout.v2', layout); } catch { /* ignore */ }
     applyLayout();
   });
   refresh.addEventListener('click', () => void hardRefresh());
