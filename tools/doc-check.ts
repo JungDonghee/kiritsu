@@ -38,6 +38,7 @@ const CANONICAL = [
   'STORY_BIBLE.md',
   'DESIGN.md',
   'TITLE_KANJI.md',
+  'MOBILE_KEYBOARD.md',
   'KANJI_ATTRIBUTION.md',
   'PWA.md',
   'QA.md',

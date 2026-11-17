@@ -196,11 +196,16 @@ docs/               README.md (문서 지도), LEVEL_FORMAT.md (authoring), CURR
 The game targets a cheap phone. In landscape it shows a floating on-screen
 keypad (`src/ui/mobile-controls.ts`); a Bluetooth keyboard is optional. The
 normal/visual layer is Vim-shaped (no duplicate uppercase keys — Shift is a
-toggle). INSERT/REPLACE switches the same panel to a compact QWERTY for free
-text; Esc switches back to Vim keys. `PlayScreen.updateStatus` emits a
-`kiritsu:mode` CustomEvent that the mobile module listens to. The keypad
-dispatches synthetic KeyboardEvents and must stay out of desktop DOM; its ⟳
-chip hard-refreshes installed PWAs by unregistering the SW and clearing caches.
+toggle) and defaults to a minimal split pad: one MOVE/EDIT command row + thin SYS/CNT/SYM
+rail, with MOVE·EDIT / NAV·INS pages swapped by tab or swipe; the grid dock chip
+cycles side rail, edge clusters and a compact 3-row bar. While keys are open the module
+reserves space by shrinking `#app` (bottom for bar/minimal, top+bottom for edge)
+so the terminal is not covered.
+INSERT/REPLACE switches to a compact QWERTY; Esc switches back. `PlayScreen.
+updateStatus` emits a `kiritsu:mode` CustomEvent that the mobile module listens
+to. The keypad dispatches synthetic KeyboardEvents and must stay out of desktop
+DOM; its ⟳ chip hard-refreshes installed PWAs by unregistering the SW and
+clearing caches. Read `docs/MOBILE_KEYBOARD.md` before changing the layout.
 
 - Zero runtime dependencies. Stretch goal: 200 kB raw / 70 kB gzip. **Hard
   ceiling enforced by `npm run budget`: 420,000 B raw / 140,000 B gzip**. Current

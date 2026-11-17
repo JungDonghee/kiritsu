@@ -2374,3 +2374,252 @@ body.crt-off .help-card { background: linear-gradient(175deg, #07160d, #040d07 7
   .mob-icon svg { width: 13px; height: 13px; }
 }
 .mob-ready #pwa-install { right: auto; left: max(14px, env(safe-area-inset-left)); }
+
+/* ── compact zone keyboard (Fitts/thumb-zone informed) ───────────────────── */
+.mob-vk {
+  width: min(980px, 100%);
+  padding: 3px 5px calc(5px + env(safe-area-inset-bottom));
+}
+.mob-vk-head { padding: 0 2px 2px; gap: 6px; }
+.mob-vk-title { font-size: 7px; letter-spacing: .22em; }
+.mob-vk-note { font-size: 6.5px; letter-spacing: .1em; }
+.mob-vk-close { font-size: 13px; padding: 0 2px; }
+.mob-vk-layer { display: none; }
+.mob-vk-layer.on { display: block; }
+.mob-vk-row {
+  display: flex; gap: 2px; margin-top: 2px;
+  justify-content: stretch; align-items: stretch;
+}
+.mob-vk-row.strip { margin-bottom: 4px; }
+.mob-vk-row.strip .mob-vk-key { height: 18px; font-size: 8px; border-radius: 3px; }
+.mob-vk-row:not(.strip) .mob-vk-key { height: 23px; font-size: 10px; border-radius: 4px; }
+.mob-vk-key { padding: 0 2px; letter-spacing: .01em; }
+.mob-vk-zone {
+  display: flex; align-items: center; gap: 2px; min-width: 0;
+  padding-left: 2px; border-left: 1px solid rgb(140 255 190 / .2);
+  border-radius: 2px;
+}
+.mob-vk-zone:first-child { padding-left: 0; border-left: 0; }
+.mob-vk-zone-label {
+  flex: 0 0 7px; align-self: stretch;
+  writing-mode: vertical-rl; text-orientation: mixed;
+  display: flex; align-items: center; justify-content: center;
+  font: 5.5px/1 ui-monospace, SFMono-Regular, Menlo, monospace;
+  letter-spacing: .08em; color: #6f8d7a; opacity: .55;
+  user-select: none; pointer-events: none;
+}
+.mob-vk-row.strip .mob-vk-zone-label { font-size: 5px; }
+.tone-sys { border-left-color: rgb(111 141 122 / .35); }
+.tone-cnt { border-left-color: rgb(215 185 106 / .35); }
+.tone-sym { border-left-color: rgb(168 161 216 / .35); }
+.tone-move { border-left-color: rgb(126 224 180 / .5); background: linear-gradient(90deg, rgb(126 224 180 / .035), transparent 55%); }
+.tone-edit { border-left-color: rgb(255 157 178 / .5); background: linear-gradient(90deg, rgb(255 157 178 / .035), transparent 55%); }
+.tone-nav { border-left-color: rgb(143 216 223 / .5); background: linear-gradient(90deg, rgb(143 216 223 / .03), transparent 55%); }
+.tone-ins { border-left-color: rgb(242 216 201 / .5); background: linear-gradient(90deg, rgb(242 216 201 / .03), transparent 55%); }
+.tone-text { border-left-color: rgb(184 247 205 / .4); }
+.tone-cnt .mob-vk-zone-label { color: #d7b96a; }
+.tone-sym .mob-vk-zone-label { color: #a8a1d8; }
+.tone-move .mob-vk-zone-label { color: #7ee0b4; }
+.tone-edit .mob-vk-zone-label { color: #ff9db2; }
+.tone-nav .mob-vk-zone-label { color: #8fd8df; }
+.tone-ins .mob-vk-zone-label { color: #f2d8c9; }
+.tone-text .mob-vk-zone-label { color: #b8f7cd; }
+/* zone labels only need to be readable, not 44px */
+.mob-vk-key.wide { flex-shrink: 0; }
+@media (orientation: landscape) and (max-height: 560px) {
+  .mob-vk { padding: 2px 4px calc(3px + env(safe-area-inset-bottom)); }
+  .mob-vk-row.strip .mob-vk-key { height: 16px; font-size: 7.5px; }
+  .mob-vk-row:not(.strip) .mob-vk-key { height: 21px; font-size: 9.5px; }
+  .mob-vk-zone-label { font-size: 5px; }
+  .mob-vk-row.strip .mob-vk-zone-label { font-size: 4.5px; }
+  .mob-vk-head { padding-bottom: 1px; }
+  .mob-vk-title, .mob-vk-note { font-size: 6.5px; }
+  .mob-vk-close { font-size: 12px; }
+  .mob-icon { width: 26px; height: 26px; font-size: 12px; opacity: .38; }
+}
+
+/* zone tags: tiny horizontal micro-labels, readable without adding a row */
+.mob-vk-zone-label {
+  writing-mode: horizontal-tb;
+  flex: 0 0 16px;
+  display: flex; align-items: center; justify-content: center;
+  font: 5px/1 ui-monospace, SFMono-Regular, Menlo, monospace;
+  letter-spacing: .02em; white-space: nowrap; overflow: hidden;
+  opacity: .78;
+}
+.mob-vk-row.strip .mob-vk-zone-label { font-size: 4.6px; flex-basis: 14px; }
+
+/* spacing exception under WCAG 2.5.8: undersized keys are separated enough
+   that 24px circles do not intersect; keep the game controls dense but safe */
+.mob-vk-row { margin-top: 3px; }
+.mob-vk-row.strip { margin-bottom: 4px; }
+@media (orientation: landscape) and (max-height: 560px) {
+  .mob-vk-row:not(.strip) .mob-vk-key { height: 22px; }
+  .mob-vk-row.strip .mob-vk-key { height: 17px; }
+}
+
+/* ── perimeter layout: sections on all four edges, centre stays clear ────── */
+.mob-vk.open.edge {
+  inset: 0; left: 0; bottom: 0; transform: none;
+  width: 100%; padding: 0; background: none; border: 0;
+  box-shadow: none; backdrop-filter: none; pointer-events: none;
+}
+.mob-vk.edge .mob-vk-head { display: none; }
+.mob-vk.edge .mob-vk-layer { display: none !important; }
+.mob-vk.edge .mob-vk-layer.vim-layer.on { display: block !important; }
+.mob-vk.edge .mob-vk-row { display: contents; }
+.mob-vk.edge .mob-vk-zone {
+  position: fixed; z-index: 95; display: grid; gap: 2px;
+  padding: 7px 3px 3px;
+  border: 1px solid rgb(140 255 190 / .2);
+  border-radius: 3px;
+  background: rgb(5 8 11 / .93);
+  box-shadow: 0 2px 18px rgb(0 0 0 / .45);
+  backdrop-filter: blur(4px);
+  pointer-events: auto;
+}
+.mob-vk.edge .mob-vk-zone-label {
+  position: absolute; top: 1px; left: 5px;
+  writing-mode: horizontal-tb; flex: none;
+  font-size: 5.5px; letter-spacing: .14em; opacity: .8;
+}
+.mob-vk.edge .tone-sys {
+  top: calc(4px + env(safe-area-inset-top)); left: 50%;
+  transform: translateX(-50%); width: min(860px, 96vw);
+  grid-template-columns: repeat(9, 1fr);
+  border-radius: 0 0 3px 3px;
+}
+.mob-vk.edge .tone-cnt {
+  left: 0; bottom: calc(3px + env(safe-area-inset-bottom));
+  width: 58%; grid-template-columns: repeat(9, 1fr);
+  border-radius: 0 3px 0 0;
+}
+.mob-vk.edge .tone-sym {
+  right: 0; bottom: calc(3px + env(safe-area-inset-bottom));
+  width: 42%; grid-template-columns: repeat(5, 1fr);
+  border-radius: 3px 0 0 0;
+}
+.mob-vk.edge .tone-move,
+.mob-vk.edge .tone-edit {
+  bottom: calc(34px + env(safe-area-inset-bottom));
+  width: min(220px, 26vw); grid-template-columns: repeat(4, 1fr);
+}
+.mob-vk.edge .tone-move { left: 6px; }
+.mob-vk.edge .tone-edit { right: 6px; }
+.mob-vk.edge .tone-nav,
+.mob-vk.edge .tone-ins {
+  bottom: calc(95px + env(safe-area-inset-bottom));
+  width: min(220px, 26vw); grid-template-columns: repeat(4, 1fr);
+}
+.mob-vk.edge .tone-nav { left: 6px; }
+.mob-vk.edge .tone-ins { right: 6px; }
+.mob-vk.edge .mob-vk-key { width: auto; min-width: 0; }
+@media (orientation: landscape) and (max-height: 560px) {
+  .mob-vk.edge .mob-vk-zone { padding-top: 6px; }
+  .mob-vk.edge .mob-vk-zone-label { font-size: 5px; }
+  .mob-vk.edge .tone-move, .mob-vk.edge .tone-edit { bottom: calc(31px + env(safe-area-inset-bottom)); }
+  .mob-vk.edge .tone-nav, .mob-vk.edge .tone-ins { bottom: calc(88px + env(safe-area-inset-bottom)); }
+  .mob-vk.edge .mob-vk-row.strip .mob-vk-key { height: 16px; }
+}
+.mob-vk-key:focus { outline: none; }
+.mob-vk-key:focus-visible { outline: 1px solid rgb(184 247 205 / .65); outline-offset: -1px; }
+
+/* ── minimal split pad: one row + thin rail, pages switch roles ─────────── */
+.mob-page-tabs { display: none; gap: 3px; align-items: center; margin-left: auto; }
+.mob-page-tab {
+  height: 15px; padding: 0 5px; border-radius: 3px;
+  border: 1px solid rgb(140 255 190 / .22); background: #0a0f13;
+  color: #7fa98c; font: 6px/1 ui-monospace, monospace; letter-spacing: .08em;
+  touch-action: manipulation;
+}
+.mob-page-tab.on { color: #b8f7cd; border-color: rgb(140 255 190 / .55); background: #12251a; }
+.mob-vk.minimal .mob-page-tabs { display: flex; }
+.mob-vk.minimal .mob-vk-note { display: none; }
+.mob-vk.minimal .mob-vk-head { padding-bottom: 2px; }
+.mob-vk.minimal .mob-vk-row { margin-top: 2px; }
+.mob-vk.minimal .mob-vk-row.strip { margin-bottom: 2px; }
+.mob-vk.minimal .mob-vk-row.strip .mob-vk-key { height: 17px; font-size: 7.5px; }
+.mob-vk.minimal .mob-vk-row:not(.strip) .mob-vk-key { height: 24px; font-size: 10px; }
+.mob-vk.minimal .mob-vk-layer.vim-layer .mob-vk-row:nth-child(3) { display: none; }
+.mob-vk.minimal.page-nav .mob-vk-layer.vim-layer .mob-vk-row:nth-child(2) { display: none; }
+.mob-vk.minimal.page-nav .mob-vk-layer.vim-layer .mob-vk-row:nth-child(3) { display: flex; }
+.mob-vk.minimal .mob-vk-row:not(.strip) .mob-vk-zone { flex-basis: 50%; }
+
+/* Reserve game space for the keyboard instead of covering the terminal. */
+#app { transition: none; }
+body.mob-kb-open #app { bottom: var(--mob-kb-h, 0px); }
+body.mob-kb-open.mob-kb-edge #app {
+  top: var(--mob-kb-top, 0px);
+  bottom: var(--mob-kb-bottom, 0px);
+}
+body.mob-kb-open .screen { min-height: 0; }
+
+/* the keyboard tools live in the panel header while open, so they cannot
+   cover the reserved game viewport; only the closed/edge dock floats */
+.mob-dock.floating {
+  position: fixed; right: calc(10px + env(safe-area-inset-right));
+  bottom: calc(10px + env(safe-area-inset-bottom));
+  z-index: 96;
+}
+.mob-dock:not(.floating) {
+  position: static; z-index: auto; margin-left: 2px; gap: 3px;
+}
+.mob-dock:not(.floating) .mob-icon { width: 20px; height: 20px; opacity: .62; }
+.mob-dock:not(.floating) .mob-icon svg { width: 12px; height: 12px; }
+.mob-vk-head { align-items: center; }
+
+/* ── side rail: full-height Vim zones at the right, thin rail at the bottom ── */
+.mob-vk.side {
+  left: auto; right: 0; bottom: auto; top: 50%;
+  transform: translateY(-50%);
+  width: min(220px, 32vw);
+  padding: 3px 4px 5px;
+  border: 1px solid rgb(140 255 190 / .22);
+  border-right: 0; border-radius: 4px 0 0 4px;
+  box-shadow: -8px 0 24px rgb(0 0 0 / .4);
+}
+.mob-vk.side .mob-vk-head { padding: 0 2px 2px; gap: 3px; }
+.mob-vk.side .mob-vk-note { display: none; }
+.mob-vk.side .mob-vk-title { font-size: 6.5px; letter-spacing: .12em; }
+.mob-vk.side .mob-page-tabs { display: flex; gap: 2px; }
+.mob-vk.side .mob-page-tab { height: 14px; padding: 0 3px; font-size: 5.5px; }
+.mob-vk.side .mob-vk-row.strip {
+  position: fixed; left: 0; right: 0; bottom: 0; width: 100vw;
+  z-index: 95; margin: 0; padding: 2px 4px calc(3px + env(safe-area-inset-bottom));
+  background: rgb(5 8 11 / .96); border-top: 1px solid rgb(140 255 190 / .25);
+}
+.mob-vk.side .mob-vk-layer.vim-layer .mob-vk-row:not(.strip) { display: flex; flex-direction: column; gap: 2px; margin-top: 2px; }
+.mob-vk.side .mob-vk-layer.vim-layer .mob-vk-row:not(.strip) .mob-vk-zone {
+  display: grid; grid-template-columns: repeat(4, 1fr); gap: 2px;
+  width: 100%; padding-top: 7px; position: relative;
+}
+.mob-vk.side .mob-vk-layer.vim-layer .mob-vk-row:not(.strip) .mob-vk-zone-label {
+  position: absolute; top: 0; left: 2px; writing-mode: horizontal-tb;
+  font-size: 5px; letter-spacing: .12em;
+}
+.mob-vk.side .mob-vk-layer.vim-layer .mob-vk-row:not(.strip) .mob-vk-key { height: 23px; font-size: 10px; }
+.mob-vk.side .mob-vk-row.strip .mob-vk-key { height: 17px; font-size: 7.5px; }
+/* one page at a time in the side rail */
+.mob-vk.side .mob-vk-layer.vim-layer .mob-vk-row:nth-child(3) { display: none; }
+.mob-vk.side.page-nav .mob-vk-layer.vim-layer .mob-vk-row:nth-child(2) { display: none; }
+.mob-vk.side.page-nav .mob-vk-layer.vim-layer .mob-vk-row:nth-child(3) { display: flex; }
+.mob-vk.side .mob-dock:not(.floating) { gap: 2px; }
+.mob-vk.side .mob-dock:not(.floating) .mob-icon { width: 18px; height: 18px; }
+body.mob-kb-open.mob-kb-side #app {
+  right: var(--mob-kb-right, 0px);
+  bottom: var(--mob-kb-bottom, 0px);
+}
+
+/* side rail positioning fix: keep it above the bottom strip and do not create a
+   transform containing block (fixed strip children must stay viewport-relative) */
+.mob-vk.side {
+  top: auto; bottom: calc(32px + env(safe-area-inset-bottom));
+  transform: none;
+  max-height: calc(100dvh - 44px);
+}
+.mob-vk.side .mob-vk-title { display: none; }
+.mob-vk.side .mob-vk-head { min-width: 0; }
+.mob-vk.side .mob-page-tabs { margin-left: 0; }
+.mob-vk.side .mob-vk-row.strip { transform: none; }
+.mob-vk.side .mob-vk-layer.vim-layer .mob-vk-row:not(.strip) { margin-top: 2px; }
+.mob-vk.side { backdrop-filter: none; -webkit-backdrop-filter: none; background: rgb(5 8 11 / .97); }

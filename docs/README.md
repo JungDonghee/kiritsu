@@ -19,7 +19,7 @@
 - **공개/배포 담당**: `../README.md`, `REPO_PRESENTATION.md`, `COMPLETION.md`, `COMPARISON.md`, `PWA.md`.
 - **소설 담당**: `STORY_BIBLE.md` → [`../stories/kiritsu/HANDOVER.md`](../stories/kiritsu/HANDOVER.md)(캐논) → `../stories/kiritsu/NOVEL_STATUS.md`.
 
-## 2. 정본(canonical) 문서 — 22개
+## 2. 정본(canonical) 문서 — 23개
 
 | 문서 | 소유하는 것 | 갱신 규칙 |
 |---|---|---|
@@ -35,6 +35,7 @@
 | [`STORY_BIBLE.md`](STORY_BIBLE.md) | 소설 캐논 포인터·게임 매핑 | 캐논 변경 시(캐논 자체는 stories/) |
 | [`DESIGN.md`](DESIGN.md) | 시각 언어·CRT·한국어 문체 | 디자인 변경 시 |
 | [`TITLE_KANJI.md`](TITLE_KANJI.md) | 타이틀 規律 규격 + 수작업 트레이싱 지시서 | 타이틀 작업 시 |
+| [`MOBILE_KEYBOARD.md`](MOBILE_KEYBOARD.md) | 모바일 키보드 리서치·존 배치·뷰포트 예약 | 모바일 입력 작업 시 |
 | [`KANJI_ATTRIBUTION.md`](KANJI_ATTRIBUTION.md) | 폰트/한자 라이선스 | 자산 변경 시 |
 | [`PWA.md`](PWA.md) | 설치·오프라인·landscape | PWA 변경 시 |
 | [`QA.md`](QA.md) | 브라우저 QA·디버깅·UX 감사 | QA 절차/결과 변경 시 |

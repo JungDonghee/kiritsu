@@ -104,10 +104,14 @@ integrated story → full Practical Vim engine. The ordered plan is
   devices. Current measured: mobile **60.5 FPS**, desktop headless
   **55.4–57.6 FPS**; [`BROWSER_QA.md`](docs/QA.md). 144fps is not claimed.
 - **It plays on a phone in landscape** with a Bluetooth keyboard **or the
-  floating on-screen keypad** — a Vim-shaped normal/visual layer that turns into
-  a compact QWERTY in INSERT/REPLACE and returns on Esc. Shift is a toggle, so
-  there are no duplicated uppercase keys. A quiet ⟳ chip in the corner
-  hard-refreshes installed PWAs.
+  floating on-screen keypad** — by default Vim keys are a **minimal split pad**: one command row (MOVE + EDIT)
+  plus a thin SYS/CNT/SYM rail; tap/swipe the MOVE·EDIT / NAV·INS tabs to swap
+  roles. The grid chip cycles **side-rail → edge-cluster → compact-bar** layouts. The game
+  viewport is shortened while keys are open, so the terminal is not covered.
+  INSERT/REPLACE turns it into a QWERTY; Esc returns. Shift is a toggle, so there
+  are no duplicated uppercase keys. A quiet ⟳ chip hard-refreshes installed PWAs.
+  The research and layout rationale are in
+  [`docs/MOBILE_KEYBOARD.md`](docs/MOBILE_KEYBOARD.md).
 - **It trains for mastery, not just completion.** Par/3-star, best keys, F3
   ghost, GOLF retry over par, TRIALS weakness/daily, and a documented
   introduce → drill → transfer → spaced-review loop:
