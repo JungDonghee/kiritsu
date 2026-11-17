@@ -106,7 +106,9 @@ integrated story → full Practical Vim engine. The ordered plan is
 - **It plays on a phone in landscape** with a Bluetooth keyboard **or the
   floating on-screen keypad** — by default **all Vim keys live in a full-height side rail on the right**
   (SYS/CNT/SYM plus MOVE/EDIT/NAV/INS clusters); the game viewport narrows but
-  keeps its full height, and the rail never covers the terminal. The grid chip
+  keeps its full height, and the rail never covers the terminal. A FOCUS chip
+  turns the rail into one large semantic page (MOVE / EDIT / NAV / INS / CNT /
+  SYM) with fixed COMMON keys — near-square, thumb-sized targets and page tabs. The grid chip
   cycles **edge-cluster → compact-bar → minimal split-pad** alternatives. INSERT/
   REPLACE raises a compact QWERTY bar and Esc returns to the side rail.
   INSERT/REPLACE turns it into a QWERTY; Esc returns. Shift is a toggle, so there

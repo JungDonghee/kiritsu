@@ -202,10 +202,12 @@ export function mountMobileControls(): void {
   const pageMove = h('button', { class: 'mob-page-tab on', type: 'button', title: 'MOVE / EDIT' }, 'MOVE·EDIT');
   const pageNav = h('button', { class: 'mob-page-tab', type: 'button', title: 'NAV / INS' }, 'NAV·INS');
   const pageTabs = h('div', { class: 'mob-page-tabs' }, pageMove, pageNav);
+  const sideModeBtn = h('button', { class: 'mob-side-mode', type: 'button', title: 'side layout mode' }, 'ALL');
   const head = h('div', { class: 'mob-vk-head' },
     h('span', { class: 'mob-vk-title' }, 'KIRITSU KEYS'),
     note,
     pageTabs,
+    sideModeBtn,
     h('button', { class: 'mob-vk-close', 'aria-label': 'close keys' }, '×'),
   );
   panel.append(head);
@@ -324,6 +326,78 @@ export function mountMobileControls(): void {
   textLayer.classList.add('text-layer');
   panel.append(vimLayer, textLayer);
 
+  // Focus mode keeps the rail's geometry but shows one large zone at a time.
+  // Focus pages are semantic groups, not the physical all-mode zones.
+  const keyByLabel = new Map<string, KeyDef>();
+  for (const row of VIM_ROWS) for (const zone of row.zones) for (const def of zone.keys) keyByLabel.set(def.label, def);
+  keyByLabel.set('*', { label: '*', key: '*', code: 'Digit8', shift: true });
+  keyByLabel.set('#', { label: '#', key: '#', code: 'Digit3', shift: true });
+  const FOCUS_PAGES: { id: string; label: string; cols: number; labels: string[] }[] = [
+    { id: 'move', label: 'MOVE', cols: 3, labels: ['h', 'j', 'k', 'l', 'w', 'b', 'e', '0', '$', '^', '*', '#'] },
+    { id: 'edit', label: 'EDIT', cols: 3, labels: ['d', 'c', 'y', 'x', 'p', 'u', 'r', 's'] },
+    { id: 'nav', label: 'NAV', cols: 3, labels: ['g', 'f', 't', ';', ',', '%', 'n'] },
+    { id: 'ins', label: 'INS', cols: 3, labels: ['i', 'a', 'o', 'v', 'q', 'z', 'm', 'n'] },
+    { id: 'cnt', label: 'CNT', cols: 3, labels: ['1', '2', '3', '4', '5', '6', '7', '8', '9'] },
+    { id: 'sym', label: 'SYM', cols: 2, labels: ['.', ',', '-', '=', '`'] },
+  ];
+  const focusPages = h('div', { class: 'mob-focus-pages' });
+  const focusPageEls = new Map<string, HTMLElement>();
+  for (const page of FOCUS_PAGES) {
+    const el = h('div', { class: `mob-focus-page cols-${page.cols}` });
+    for (const label of page.labels) {
+      const def = keyByLabel.get(label);
+      if (def) el.append(bindButton(def));
+    }
+    focusPageEls.set(page.id, el);
+    focusPages.append(el);
+  }
+  const focusTabs = h('div', { class: 'mob-focus-tabs' });
+  const focusButtons = new Map<string, HTMLButtonElement>();
+  for (const page of FOCUS_PAGES) {
+    const b = h('button', { class: 'mob-focus-tab', type: 'button', title: page.label }, page.label) as HTMLButtonElement;
+    b.addEventListener('click', () => { focusZone = page.id; storeSide(); applySideMode(); });
+    focusButtons.set(page.id, b);
+    focusTabs.append(b);
+  }
+  const focusPrev = h('button', { class: 'mob-focus-arrow', type: 'button', 'aria-label': 'previous zone' }, '‹') as HTMLButtonElement;
+  const focusNext = h('button', { class: 'mob-focus-arrow', type: 'button', 'aria-label': 'next zone' }, '›') as HTMLButtonElement;
+  const focusBar = h('div', { class: 'mob-focus-bar' }, focusPrev, focusTabs, focusNext);
+  const focusFooter = h('div', { class: 'mob-focus-footer' });
+  for (const label of ['Esc', 'Shift', 'Ctrl', 'Bksp', 'Enter', 'Space', ':', '/', 'F1']) {
+    const def = keyByLabel.get(label);
+    if (def) focusFooter.append(bindButton(def));
+  }
+  panel.append(focusPages, focusBar, focusFooter);
+
+  let sideMode: 'all' | 'focus' = (() => {
+    try { return localStorage.getItem('kiritsu.sideMode') === 'focus' ? 'focus' : 'all'; } catch { return 'all'; }
+  })();
+  let focusZone = (() => {
+    try {
+      const z = localStorage.getItem('kiritsu.sideFocus');
+      return z && FOCUS_PAGES.some((p) => p.id === z) ? z : 'move';
+    } catch { return 'move'; }
+  })();
+  const storeSide = (): void => {
+    try {
+      localStorage.setItem('kiritsu.sideMode', sideMode);
+      localStorage.setItem('kiritsu.sideFocus', focusZone);
+    } catch { /* ignore */ }
+  };
+  const cycleFocus = (dir: number): void => {
+    const idx = FOCUS_PAGES.findIndex((p) => p.id === focusZone);
+    focusZone = FOCUS_PAGES[(idx + dir + FOCUS_PAGES.length) % FOCUS_PAGES.length]!.id;
+    storeSide();
+    applySideMode();
+  };
+  focusPrev.addEventListener('click', () => cycleFocus(-1));
+  focusNext.addEventListener('click', () => cycleFocus(1));
+  sideModeBtn.addEventListener('click', () => {
+    sideMode = sideMode === 'all' ? 'focus' : 'all';
+    storeSide();
+    applySideMode();
+  });
+
   function applyVimPage(): void {
     panel.classList.toggle('page-nav', vimPage === 'nav');
     pageMove.classList.toggle('on', vimPage === 'move');
@@ -340,6 +414,18 @@ export function mountMobileControls(): void {
     applyVimPage();
   });
   applyVimPage();
+
+  const applySideMode = (): void => {
+    const focus = isSide() && sideMode === 'focus';
+    panel.classList.toggle('focus', focus);
+    panel.dataset.focus = focusZone;
+    sideModeBtn.textContent = sideMode === 'focus' ? 'FOCUS' : 'ALL';
+    sideModeBtn.title = sideMode === 'focus' ? 'show all side keys' : 'focus one zone at a time';
+    for (const page of FOCUS_PAGES) {
+      focusButtons.get(page.id)?.classList.toggle('on', page.id === focusZone);
+      focusPageEls.get(page.id)?.classList.toggle('on', page.id === focusZone);
+    }
+  };
 
   const setLayer = (next: Layer): void => {
     if (layer === next) return;
@@ -435,6 +521,7 @@ export function mountMobileControls(): void {
       if (dock.parentElement !== head) head.insertBefore(dock, closeBtn);
       dock.classList.remove('floating');
     }
+    applySideMode();
     placeDock();
     syncViewport();
   };

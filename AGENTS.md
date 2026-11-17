@@ -198,7 +198,10 @@ keypad (`src/ui/mobile-controls.ts`); a Bluetooth keyboard is optional. The
 normal/visual layer is Vim-shaped (no duplicate uppercase keys — Shift is a
 toggle) and defaults to a full-height **side rail** on the right: SYS/CNT/SYM plus
 MOVE/EDIT/NAV/INS all visible, the game viewport narrows but keeps full height,
-and the rail never covers the terminal. The grid dock chip cycles edge clusters,
+and the rail never covers the terminal. A FOCUS chip switches the rail to one
+large semantic page (MOVE/EDIT/NAV/INS/CNT/SYM) plus a fixed COMMON footer;
+keys become near-square and page tabs/arrows switch context. The grid dock chip
+cycles edge clusters,
 compact bar and minimal split pad (page tabs/swipe only in the minimal layout).
 While keys are open the module reserves space by shrinking `#app` (right for side,
 bottom for bar/minimal, top+bottom for edge).

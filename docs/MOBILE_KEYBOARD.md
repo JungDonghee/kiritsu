@@ -86,10 +86,10 @@ remaining ideas stay as documented future work.
    smallest layout that still lets a two-key command (`d w`) be typed without a
    page change. Height: **68.5px** at 900×430.
 2. **Side rail (current default).** A full-height vertical Vim panel on the right
-   edge: SYS/CNT/SYM at the top, then MOVE/EDIT/NAV/INS as 4×2 grids. Nothing is
-   on the bottom, the game viewport keeps full height and narrows by the rail
-   width; this is the layout that best matches Vim's horizontal text. The game
-   stays immersive because the rail is outside the play area, not across it.
+   edge with two modes: **ALL** (SYS/CNT/SYM + MOVE/EDIT/NAV/INS as 4×2 grids)
+   and **FOCUS** (one large semantic page + fixed COMMON keys). The game viewport
+   keeps full height and narrows by the rail width; the rail is outside the play
+   area, not across it.
 3. **Edge clusters.** SYS top, CNT/SYM bottom, MOVE/EDIT by the thumbs, NAV/INS
    above them. Uses screen edges instead of vertical height, keeps the centre
    more open, and is one grid-chip away. It overlays the play-area corners.
@@ -148,25 +148,68 @@ remaining ideas stay as documented future work.
 - **INSERT/REPLACE** temporarily raises the compact QWERTY bar at the bottom
   (full typing needs a wider surface); Esc returns to the all-side Vim rail.
 
+### Side modes: ALL vs FOCUS
+
+The side rail has a **FOCUS** chip in its header:
+
+- **ALL** (default): every zone visible at once — SYS/CNT/SYM at the top,
+  MOVE/EDIT/NAV/INS down the rail. Best when learning and when the full command
+  set should stay visible.
+- **FOCUS**: one semantic page fills the rail with near-square keys, and the
+  page tabs (`MOVE EDIT NAV INS CNT SYM`) / ‹ › arrows switch context. Always-
+  common keys are pinned in a separate **COMMON** footer: Esc, Shift, Ctrl,
+  Bksp, Enter, Space, `:`, `/`, F1. The pages are:
+  - MOVE: `h j k l w b e 0 $ ^ * #`
+  - EDIT: `d c y x p u r s`
+  - NAV: `g f t ; , % n`
+  - INS: `i a o v q z m n`
+  - CNT: `1…9`
+  - SYM: `. , - = ``
+  - Uppercase/symbol variants remain available through the COMMON Shift toggle.
+  - Focus page keys are **71×68** (MOVE 3×4) or **71×92** (3×3 pages), not wide
+    bars; the page fills the rail height. The mode and page are remembered.
+
 ### Alternatives (grid dock chip cycles)
+
+### Side modes: ALL vs FOCUS
+
+The side rail has a **FOCUS** chip in its header:
+
+- **ALL** (default): every zone visible at once — SYS/CNT/SYM at the top,
+  MOVE/EDIT/NAV/INS down the rail. Best when learning and when the full command
+  set should stay visible.
+- **FOCUS**: one semantic page fills the rail with near-square keys, and the
+  page tabs (`MOVE EDIT NAV INS CNT SYM`) / ‹ › arrows switch context. Always-
+  common keys are pinned in a separate **COMMON** footer: Esc, Shift, Ctrl,
+  Bksp, Enter, Space, `:`, `/`, F1. The pages are:
+  - MOVE: `h j k l w b e 0 $ ^ * #`
+  - EDIT: `d c y x p u r s`
+  - NAV: `g f t ; , % n`
+  - INS: `i a o v q z m n`
+  - CNT: `1…9`
+  - SYM: `. , - = ``
+  - Uppercase/symbol variants remain available through the COMMON Shift toggle.
+  - Focus page keys are **71×68** (MOVE 3×4) or **71×92** (3×3 pages), not wide
+    bars; the page fills the rail height. The mode and page are remembered.
 
 ### Alternatives (grid dock chip cycles)
 
 | layout | shape | height / footprint | notes |
 |---|---|---|---|
-| **side** | full-height right rack (SYS/CNT/SYM + four 4×2 command clusters) | ~230px wide, top to bottom | **default**; reserve right only; full game height |
+| **side** | full-height right rack; ALL or FOCUS mode | ~230px wide, top to bottom | **default**; reserve right only; full game height |
 | **minimal** | one row + thin rail | **73px** | alternate; page tabs/swipe; reserve bottom 75px |
 | **edge** | SYS top, CNT/SYM bottom, side clusters | top≈31 / bottom≈27 / clusters≈57×220 | alternate; reserve top+bottom; corners overlay |
 | **bar** | 3 rows + rail | 94px Vim / 123px QWERTY | alternate; all zones at once |
 
 The choice and page are stored in `kiritsu.mobileLayout.v2` /
-`kiritsu.mobilePage` so a phone keeps its preference.
+`kiritsu.mobilePage`, `kiritsu.sideMode` / `kiritsu.sideFocus` so a phone keeps its preference.
 
 ## 5. Measurements (headless 900×430 landscape)
 
 | thing | value |
 |---|---|
 | side rail | **~230 px wide, full 430px height**; game viewport ~666×430 |
+| focus keys | MOVE 71×68px; other pages 71×92px; COMMON footer 71×24 |
 | minimal split pad | **73 px** (~17% of 430) |
 | compact bar (Vim) | **94 px** (~22%) |
 | compact bar (QWERTY) | **123 px** (~29%) |
