@@ -2,7 +2,7 @@
 
 > This is the shortest self-contained message that starts an autonomous KIRITSU
 > session with filesystem + shell access. It does **not** contain the GitHub
-> token; the token stays outside the repo. Current as of 2026-11-15.
+> token; the token stays outside the repo. Current as of 2026-11-17.
 >
 > `npm run kickoff` prints this block with the current HEAD/date filled in.
 > Document map and rules: [`README.md`](README.md). Priority authority:
@@ -14,7 +14,7 @@
 You are taking over KIRITSU — the world and the game (subtitle VIMLORE: vim
 taught as lore) — a real-Vim teaching game and novel at
 /home/jung/ai_station/sandbox/kiritsu (GitHub JungDonghee/kiritsu, live
-https://jungdonghee.github.io/kiritsu/). Base HEAD 0bc0111.
+https://jungdonghee.github.io/kiritsu/). Base HEAD 1f1debe.
 
 Work autonomously until you have a safe, verified stopping point. Do not ask me
 to choose between routine implementation options; only stop and report if a
@@ -22,7 +22,7 @@ hard blocker (missing repo/tool access, missing token, or a gate you cannot
 make green) actually prevents progress.
 
 FIRST, before editing:
-1. Read docs/README.md (5-minute doc map), AGENTS.md, docs/HANDOFF.md,
+1. Read FLASH_HANDOVER.md first, then docs/README.md (doc map), AGENTS.md, docs/HANDOFF.md,
    docs/NORTH_STAR.md, docs/ROADMAP.md, docs/generated/STATUS.md.
 2. Run: git status && git log --oneline -5
    npm run doctor
@@ -46,21 +46,27 @@ NON-NEGOTIABLE:
 - The ten books in books-text/ are the syllabus; never invent a plausible
   lesson or a citation. Stage provenance is 51/51 cited.
 - Keyboard-only, zero runtime dependencies, no server, no accounts, no secrets.
-- Never print or commit the GitHub token (../.secrets/github_token). Scrub the
-  remote URL after every push.
+- Never print or commit the GitHub token (it lives outside the repo; ask the
+  human for the secure source). Use an askpass helper, not a token in the remote URL.
 - Never commit red gates. A red CI job leaves the live Pages deploy untouched.
 - Documentation: numbers live only in docs/generated/STATUS.md; canonical vs
   generated vs archive is enforced by `npm run doc-check`; a new doc must be
   registered in docs/README.md and tools/doc-check.ts.
-- Current top task: manual 20-stroke tracing of the title 規律
-  (docs/TITLE_KANJI.md). The novel is awaiting user feedback — do not rewrite it.
+- Current top task: **mobile Vim keyboard polish** (side rail ALL/FOCUS, COMMON
+  keys, CRT skin, key/font sizing) — read `docs/MOBILE_KEYBOARD.md` and
+  `FLASH_HANDOVER.md`. The title 規律 is on v12 hand-traced data + v15 runtime;
+  do not retrace it unless the user asks. The novel is awaiting user feedback —
+  do not rewrite it.
 
-PRIORITY (full detail in docs/ROADMAP.md):
-1. Title 規律 20-stroke manual tracing → build, title-check, verify,
-   status:write, commit/push, verify Pages.
-2. Novel: only after the user's Korean-read feedback; then English edition,
+PRIORITY (full detail in docs/ROADMAP.md, but the user's live request wins):
+1. Mobile keyboard refinements in `src/ui/mobile-controls.ts` / `.mob-*` CSS:
+   side rail, ALL/FOCUS, COMMON keys, QWERTY insert, CRT, viewport reservation.
+   Change one lever at a time; keep desktop DOM absent and budget green.
+2. Title 規律 animation fixes only if the user reports a precise symptom;
+   `title-check` + frame-alpha sampling, no retracing without a request.
+3. Novel: only after the user's Korean-read feedback; then English edition,
    1st-person Ritsu, game integration (STORY_TO_GAME.md F0+F4 vertical slice).
-3. Game: story vertical slice → LIVE CIRCUIT / puzzle devices → integrated
+4. Game: story vertical slice → LIVE CIRCUIT / puzzle devices → integrated
    story → PV-FULL (every Practical Vim tip bucket) → Modern Vim.
 
 DEFINITION OF DONE: oracle all green · tests · lint 51 · tsc · doc-check ·

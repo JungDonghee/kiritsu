@@ -61,12 +61,15 @@ deliberate practice and VimGolf, without requiring a separate course.**
 - Full state matrix: 104 open (undo/register edge cases); game-used level
   solutions: 51 of 51; solution+undo diagnostic: 51 of 51. Game-used target
   remains 0, so full-engine perfection is still an open debt.
-- Bundle: ~412 kB raw (hard ceiling 420,000 B / gzip 140,000 B); exact size in [`STATUS.md`](generated/STATUS.md).
+- Bundle is close to the hard ceiling (420,000 B raw / 140,000 B gzip); the exact
+  current size is only in [`STATUS.md`](generated/STATUS.md). Do not add large
+  features without measuring; do not raise the ceiling.
 - Browser desktop headless: 57.6 FPS; mobile 60.5 FPS; audit 38 screens clean;
   144 not verifiable here.
 
 ## If lost
 
-Read `docs/archive/SPRINT_2026-11-12.md` → `docs/HANDOFF.md` → `AGENTS.md`. Continue the
-highest unfinished P0. Freeze risky edits at 23:40 KST; final gates/commit/push
+Read [`../FLASH_HANDOVER.md`](../FLASH_HANDOVER.md) → `docs/HANDOFF.md` →
+`AGENTS.md`. The user's live request wins over the long-term roadmap; continue
+the current workstream one safe change at a time. Freeze risky edits at 23:40 KST; final gates/commit/push
 by 23:58. Never end with an unverified claim.

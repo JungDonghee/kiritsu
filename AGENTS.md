@@ -288,18 +288,15 @@ plus the cursor-only fuzz backlog are green.
 
 Target remote: `github.com/JungDonghee/kiritsu`, branch `main`.
 
-A fine-grained GitHub PAT is stored **outside this repository** at
-`/home/jung/ai_station/sandbox/.secrets/github_token` (mode 600, notes in the
-same directory). It can read the account, create repositories and push — but it
-**cannot manage Pages**; the `pages` workflow enables Pages itself via
-`actions/configure-pages` with `enablement: true`. Never copy the token into the
-repo, never commit it, and scrub the remote URL after pushing:
+A fine-grained GitHub PAT is stored **outside this repository** in the
+machine's secret store (ask the human for the secure source; never copy the
+value into the repo, chat, or a prompt). It can read the account, create
+repositories and push — but it **cannot manage Pages**; the `pages` workflow
+enables Pages itself via `actions/configure-pages` with `enablement: true`.
+Use an askpass/credential helper so the token never appears in the remote URL:
 
 ```bash
-TOKEN=$(cat /home/jung/ai_station/sandbox/.secrets/github_token)
-git remote set-url origin "https://x-access-token:$TOKEN@github.com/JungDonghee/kiritsu.git"
-git push -u origin main
-git remote set-url origin https://github.com/JungDonghee/kiritsu.git
+GIT_ASKPASS=/path/to/existing-askpass.sh GIT_TERMINAL_PROMPT=0 git push -u origin main
 ```
 
 This is an **AI-purpose account**: token rotation is NOT required. But the token

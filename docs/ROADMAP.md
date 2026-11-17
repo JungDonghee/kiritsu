@@ -1,6 +1,9 @@
 # ROADMAP — upgrade program, next steps, puzzle devices
 
-> 제품 우선순위의 정본. 순서: 스토리 캐논 → story vertical slice → LIVE/PUZZLE → 통합 → PV-FULL → Modern Vim. 캠페인 결정론·par는 동결.
+> 제품 우선순위의 정본. **2026-11-17 현재 활성 작업은 모바일 Vim 키보드
+> (side rail/ALL·FOCUS/CRT)와 타이틀 애니메이션 피드백 반영**이며, 아래 장기
+> 순서(스토리 캐논 → story vertical slice → LIVE/PUZZLE → 통합 → PV-FULL →
+> Modern Vim)는 그대로 유효하다. 캠페인 결정론·par는 동결.
 
 > **통합 문서.** 원본은 아래 부록으로 병합됐다(과거 기록은 git 이력에 남는다).
 
@@ -52,8 +55,9 @@
 - Practical Vim: 48 of 123 tips represented; 75 gaps = 39 drill candidates,
   28 deferred surfaces, 8 review.
 - Modern Vim: 28 tips, 0 playable (deferred).
-- Bundle: 402,705 raw / 132,489 gzip (ceiling 420,000 / 140,000); ~12.5 kB raw
-  headroom. Any real feature requires a deliberate budget decision.
+- Bundle: near the 420,000 raw / 140,000 gzip ceiling; exact current bytes are in
+  [`generated/STATUS.md`](generated/STATUS.md). Any real feature requires a
+  deliberate budget decision.
 - PWA installability 0 errors; offline; landscape gate; 50-screen audit clean.
 
 ### 3. Workstreams and ownership boundaries

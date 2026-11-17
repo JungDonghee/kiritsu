@@ -39,7 +39,7 @@ The kanji typeface for every KIRITSU surface — title intro, novel PDF, boot-lo
 律, future hanja — is **Yuji Boku Light cut** (Yuji Boku Regular eroded 8 font
 units, OFL). This is final; do not reintroduce other kanji fonts. The title
 glyph is generated from this cut by `tools/gen-title-svg.py`, and the intro's
-20 per-stroke vector paths by `tools/gen-title-strokes.py`.
+20 stroke territories are hand-traced by the user and synthesized by `kanji-trace/zones.py`; `tools/gen-title-strokes.py` is retired history.
 
 ## Final choice (2026-11-15)
 
@@ -71,9 +71,9 @@ If the mark is replaced, remove these paths and this attribution.
 ## KanjiVG stroke order and medians (v9 title animation)
 
 The title intro's **stroke order** (規 11 strokes, 律 9) and the **centreline
-medians** used to author the 20 full brush-stroke outlines are derived from
-**KanjiVG** (Copyright Ulrich Apel, CC BY-SA 3.0, <https://kanjivg.tagaini.net>).
-Only the centrelines/stroke order are used as reference and fitted onto the
-Yuji Boku Light ink; no KanjiVG outline or Arphic/Hanzi Writer shape data is
-shipped in the animation. Data: `src/ui/title-stroke-paths.ts`;
-spec/verification: `docs/TITLE_KANJI.md` §8.
+medians** used by the animation are derived from **KanjiVG** (Copyright Ulrich
+Apel, CC BY-SA 3.0, <https://kanjivg.tagaini.net>). The 20 filled territories
+are hand-drawn by the user as cuts + stroke lines and synthesized by
+`kanji-trace/zones.py`; no KanjiVG outline or Arphic/Hanzi Writer shape data is
+shipped. Data: `src/ui/title-stroke-paths.ts`; current spec/verification:
+`docs/TITLE_KANJI.md` §11–§14.

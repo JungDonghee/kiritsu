@@ -11,8 +11,9 @@ it did not belong to the CRT vector language.
 - **Ouyang Xun brush**: real Ouyang-style scans of 規/律, cleaned, vectorised,
   then normalised into equal cells so the pair reads as one word. No red seal
   box, no hanko frame, no duplicate colour per glyph.
-- **Laser write**: bootlog types; a red beam crosses; the brush ink is revealed
-  behind it with stepped clipping; one flash; caption and press rise.
+- **Vector-brush write**: bootlog types; a small CRT vector crosshair writes the
+  strokes with a pale wet edge; a glyph-clipped scanline/beam finishes it; caption
+  and press rise.
 - **CRT vector display**: 80 px phosphor grid, scanlines, a slow beam sweep,
   monospace telemetry, phosphor green text, case/redaction accents.
 - **Sakura**: petals only. The organic branch was removed because its curves
@@ -30,7 +31,7 @@ it did not belong to the CRT vector language.
 | `#050b08` | CRT black |
 | `#a9ffc5` / `#c9ffda` | phosphor / telemetry |
 | `#f2d8c9` | Ouyang ink |
-| `#ff5a72` | laser, case, open line |
+| `#ff5a72` | vector cursor, case, open line |
 | sakura `#ff9fba` → `#ffe0e8` | falling petals |
 
 ## Responsive

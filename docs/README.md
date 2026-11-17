@@ -4,6 +4,10 @@
 
 ## 1. 5분 읽기 순서
 
+> **새 AI는 [`../FLASH_HANDOVER.md`](../FLASH_HANDOVER.md)를 먼저 읽는다.**
+> 현재 작업·최근 배포·첫 턴 체크리스트가 한 파일에 있다. 그 다음 이 지도와
+> `HANDOFF.md`로 프로젝트 맥락을 잡는다.
+
 | 순서 | 문서 | 무엇을 얻나 |
 |---:|---|---|
 | 1 | [`../README.md`](../README.md) | 공개 소개·플레이 방법·현재 수치 한눈에 |
@@ -14,7 +18,9 @@
 | 6 | [`generated/STATUS.md`](generated/STATUS.md) | 모든 수치의 단일 정본(oracle·매트릭스·스테이지·번들) |
 
 역할별:
-- **새 AI/기여자**: 1→2→3→4→5→6, 이후 작업 종류에 따라 `ARCHITECTURE`(코드), `CURRICULUM`(콘텐츠), `BOOKS`(책 파이프라인), `DEBT`(부채).
+- **새 AI/기여자**: `FLASH_HANDOVER.md` → 1→2→3→4→5→6, 이후 작업 종류에 따라
+  `ARCHITECTURE`(코드), `MOBILE_KEYBOARD`(현재 모바일 키보드),
+  `CURRICULUM`(콘텐츠), `BOOKS`(책 파이프라인), `DEBT`(부채).
 - **유지보수(저비용 모델)**: [`../FLASH_HANDOVER.md`](../FLASH_HANDOVER.md) → `HANDOFF.md` → `generated/STATUS.md`. 판단이 필요한 일은 멈추고 사용자에게 묻는다.
 - **공개/배포 담당**: `../README.md`, `REPO_PRESENTATION.md`, `COMPLETION.md`, `COMPARISON.md`, `PWA.md`.
 - **소설 담당**: `STORY_BIBLE.md` → [`../stories/kiritsu/HANDOVER.md`](../stories/kiritsu/HANDOVER.md)(캐논) → `../stories/kiritsu/NOVEL_STATUS.md`.
@@ -24,7 +30,7 @@
 | 문서 | 소유하는 것 | 갱신 규칙 |
 |---|---|---|
 | [`README.md`](README.md) | 이 지도·읽기 순서·문서 규칙 | 구조 변경 시 같은 커밋 |
-| [`HANDOFF.md`](HANDOFF.md) | 현재 상태·열린 작업·함정·새 세션 시작 순서 | 상태가 바뀌면 갱신. 숫자는 STATUS 참조 |
+| [`HANDOFF.md`](HANDOFF.md) | 현재 상태·열린 작업·함정·새 세션 시작 순서(v15/모바일 포함) | 상태가 바뀌면 갱신. 숫자는 STATUS 참조 |
 | [`NORTH_STAR.md`](NORTH_STAR.md) | 한 문장·불변식·현재 게이트 진실 | 결정이 바뀔 때만 |
 | [`ARCHITECTURE.md`](ARCHITECTURE.md) | 레이어·파일 책임·빌드/배포 구조 | 코드 구조 변경 시 |
 | [`VIM_COVERAGE.md`](VIM_COVERAGE.md) | 엔진 지원/미지원 경계 + 엔진 프로그램 부록 | 엔진 표면 변경 시 |
@@ -72,6 +78,7 @@
 - `SPRINT_2026-11-12.md`, `FINAL_REPORT.md`, `FINAL_CHECKPOINT.md` — 2026-11-12 스프린트 마감 기록
 - `MASTER_PLAN.md`, `NEXT_PROMPT.md`, `EVALUATION.md`, `DIVINE_MOVE.md` — 폐기/대체된 계획
 - `STROKE_RESEARCH.md` — 타이틀 획 리서치(현재 지시서는 `TITLE_KANJI.md`)
+- `HANDOFF_2026-11-15.md`, `FLASH_HANDOVER_2026-11-15.md` — 이전 핸드오프(현재 정본 아님)
 
 ## 5. 문서 규칙 — CI가 강제한다
 
@@ -90,7 +97,7 @@
 ```
 docs/
 ├─ README.md            ← 이 지도
-├─ (정본 22개)          ← 위 §2
+├─ (정본 23개)          ← 위 §2
 ├─ generated/           ← 도구 생성(§3)
 ├─ archive/             ← 과거 기록(§4)
 ├─ browser/             ← 스크린샷 증거 (docs/browser/**)

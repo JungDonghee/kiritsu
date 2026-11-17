@@ -22,9 +22,9 @@ real Vim, from the first keystroke to advanced editor features, as story and
 play — vim, told as lore.
 
 No install, no account, no tracking, no third-party requests — one small page.
-A keyboard is required; on a touch screen, turn it sideways and use the built-in
-floating Vim keypad (toggle ⌨ bottom-right). In INSERT/REPLACE mode the same
-panel becomes a compact QWERTY for free text, and Esc switches back to Vim keys.
+A keyboard is required — physical, or the built-in touch **side rail** in landscape.
+The keyboard icon toggles it; FOCUS enlarges one semantic zone. In INSERT/REPLACE
+mode the same panel becomes a compact QWERTY for free text; Esc returns to Vim.
 
 > **If you are an AI agent opening this repository:**
 > run `npm run doctor`, then read [`AGENTS.md`](AGENTS.md) before changing anything.
@@ -52,7 +52,7 @@ canon and plot rules are
 [`stories/kiritsu/HANDOVER.md`](stories/kiritsu/HANDOVER.md); the novel
 manuscript is [`stories/kiritsu/`](stories/kiritsu/README.md).
 
-## Current state (2026-11-15)
+## Current state (2026-11-17)
 
 This is a **development build**, not a finished Vim Adventures peer.
 
@@ -69,8 +69,10 @@ This is a **development build**, not a finished Vim Adventures peer.
 Read [`COMPLETION.md`](docs/COMPLETION.md) and
 [`COMPARISON.md`](docs/COMPARISON.md) before calling it complete.
 
-**Next direction:** story canon → story vertical slice → LIVE/puzzle systems →
-integrated story → full Practical Vim engine. The ordered plan is
+**Current active work:** mobile Vim keyboard polish — side rail (ALL/FOCUS),
+COMMON keys, MOVE compass, key-scaled glyphs and CRT skin. The long-term
+**next direction** remains story canon → story vertical slice → LIVE/puzzle
+systems → integrated story → full Practical Vim engine; see
 [`docs/ROADMAP.md`](docs/ROADMAP.md).
 
 ## Why it is different
@@ -103,8 +105,8 @@ integrated story → full Practical Vim engine. The ordered plan is
   frame, cursorline/numbers on a cheap FX pass, and a CRT switch for weak
   devices. Current measured: mobile **60.5 FPS**, desktop headless
   **55.4–57.6 FPS**; [`BROWSER_QA.md`](docs/QA.md). 144fps is not claimed.
-- **It plays on a phone in landscape** with a Bluetooth keyboard **or the
-  floating on-screen keypad** — by default **all Vim keys live in a full-height side rail on the right**
+- **It plays on a phone in landscape** with a Bluetooth keyboard **or the built-in
+  touch side rail** — by default **all Vim keys live in a full-height side rail on the right**
   (SYS/CNT/SYM plus MOVE/EDIT/NAV/INS clusters); the game viewport narrows but
   keeps its full height, and the rail never covers the terminal. A FOCUS chip
   turns the rail into one large semantic page (MOVE / EDIT / NAV / INS / CNT /
@@ -112,9 +114,9 @@ integrated story → full Practical Vim engine. The ordered plan is
   The MOVE page puts h/j/k/l in a four-direction compass (←↓↑→). Keys and fonts
   share the same CRT phosphor/scanline treatment as the game. The grid chip
   cycles **edge-cluster → compact-bar → minimal split-pad** alternatives. INSERT/
-  REPLACE raises a compact QWERTY bar and Esc returns to the side rail.
-  INSERT/REPLACE turns it into a QWERTY; Esc returns. Shift is a toggle, so there
-  are no duplicated uppercase keys. A quiet ⟳ chip hard-refreshes installed PWAs.
+  REPLACE turns the panel into a compact QWERTY bar; Esc returns. Shift is a
+  toggle, so there are no duplicated uppercase keys. A quiet ⟳ chip hard-refreshes
+  installed PWAs.
   The research and layout rationale are in
   [`docs/MOBILE_KEYBOARD.md`](docs/MOBILE_KEYBOARD.md).
 - **It trains for mastery, not just completion.** Par/3-star, best keys, F3
@@ -127,11 +129,13 @@ integrated story → full Practical Vim engine. The ordered plan is
 
 ## Screens
 
-| Desktop title | Landscape title |
+| Desktop title | Landscape title + Vim side rail |
 |---|---|
-| ![KIRITSU desktop title](docs/browser/desktop-title.jpg) | ![KIRITSU landscape title](docs/browser/pwa/landscape-title.png) |
-| **First chamber** | **Portrait gate** |
-| ![KIRITSU first chamber](docs/browser/desktop-play.jpg) | ![Portrait gate](docs/browser/pwa/portrait-gate.png) |
+| ![KIRITSU desktop title](docs/browser/desktop-title.jpg) | ![KIRITSU landscape title with the Vim side rail](docs/browser/pwa/landscape-title.png) |
+| **First chamber** | **Touch play: side rail, full game height** |
+| ![KIRITSU first chamber](docs/browser/desktop-play.jpg) | ![KIRITSU touch gameplay with the Vim side rail](docs/browser/pwa/landscape-play.png) |
+| **FOCUS MOVE compass** | **Portrait gate** |
+| ![FOCUS MOVE page with the hjkl compass and COMMON keys](docs/browser/pwa/landscape-focus.png) | ![Portrait gate](docs/browser/pwa/portrait-gate.png) |
 
 ## Design
 
@@ -171,8 +175,9 @@ npm install
 npm run dev      # http://localhost:5173
 ```
 
-A physical keyboard is required. The input method does not matter: Vim keys are
-physical positions, so a Korean IME's ㅗㅓㅏㅣ is remapped to hjkl automatically.
+A physical keyboard is optional — on a touch screen the built-in side rail is the
+keyboard. Vim keys are physical positions, so a Korean IME's ㅗㅓㅏㅣ is remapped
+to hjkl automatically.
 New to Vim? Press **F1** for the 60-second primer; the coach offers a hint if
 you idle or get stuck.
 

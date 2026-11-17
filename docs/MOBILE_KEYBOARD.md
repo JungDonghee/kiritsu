@@ -1,7 +1,11 @@
 # KIRITSU mobile keyboard — research notes & layout
 
 The phone keyboard is not a QWERTY clone. It is a **Vim command surface** first,
-with a familiar QWERTY layer only for INSERT/REPLACE text. This note records the
+with a familiar QWERTY layer only for INSERT/REPLACE text.
+
+**Status: 2026-11-17 — deployed.** Side rail is the default; ALL/FOCUS modes,
+COMMON keys, compass MOVE page, key-scaled glyphs and CRT skin are live.
+Exact live/gate numbers are in `docs/generated/STATUS.md` and `FLASH_HANDOVER.md`. This note records the
 research that drove the layout, the resulting decisions, and the measurements
 we verify.
 
@@ -147,33 +151,6 @@ remaining ideas stay as documented future work.
   the rail, not over the game.
 - **INSERT/REPLACE** temporarily raises the compact QWERTY bar at the bottom
   (full typing needs a wider surface); Esc returns to the all-side Vim rail.
-
-### Side modes: ALL vs FOCUS
-
-The side rail has a **FOCUS** chip in its header:
-
-- **ALL** (default): every zone visible at once — SYS/CNT/SYM at the top,
-  MOVE/EDIT/NAV/INS down the rail. Best when learning and when the full command
-  set should stay visible.
-- **FOCUS**: one semantic page fills the rail with near-square keys, and the
-  page tabs (`MOVE EDIT NAV INS CNT SYM`) / ‹ › arrows switch context. Always-
-  common keys are pinned in a separate **COMMON** footer: Esc, Shift, Ctrl,
-  Bksp, Enter, Space, `:`, `/`, F1. The pages are:
-  - MOVE: a four-direction **compass** — `k` north, `j` south, `h` west, `l` east
-    around a crosshair; `w b e 0` / `$ ^ * #` fill the lower grid.
-  - EDIT: `d c y x p u r s`
-  - NAV: `g f t ; , % n`
-  - INS: `i a o v q z m n`
-  - CNT: `1…9`
-  - SYM: `. , - = ``
-  - Uppercase/symbol variants remain available through the COMMON Shift toggle.
-  - Focus page keys are **71×64** (MOVE compass/extra) or **71×86** (3×3 pages),
-    not wide bars; the page fills the rail height, and the glyph size follows the
-    key area (24–28px in FOCUS, 20–28px in the compass, 14px in the COMMON
-    footer). The whole surface uses phosphor text bloom, a faint red/cyan fringe
-    and 1px scanlines; `body.crt-off` removes them. The mode and page are remembered.
-
-### Alternatives (grid dock chip cycles)
 
 ### Side modes: ALL vs FOCUS
 
