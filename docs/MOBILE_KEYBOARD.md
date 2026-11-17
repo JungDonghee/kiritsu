@@ -159,16 +159,19 @@ The side rail has a **FOCUS** chip in its header:
   page tabs (`MOVE EDIT NAV INS CNT SYM`) / ‹ › arrows switch context. Always-
   common keys are pinned in a separate **COMMON** footer: Esc, Shift, Ctrl,
   Bksp, Enter, Space, `:`, `/`, F1. The pages are:
-  - MOVE: `h j k l w b e 0 $ ^ * #`
+  - MOVE: a four-direction **compass** — `k` north, `j` south, `h` west, `l` east
+    around a crosshair; `w b e 0` / `$ ^ * #` fill the lower grid.
   - EDIT: `d c y x p u r s`
   - NAV: `g f t ; , % n`
   - INS: `i a o v q z m n`
   - CNT: `1…9`
   - SYM: `. , - = ``
   - Uppercase/symbol variants remain available through the COMMON Shift toggle.
-  - Focus page keys are **71×64** (MOVE 3×4) or **71×86** (3×3 pages), not wide
-    bars; the page fills the rail height, and the glyph size follows the key
-    area (24–28px in FOCUS, 14px in the COMMON footer). The mode and page are remembered.
+  - Focus page keys are **71×64** (MOVE compass/extra) or **71×86** (3×3 pages),
+    not wide bars; the page fills the rail height, and the glyph size follows the
+    key area (24–28px in FOCUS, 20–28px in the compass, 14px in the COMMON
+    footer). The whole surface uses phosphor text bloom, a faint red/cyan fringe
+    and 1px scanlines; `body.crt-off` removes them. The mode and page are remembered.
 
 ### Alternatives (grid dock chip cycles)
 
@@ -183,16 +186,19 @@ The side rail has a **FOCUS** chip in its header:
   page tabs (`MOVE EDIT NAV INS CNT SYM`) / ‹ › arrows switch context. Always-
   common keys are pinned in a separate **COMMON** footer: Esc, Shift, Ctrl,
   Bksp, Enter, Space, `:`, `/`, F1. The pages are:
-  - MOVE: `h j k l w b e 0 $ ^ * #`
+  - MOVE: a four-direction **compass** — `k` north, `j` south, `h` west, `l` east
+    around a crosshair; `w b e 0` / `$ ^ * #` fill the lower grid.
   - EDIT: `d c y x p u r s`
   - NAV: `g f t ; , % n`
   - INS: `i a o v q z m n`
   - CNT: `1…9`
   - SYM: `. , - = ``
   - Uppercase/symbol variants remain available through the COMMON Shift toggle.
-  - Focus page keys are **71×64** (MOVE 3×4) or **71×86** (3×3 pages), not wide
-    bars; the page fills the rail height, and the glyph size follows the key
-    area (24–28px in FOCUS, 14px in the COMMON footer). The mode and page are remembered.
+  - Focus page keys are **71×64** (MOVE compass/extra) or **71×86** (3×3 pages),
+    not wide bars; the page fills the rail height, and the glyph size follows the
+    key area (24–28px in FOCUS, 20–28px in the compass, 14px in the COMMON
+    footer). The whole surface uses phosphor text bloom, a faint red/cyan fringe
+    and 1px scanlines; `body.crt-off` removes them. The mode and page are remembered.
 
 ### Alternatives (grid dock chip cycles)
 
@@ -211,7 +217,7 @@ The choice and page are stored in `kiritsu.mobileLayout.v2` /
 | thing | value |
 |---|---|
 | side rail | **~230 px wide, full 430px height**; game viewport ~666×430 |
-| focus keys | MOVE 71×64px; other pages 71×86px; COMMON footer 71×30; font 24–28px |
+| focus keys | compass 71×64/71×86px; other pages 71×86px; COMMON footer 71×30; font 24–28px |
 | minimal split pad | **73 px** (~17% of 430) |
 | compact bar (Vim) | **94 px** (~22%) |
 | compact bar (QWERTY) | **123 px** (~29%) |
@@ -220,7 +226,19 @@ The choice and page are stored in `kiritsu.mobileLayout.v2` /
 | target sizes | command-row keys 24×~50; strip 17–18 px tall; dock 26–30 px; spacing exception under WCAG 2.5.8 |
 | viewport | `#app` right reserve for side; bottom for minimal/bar; top+bottom for edge; insert uses QWERTY bar |
 
-## 6. Implementation map
+## 6. CRT treatment
+
+The keys are not flat UI. The panel uses:
+- phosphor text bloom (`text-shadow`), a faint red/cyan chromatic fringe;
+- 1px scanlines on the panel and repeated on each key background;
+- inset tube shadow/vignette, and a soft green radial highlight;
+- page/key glyphs scale with the key area (see focus measurements);
+- `body.crt-off` strips the scanlines, glow and fringe for the plain mode.
+
+This keeps the keyboard in the same tube as the terminal without hurting
+legibility; the scanline overlay is `pointer-events: none`.
+
+## 7. Implementation map
 
 - `src/ui/mobile-controls.ts` — zone data, pages, edge/bar/minimal layouts,
   swipe/tabs, Shift labels, viewport reservation, refresh.
@@ -230,7 +248,7 @@ The choice and page are stored in `kiritsu.mobileLayout.v2` /
   `--mob-kb-*`, `#app` reservation.
 - `public/sw.js` — cache version bumped when the keyboard shell changes.
 
-## 7. Open questions
+## 8. Open questions
 
 - The minimal split pad hides NAV/INS behind a page; first-time players need a
   visible hint. A one-shot coach mark (“swipe the header to switch pages”) is

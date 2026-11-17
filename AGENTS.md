@@ -200,7 +200,8 @@ toggle) and defaults to a full-height **side rail** on the right: SYS/CNT/SYM pl
 MOVE/EDIT/NAV/INS all visible, the game viewport narrows but keeps full height,
 and the rail never covers the terminal. A FOCUS chip switches the rail to one
 large semantic page (MOVE/EDIT/NAV/INS/CNT/SYM) plus a fixed COMMON footer;
-keys become near-square and page tabs/arrows switch context. The grid dock chip
+keys become near-square and page tabs/arrows switch context; the MOVE page lays out
+h/j/k/l as a directional compass and key glyphs scale with the key area. The grid dock chip
 cycles edge clusters,
 compact bar and minimal split pad (page tabs/swipe only in the minimal layout).
 While keys are open the module reserves space by shrinking `#app` (right for side,

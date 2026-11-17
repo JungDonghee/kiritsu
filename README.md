@@ -108,7 +108,9 @@ integrated story → full Practical Vim engine. The ordered plan is
   (SYS/CNT/SYM plus MOVE/EDIT/NAV/INS clusters); the game viewport narrows but
   keeps its full height, and the rail never covers the terminal. A FOCUS chip
   turns the rail into one large semantic page (MOVE / EDIT / NAV / INS / CNT /
-  SYM) with fixed COMMON keys — near-square, thumb-sized targets and page tabs. The grid chip
+  SYM) with fixed COMMON keys — near-square, thumb-sized targets and page tabs.
+  The MOVE page puts h/j/k/l in a four-direction compass (←↓↑→). Keys and fonts
+  share the same CRT phosphor/scanline treatment as the game. The grid chip
   cycles **edge-cluster → compact-bar → minimal split-pad** alternatives. INSERT/
   REPLACE raises a compact QWERTY bar and Esc returns to the side rail.
   INSERT/REPLACE turns it into a QWERTY; Esc returns. Shift is a toggle, so there

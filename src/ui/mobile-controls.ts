@@ -342,11 +342,46 @@ export function mountMobileControls(): void {
   ];
   const focusPages = h('div', { class: 'mob-focus-pages' });
   const focusPageEls = new Map<string, HTMLElement>();
+  const compassKey = (label: string, col: number, row: number, dir: string): HTMLButtonElement | null => {
+    const def = keyByLabel.get(label);
+    if (!def) return null;
+    const b = bindButton(def);
+    b.style.gridColumn = String(col);
+    b.style.gridRow = String(row);
+    b.classList.add('compass-key', `dir-${dir}`);
+    return b;
+  };
   for (const page of FOCUS_PAGES) {
-    const el = h('div', { class: `mob-focus-page cols-${page.cols}` });
-    for (const label of page.labels) {
-      const def = keyByLabel.get(label);
-      if (def) el.append(bindButton(def));
+    let el: HTMLElement;
+    if (page.id === 'move') {
+      // h ←  k ↑  l →  j ↓ in a four-direction compass; movement extras below.
+      el = h('div', { class: 'mob-focus-page compass' });
+      const compass = h('div', { class: 'mob-compass' });
+      const center = h('div', { class: 'mob-compass-center' },
+        h('span', { class: 'cross' }, '+'),
+        h('span', { class: 'label' }, 'HJKL'),
+      );
+      center.style.gridColumn = '2';
+      center.style.gridRow = '2';
+      for (const [label, col, row, dir] of [
+        ['k', 2, 1, 'north'], ['h', 1, 2, 'west'], ['l', 3, 2, 'east'], ['j', 2, 3, 'south'],
+      ] as const) {
+        const b = compassKey(label, col, row, dir);
+        if (b) compass.append(b);
+      }
+      compass.append(center);
+      const extra = h('div', { class: 'mob-compass-extra' });
+      for (const label of ['w', 'b', 'e', '0', '$', '^', '*', '#']) {
+        const def = keyByLabel.get(label);
+        if (def) extra.append(bindButton(def));
+      }
+      el.append(compass, extra);
+    } else {
+      el = h('div', { class: `mob-focus-page cols-${page.cols}` });
+      for (const label of page.labels) {
+        const def = keyByLabel.get(label);
+        if (def) el.append(bindButton(def));
+      }
     }
     focusPageEls.set(page.id, el);
     focusPages.append(el);
