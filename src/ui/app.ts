@@ -597,7 +597,7 @@ export class App {
         h(
           'div',
           { class: 'map-foot' },
-          h('span', { class: 'ko' }, this.t('↑↓ select · ↵ play · ESC floor map', '↑↓ 선택 · ↵ 플레이 · ESC 층 지도')),
+          h('span', { class: 'ko' }, this.t('↑↓ select · ↵ play · ESC title', '↑↓ 선택 · ↵ 플레이 · ESC 인트로')),
           h('button', { class: 'chip', onclick: () => this.goMap() }, this.t('MAP', '지도')),
         ),
       ),
@@ -1350,7 +1350,7 @@ export class App {
         this.startStageAt(this.chapterSel);
       } else if (e.key === 'Escape' || e.key === 'h' || e.key === 'ArrowLeft') {
         e.preventDefault();
-        this.goMap(true);
+        this.goTitle();
       }
       return;
     }

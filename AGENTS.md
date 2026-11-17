@@ -143,31 +143,22 @@ docs/               README.md (문서 지도), LEVEL_FORMAT.md (authoring), CURR
 
 ## Design laws
 
-- **Title kanji (規律) — v12 SHIPPED (2026-11-15).** The rejected automated
-  partitions v1–v8 are retired. v12 data (`src/ui/title-stroke-paths.ts`) is a
-  **20-territory synthesis** produced by `kanji-trace/zones.py` from the user's
-  hand-drawn drawing: **51 inner boundary cuts** partition the ink into 57 zones,
-  and **22 straight stroke lines** (drawn in stroke order; cornered strokes use
-  two touching segments — 6+7 and 16+17 are grouped automatically) merge the
-  zones they pass through into each stroke, giving exactly **20 strokes**. A zone
-  crossed by several lines is shared (same ink colour, so overlaps are invisible
-  in the final glyph). Union reproduces the glyph (raster diff <0.1%, AA edges
-  only). v13 runtime (`src/ui/kanji.ts`) removes the laser head completely:
-  the old radial laser is now a **small CRT-vector plus-sign crosshair**
-  (24px, no arrow/centre dot) at the contact point; the active mask is clipped
-  by the half-plane behind the cursor so ink never appears ahead of the brush.
-  Only a **small circular wet dab at the contact point** (radius = local
-  half-width; destination-out radial, max 62% removed) is lighter; passed ink is
-  immediately final-colour. Each character accelerates: the first stroke is
-  careful (pace 1.20) and later strokes speed up (pace 0.58) with shrinking
-  gaps — one character ≈5.2s total, `--kt-end` 6.16s. The post-write effect is
-  a **CRT scanline + beam sweep clipped to the glyph ink** (no rectangular
-  bloom). Stroke easing is natural easeInOut
-  (`0.12t+0.88t^2.4`, slow start → fast finish) with the old end-slowdown
-  removed; total ≈7.55s. Never draw the final glyph over the animated one,
-  never re-introduce v1–v8 masks, and never edit the generated data by hand —
-  rerun `kanji-trace/zones.py` with the user's cuts/lines and re-verify. Read
-  [`docs/TITLE_KANJI.md`](docs/TITLE_KANJI.md) §11·§12 before touching the title.
+- **Title kanji (規律) — v15 SHIPPED (2026-11-17).** The rejected automated
+  partitions v1–v8 are retired. v12 data (`src/ui/title-stroke-paths.ts`) is the
+  **20-territory synthesis** from the user's 51 cuts + 22 straight lines; cornered
+  strokes use two touching segments (6+7, 16+17) merged automatically. v15
+  runtime (`src/ui/kanji.ts`) uses a **monotonic swept mask**: full discs along
+  the travelled path plus a rear semicircle at the contact point, NOT the old
+  infinite half-plane cut — that cut could chop revealed ink for one frame at
+  sharp corners (the stroke "flicker" bug). The active tip still has no ink
+  ahead of the brush, and a small circular wet dab (radius = local half-width,
+  max 62% removed) marks the touch point. Each character accelerates: first
+  stroke pace 1.20 → last 0.58, shrinking gaps, one character ≈5.2s,
+  `--kt-end` 6.16s. The finish effect is a glyph-clipped CRT scanline/beam sweep
+  (softened: tint 0.08, beam 0.58 — no whole-glyph flash). Never draw the final
+  glyph over the animated one, never re-introduce v1–v8 masks, and never edit
+  the generated data by hand — rerun `kanji-trace/zones.py` and re-verify. Read
+  [`docs/TITLE_KANJI.md`](docs/TITLE_KANJI.md) §11–§14 before touching the title.
 - **Title kanji (規律) has a single source of truth:** `public/kanji/ou-guilv-tight.svg`
   (구양순체 계열 Yuji Boku **Light cut**, viewBox 600×300, fill `#f2d8c9`;
   generated directly from the subset by `tools/gen-title-svg.py`). **Kanji

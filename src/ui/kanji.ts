@@ -224,46 +224,39 @@ export async function mountKtTitleWrite(root: HTMLElement, sfx?: Sfx): Promise<v
       lctx.beginPath();
       const step = 2.5;
       const baseR = KIRITSU_TITLE_STROKE_RADII[active]! + 2;
-      for (let s = 0; s <= arc + step; s += step) {
-        const ss = Math.min(s, arc);
-        const q = pointAt(g, ss);
+      // The swept mask grows monotonically: full discs along the travelled
+      // path, then a rear semicircle at the contact point. This avoids the old
+      // infinite half-plane cut, which could momentarily chop already-revealed
+      // ink when the tangent turned a sharp corner (the visible "flicker").
+      for (let s = 0; s < arc - 0.01; s += step) {
+        const q = pointAt(g, s);
         // 붓 압력 램프: 진행 중인 획의 맨 앞쪽은 얇게, 지나간 뒤쪽은 두껍게.
-        // (v10c) 앞 18unit 구간에서 55%→100%로 벌어져 '확' 나타나는 느낌을 줄인다.
-        const taper = 0.55 + 0.45 * Math.min(1, Math.max(0, arc - ss) / 18);
+        const taper = 0.55 + 0.45 * Math.min(1, Math.max(0, arc - s) / 18);
         const rr = baseR * taper;
         lctx.moveTo(q.x + rr, q.y);
         lctx.arc(q.x, q.y, rr, 0, Math.PI * 2);
-        if (ss >= arc) break;
       }
-      lctx.clip();
-      lctx.fill(paths[active]!);
-      lctx.restore();
-
-      // No ink ahead of the brush: keep only the half-plane behind the contact
-      // line through the current brush position.
       {
         const tip = pointAt(g, arc);
         const ahead = pointAt(g, Math.min(g.len, arc + 2));
         const behind = pointAt(g, Math.max(0, arc - 2));
-        let ttx = ahead.x - behind.x, tty = ahead.y - behind.y;
-        const tl = Math.hypot(ttx, tty) || 1;
-        ttx /= tl; tty /= tl;
-        const nnx = -tty, nny = ttx;
-        const BIG = 2000;
-        const ax = tip.x + nnx * BIG, ay = tip.y + nny * BIG;
-        const bx = tip.x - nnx * BIG, by = tip.y - nny * BIG;
-        lctx.save();
-        lctx.setTransform(1, 0, 0, 1, 0, 0);
-        lctx.globalCompositeOperation = 'destination-in';
-        lctx.beginPath();
-        lctx.moveTo(ax * OUT_SCALE, ay * OUT_SCALE);
-        lctx.lineTo(bx * OUT_SCALE, by * OUT_SCALE);
-        lctx.lineTo((bx - ttx * BIG) * OUT_SCALE, (by - tty * BIG) * OUT_SCALE);
-        lctx.lineTo((ax - ttx * BIG) * OUT_SCALE, (ay - tty * BIG) * OUT_SCALE);
+        const angle = Math.atan2(ahead.y - behind.y, ahead.x - behind.x);
+        const rTip = baseR * 0.55;
+        // rear half-disc, flat edge on the contact line: no ink ahead of brush
+        const a0 = angle + Math.PI / 2;
+        const a1 = angle + (Math.PI * 3) / 2;
+        lctx.moveTo(tip.x + Math.cos(a0) * rTip, tip.y + Math.sin(a0) * rTip);
+        lctx.arc(tip.x, tip.y, rTip, a0, a1, false);
         lctx.closePath();
-        lctx.fill();
-        lctx.restore();
+        // at the very end also cover the glyph's end cap before completion
+        if (arc >= g.len - 0.01) {
+          lctx.moveTo(tip.x + rTip, tip.y);
+          lctx.arc(tip.x, tip.y, rTip, 0, Math.PI * 2);
+        }
       }
+      lctx.clip();
+      lctx.fill(paths[active]!);
+      lctx.restore();
 
       // Wet brush dab: erase a soft circular spot at the current touch point.
       // The radius follows the stroke's local half-width, so the wet circle is
@@ -317,21 +310,21 @@ export async function mountKtTitleWrite(root: HTMLElement, sfx?: Sfx): Promise<v
       const env = p < 0.12 ? p / 0.12 : p > 0.9 ? (1 - p) / 0.1 : 1;
       const shimmer = 0.65 + 0.35 * Math.abs(Math.sin(elapsed * 47) * Math.cos(elapsed * 23));
       // phosphor tint exactly on the glyph ink
-      gl.fillStyle = `rgba(36,255,150,${(0.26 * env).toFixed(3)})`;
+      gl.fillStyle = `rgba(36,255,150,${(0.08 * env).toFixed(3)})`;
       gl.fill(glyphClip);
       // CRT scanlines on the glyph
       for (let y = 0; y < VB_H; y += 3) {
-        gl.fillStyle = `rgba(90,255,170,${(0.09 * env * shimmer).toFixed(3)})`;
+        gl.fillStyle = `rgba(90,255,170,${(0.045 * env * shimmer).toFixed(3)})`;
         gl.fillRect(0, y, VB_W, 1);
       }
       const by = -24 + p * (VB_H + 48);
       const grad = gl.createLinearGradient(0, by - 24, 0, by + 24);
       grad.addColorStop(0, 'rgba(150,255,210,0)');
-      grad.addColorStop(0.45, `rgba(170,255,215,${(0.85 * env).toFixed(3)})`);
+      grad.addColorStop(0.45, `rgba(170,255,215,${(0.58 * env).toFixed(3)})`);
       grad.addColorStop(1, 'rgba(150,255,210,0)');
       gl.fillStyle = grad;
       gl.fillRect(0, by - 24, VB_W, 48);
-      gl.fillStyle = `rgba(230,255,245,${(0.85 * env).toFixed(3)})`;
+      gl.fillStyle = `rgba(230,255,245,${(0.65 * env).toFixed(3)})`;
       gl.fillRect(0, by, VB_W, 1.4);
       gl.restore();
     };
