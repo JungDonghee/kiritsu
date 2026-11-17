@@ -2750,3 +2750,13 @@ body.mob-kb-open.mob-kb-side #app { right: var(--mob-kb-right, 0px); bottom: 0px
   font: 5px/1 ui-monospace, monospace; letter-spacing: .14em; color: #7fa98c; opacity: .7;
 }
 .mob-vk.side.focus .mob-focus-footer .mob-vk-key { height: 24px; font-size: 10px; }
+
+/* key labels scale with the key area; focus pages use big, readable glyphs */
+.mob-vk.side .mob-vk-row:not(.strip) .mob-vk-key { font-size: 12px; }
+.mob-vk.side .mob-vk-row.strip .mob-vk-key { font-size: 8.5px; }
+.mob-vk.side.focus .mob-focus-page .mob-vk-key { font-size: 26px; }
+.mob-vk.side.focus .mob-focus-page.cols-3 .mob-vk-key { font-size: 24px; }
+.mob-vk.side.focus .mob-focus-page.cols-2 .mob-vk-key { font-size: 28px; }
+.mob-vk.side.focus .mob-focus-footer .mob-vk-key { height: 30px; font-size: 14px; }
+.mob-vk.minimal .mob-vk-row:not(.strip) .mob-vk-key { font-size: 11px; }
+.mob-vk.edge .mob-vk-row:not(.strip) .mob-vk-key { font-size: 11px; }

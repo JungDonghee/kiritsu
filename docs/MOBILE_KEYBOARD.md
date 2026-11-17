@@ -166,8 +166,9 @@ The side rail has a **FOCUS** chip in its header:
   - CNT: `1…9`
   - SYM: `. , - = ``
   - Uppercase/symbol variants remain available through the COMMON Shift toggle.
-  - Focus page keys are **71×68** (MOVE 3×4) or **71×92** (3×3 pages), not wide
-    bars; the page fills the rail height. The mode and page are remembered.
+  - Focus page keys are **71×64** (MOVE 3×4) or **71×86** (3×3 pages), not wide
+    bars; the page fills the rail height, and the glyph size follows the key
+    area (24–28px in FOCUS, 14px in the COMMON footer). The mode and page are remembered.
 
 ### Alternatives (grid dock chip cycles)
 
@@ -189,8 +190,9 @@ The side rail has a **FOCUS** chip in its header:
   - CNT: `1…9`
   - SYM: `. , - = ``
   - Uppercase/symbol variants remain available through the COMMON Shift toggle.
-  - Focus page keys are **71×68** (MOVE 3×4) or **71×92** (3×3 pages), not wide
-    bars; the page fills the rail height. The mode and page are remembered.
+  - Focus page keys are **71×64** (MOVE 3×4) or **71×86** (3×3 pages), not wide
+    bars; the page fills the rail height, and the glyph size follows the key
+    area (24–28px in FOCUS, 14px in the COMMON footer). The mode and page are remembered.
 
 ### Alternatives (grid dock chip cycles)
 
@@ -209,7 +211,7 @@ The choice and page are stored in `kiritsu.mobileLayout.v2` /
 | thing | value |
 |---|---|
 | side rail | **~230 px wide, full 430px height**; game viewport ~666×430 |
-| focus keys | MOVE 71×68px; other pages 71×92px; COMMON footer 71×24 |
+| focus keys | MOVE 71×64px; other pages 71×86px; COMMON footer 71×30; font 24–28px |
 | minimal split pad | **73 px** (~17% of 430) |
 | compact bar (Vim) | **94 px** (~22%) |
 | compact bar (QWERTY) | **123 px** (~29%) |
